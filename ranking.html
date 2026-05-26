@@ -10,7 +10,9 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --vermelho: #DD303E; --azul: #0D134C; --branco: #FFFFFF; }
+
     body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
+
     .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
     .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .logo-marca { display: flex; align-items: center; gap: 10px; }
@@ -27,55 +29,120 @@
     .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
     .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
     .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
-    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 800px; }
+
+    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 760px; }
+
     .page-header { margin-bottom: 32px; }
     .page-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
-    .page-header p { color: rgba(255,255,255,0.45); font-size: 14px; margin-top: 4px; font-weight: 600; }
+    .page-header p { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+    /* PREVIEW BANNER */
+    .preview-banner {
+      background: rgba(221,48,62,0.1);
+      border: 1px solid rgba(221,48,62,0.25);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .preview-banner span { font-size: 18px; }
+
+    /* PÓDIO */
+    .podium-wrap {
+      margin-bottom: 32px;
+      padding: 32px 24px 0;
+      position: relative;
+    }
+
+    .podium-titulo {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 28px;
+    }
 
     .podium {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 32px;
-      padding: 0 20px;
+      gap: 8px;
     }
 
     .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       flex: 1;
-      max-width: 160px;
-      text-align: center;
+      max-width: 180px;
     }
 
     .podium-avatar {
-      width: 56px;
-      height: 56px;
       border-radius: 50%;
-      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 900;
       border: 3px solid;
+      margin-bottom: 8px;
+      position: relative;
     }
 
-    .podium-item:nth-child(1) .podium-avatar { border-color: #C0C0C0; background: rgba(192,192,192,0.1); color: #C0C0C0; width: 48px; height: 48px; }
-    .podium-item:nth-child(2) .podium-avatar { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; width: 64px; height: 64px; font-size: 26px; }
-    .podium-item:nth-child(3) .podium-avatar { border-color: #CD7F32; background: rgba(205,127,50,0.1); color: #CD7F32; width: 48px; height: 48px; }
-
-    .podium-nome { font-size: 12px; font-weight: 800; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .podium-qtd { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; }
-
-    .podium-barra {
-      border-radius: 8px 8px 0 0;
-      margin-top: 12px;
+    .podium-coroa {
+      position: absolute;
+      top: -18px;
+      font-size: 18px;
     }
 
-    .podium-item:nth-child(1) .podium-barra { height: 60px; background: rgba(192,192,192,0.2); border: 1px solid rgba(192,192,192,0.3); }
-    .podium-item:nth-child(2) .podium-barra { height: 90px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
-    .podium-item:nth-child(3) .podium-barra { height: 45px; background: rgba(205,127,50,0.2); border: 1px solid rgba(205,127,50,0.3); }
+    .podium-item.pos-1 .podium-avatar { width: 72px; height: 72px; border-color: #FFD700; background: rgba(255,215,0,0.12); color: #FFD700; font-size: 26px; }
+    .podium-item.pos-2 .podium-avatar { width: 56px; height: 56px; border-color: #C0C0C0; background: rgba(192,192,192,0.1); color: #C0C0C0; }
+    .podium-item.pos-3 .podium-avatar { width: 56px; height: 56px; border-color: #CD7F32; background: rgba(205,127,50,0.1); color: #CD7F32; }
 
+    .podium-nome {
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .podium-qtd {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .podium-item.pos-1 .podium-qtd { color: #FFD700; }
+    .podium-item.pos-2 .podium-qtd { color: #C0C0C0; }
+    .podium-item.pos-3 .podium-qtd { color: #CD7F32; }
+
+    .podium-base {
+      width: 100%;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .podium-item.pos-1 .podium-base { height: 100px; background: linear-gradient(180deg, rgba(255,215,0,0.2), rgba(255,215,0,0.06)); border: 1px solid rgba(255,215,0,0.25); border-bottom: none; color: rgba(255,215,0,0.4); }
+    .podium-item.pos-2 .podium-base { height: 72px; background: linear-gradient(180deg, rgba(192,192,192,0.15), rgba(192,192,192,0.04)); border: 1px solid rgba(192,192,192,0.2); border-bottom: none; color: rgba(192,192,192,0.3); }
+    .podium-item.pos-3 .podium-base { height: 52px; background: linear-gradient(180deg, rgba(205,127,50,0.15), rgba(205,127,50,0.04)); border: 1px solid rgba(205,127,50,0.2); border-bottom: none; color: rgba(205,127,50,0.3); }
+
+    /* LISTA RANKING */
     .ranking-lista {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.07);
@@ -83,58 +150,111 @@
       overflow: hidden;
     }
 
+    .ranking-header {
+      display: grid;
+      grid-template-columns: 48px 1fr 80px;
+      padding: 10px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+    }
+
     .ranking-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: 48px 1fr 80px;
       align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
+      padding: 14px 20px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       transition: background 0.2s;
+      position: relative;
     }
 
     .ranking-item:last-child { border-bottom: none; }
     .ranking-item:hover { background: rgba(255,255,255,0.03); }
-    .ranking-item.eu { background: rgba(221,48,62,0.06); border-color: rgba(221,48,62,0.1); }
+
+    .ranking-item.eu {
+      background: rgba(221,48,62,0.06);
+      border-left: 3px solid var(--vermelho);
+    }
+
+    .ranking-item.preview-blur {
+      filter: blur(4px);
+      pointer-events: none;
+      user-select: none;
+    }
 
     .ranking-pos {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
-      width: 32px;
       text-align: center;
-      flex-shrink: 0;
+    }
+
+    .pos-1 { color: #FFD700; }
+    .pos-2 { color: #C0C0C0; }
+    .pos-3 { color: #CD7F32; }
+    .pos-outros { color: rgba(255,255,255,0.3); font-size: 13px; }
+
+    .ranking-pessoa {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .ranking-avatar {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
       color: var(--vermelho);
       flex-shrink: 0;
-      border: 2px solid rgba(221,48,62,0.2);
+      border: 2px solid rgba(221,48,62,0.15);
     }
 
-    .ranking-info { flex: 1; }
     .ranking-nome { font-size: 14px; font-weight: 800; }
-    .ranking-sub { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; margin-top: 2px; }
+    .ranking-sub { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 600; margin-top: 2px; }
 
-    .ranking-qtd { text-align: right; flex-shrink: 0; }
-    .ranking-qtd strong { font-size: 22px; font-weight: 900; color: var(--vermelho); display: block; line-height: 1; }
-    .ranking-qtd span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ranking-qtd {
+      text-align: right;
+    }
+
+    .ranking-qtd strong { font-size: 20px; font-weight: 900; color: var(--vermelho); display: block; line-height: 1; }
+    .ranking-qtd span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; }
+
+    /* Lock overlay para posições desfocadas */
+    .lock-row {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.35);
+    }
 
     .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; }
+
+    .vazio { text-align: center; padding: 60px 32px; }
+    .vazio .vazio-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+    .vazio strong { display: block; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+    .vazio p { font-size: 14px; color: rgba(255,255,255,0.3); font-weight: 600; }
   </style>
 </head>
 <body>
+
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-marca">
-      <div class="logo-icone">🎴</div>
+      <div class="logo-icone">🏆</div>
       <div class="logo-texto">
         <h1>Gran <span>Seleção</span></h1>
         <p>Álbum de figurinhas</p>
@@ -152,18 +272,35 @@
     <button class="btn-sair" onclick="sair()">↩ Sair</button>
   </div>
 </nav>
+
 <div class="content">
   <div class="page-header">
     <h2>Ranking</h2>
     <p>Os colecionadores mais dedicados da Gran Seleção!</p>
   </div>
+
   <div id="ranking-container"><div class="carregando">Carregando ranking...</div></div>
 </div>
+
 <script>
   const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
   let meuId = null
+
+  // Dados de preview para mostrar o layout antes de ter usuários reais
+  const dadosPreview = [
+    { nome_completo: 'Maria Oliveira', email: 'maria@email.com', total: 23 },
+    { nome_completo: 'João Santos', email: 'joao@email.com', total: 19 },
+    { nome_completo: 'Ana Lima', email: 'ana@email.com', total: 17 },
+    { nome_completo: 'Carlos Souza', email: 'carlos@email.com', total: 14 },
+    { nome_completo: 'Beatriz Costa', email: 'beatriz@email.com', total: 12 },
+    { nome_completo: 'Pedro Alves', email: 'pedro@email.com', total: 10 },
+    { nome_completo: 'Fernanda Rocha', email: 'fernanda@email.com', total: 8 },
+    { nome_completo: 'Rafael Mendes', email: 'rafael@email.com', total: 7 },
+    { nome_completo: 'Juliana Ferreira', email: 'juliana@email.com', total: 5 },
+    { nome_completo: 'Thiago Barbosa', email: 'thiago@email.com', total: 3 },
+  ]
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
@@ -177,49 +314,75 @@
   async function carregarRanking() {
     const { data, error } = await sb.rpc('ranking_figurinhas')
     const container = document.getElementById('ranking-container')
-    if (error || !data || data.length === 0) {
-      container.innerHTML = '<div class="carregando">Nenhum dado ainda. Seja o primeiro a colecionar!</div>'
-      return
-    }
 
-    const top3 = data.slice(0, 3)
-    const resto = data.slice(3)
+    // Se não há dados reais, mostra preview com dados fictícios
+    const usandoPreview = error || !data || data.length === 0
+    const lista = usandoPreview ? dadosPreview : data
+
+    if (usandoPreview) {
+      container.innerHTML = renderizarRanking(lista, true)
+    } else {
+      container.innerHTML = renderizarRanking(lista, false)
+    }
+  }
+
+  function renderizarRanking(lista, isPreview) {
+    const top3 = lista.slice(0, 3)
+    const resto = lista.slice(3)
 
     // Pódio
-    let podiumHTML = ''
-    if (top3.length >= 2) {
-      const ordem = top3.length === 1 ? [top3[0]] : top3.length === 2 ? [top3[1], top3[0]] : [top3[1], top3[0], top3[2]]
-      const medalhas = top3.length === 2 ? ['🥈', '🥇'] : ['🥈', '🥇', '🥉']
-      podiumHTML = '<div class="podium">' + ordem.map((item, i) => {
+    const ordemPodio = top3.length === 1
+      ? [{ item: top3[0], pos: 1 }]
+      : top3.length === 2
+        ? [{ item: top3[1], pos: 2 }, { item: top3[0], pos: 1 }]
+        : [{ item: top3[1], pos: 2 }, { item: top3[0], pos: 1 }, { item: top3[2], pos: 3 }]
+
+    const podiumHTML = '<div class="podium-wrap">' +
+      '<div class="podium-titulo">Pódio da Gran Seleção</div>' +
+      '<div class="podium">' +
+      ordemPodio.map(({ item, pos }) => {
         const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
         const inicial = nome.charAt(0).toUpperCase()
-        return '<div class="podium-item">' +
-          '<div class="podium-avatar">' + inicial + '</div>' +
-          '<div class="podium-nome">' + medalhas[i] + ' ' + nome + '</div>' +
-          '<div class="podium-qtd">' + item.total + ' fig.</div>' +
-          '<div class="podium-barra"></div>' +
+        const coroa = pos === 1 ? '<span class="podium-coroa">👑</span>' : ''
+        return '<div class="podium-item pos-' + pos + '">' +
+          '<div class="podium-avatar">' + coroa + inicial + '</div>' +
+          '<div class="podium-nome">' + nome + '</div>' +
+          '<div class="podium-qtd">' + item.total + ' figurinhas</div>' +
+          '<div class="podium-base">' + (pos === 1 ? '1º' : pos === 2 ? '2º' : '3º') + '</div>' +
           '</div>'
-      }).join('') + '</div>'
-    }
+      }).join('') +
+      '</div></div>'
 
     // Lista completa
-    const listaHTML = '<div class="ranking-lista">' + data.map((item, i) => {
-      const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
-      const inicial = nome.charAt(0).toUpperCase()
-      const euClass = item.user_id === meuId ? ' eu' : ''
-      const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)
-      return '<div class="ranking-item' + euClass + '">' +
-        '<div class="ranking-pos">' + medalha + '</div>' +
-        '<div class="ranking-avatar">' + inicial + '</div>' +
-        '<div class="ranking-info">' +
-        '<div class="ranking-nome">' + nome + (item.user_id === meuId ? ' 👈 você' : '') + '</div>' +
-        '<div class="ranking-sub">Colecionador Gran</div>' +
-        '</div>' +
-        '<div class="ranking-qtd"><strong>' + item.total + '</strong><span>figurinhas</span></div>' +
-        '</div>'
-    }).join('') + '</div>'
+    const listaHTML = '<div class="ranking-lista">' +
+      '<div class="ranking-header"><span>Pos.</span><span>Colecionador</span><span style="text-align:right">Total</span></div>' +
+      lista.map((item, i) => {
+        const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
+        const inicial = nome.charAt(0).toUpperCase()
+        const isEu = !isPreview && item.user_id === meuId
+        const deveDesfocar = isPreview && i >= 3
+        const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : null
+        const posClass = i === 0 ? 'pos-1' : i === 1 ? 'pos-2' : i === 2 ? 'pos-3' : 'pos-outros'
+        const posTexto = medalha || (i + 1) + 'º'
 
-    container.innerHTML = podiumHTML + listaHTML
+        return '<div class="ranking-item' + (isEu ? ' eu' : '') + (deveDesfocar ? ' preview-blur' : '') + '">' +
+          (deveDesfocar ? '<div class="lock-row">🔒 Jogue para aparecer aqui</div>' : '') +
+          '<div class="ranking-pos ' + posClass + '">' + posTexto + '</div>' +
+          '<div class="ranking-pessoa">' +
+          '<div class="ranking-avatar">' + inicial + '</div>' +
+          '<div><div class="ranking-nome">' + nome + (isEu ? ' 👈 você' : '') + '</div>' +
+          '<div class="ranking-sub">Colecionador Gran</div></div>' +
+          '</div>' +
+          '<div class="ranking-qtd"><strong>' + item.total + '</strong><span>figurinhas</span></div>' +
+          '</div>'
+      }).join('') +
+      '</div>'
+
+    const banner = isPreview
+      ? '<div class="preview-banner"><span>👀</span> Prévia do ranking — os dados reais aparecerão assim que os primeiros colecionadores resgatarem figurinhas.</div>'
+      : ''
+
+    return banner + podiumHTML + listaHTML
   }
 
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }

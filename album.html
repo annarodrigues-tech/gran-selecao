@@ -9,641 +9,337 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --vermelho: #DD303E;
-      --azul: #0D134C;
-      --azul-medio: #162060;
-      --azul-claro: #1e2d7a;
-      --cinza: #939597;
-      --branco: #FFFFFF;
-    }
+    :root { --vermelho: #DD303E; --azul: #0D134C; --azul-medio: #162060; --azul-claro: #1e2d7a; --branco: #FFFFFF; }
 
     body {
       font-family: 'Nunito', 'Trebuchet MS', sans-serif;
-      background: var(--azul);
-      min-height: 100vh;
-      color: var(--branco);
-      display: flex;
+      background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%);
+      min-height: 100vh; color: var(--branco); display: flex;
     }
 
     /* SIDEBAR */
-    .sidebar {
-      width: 230px;
-      min-height: 100vh;
-      background: rgba(10,15,60,0.95);
-      border-right: 1px solid rgba(255,255,255,0.07);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0;
-      z-index: 100;
-      backdrop-filter: blur(20px);
-    }
-
-    .sidebar-logo {
-      padding: 28px 20px 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .logo-marca {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .logo-icone {
-      width: 38px;
-      height: 38px;
-      background: var(--vermelho);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(221,48,62,0.4);
-    }
-
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .logo-marca { display: flex; align-items: center; gap: 10px; }
+    .logo-icone { width: 38px; height: 38px; background: var(--vermelho); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(221,48,62,0.4); }
     .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
     .logo-texto h1 span { color: var(--vermelho); }
     .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
-
     .sidebar-nav { padding: 16px 12px; flex: 1; }
-
-    .nav-section-title {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      padding: 0 10px;
-      margin: 16px 0 8px;
-    }
-
-    .nav-section-title:first-child { margin-top: 0; }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.45);
-      transition: all 0.2s;
-      text-decoration: none;
-      margin-bottom: 2px;
-    }
-
+    .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
     .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-
-    .nav-item.ativo {
-      background: var(--vermelho);
-      color: var(--branco);
-      box-shadow: 0 4px 12px rgba(221,48,62,0.3);
-    }
-
-    .nav-item .icon {
-      font-size: 16px;
-      width: 22px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .sidebar-footer {
-      padding: 16px 12px;
-      border-top: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .btn-sair {
-      width: 100%;
-      padding: 10px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.4);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
+    .nav-item.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
     .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
 
     /* CONTEÚDO */
-    .content {
-      margin-left: 230px;
-      flex: 1;
-      padding: 36px;
-      background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%);
-      min-height: 100vh;
-      position: relative;
-    }
+    .content { margin-left: 230px; flex: 1; padding: 36px; }
 
-    .content::before {
-      content: '';
-      position: fixed;
-      top: 0; right: 0;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(221,48,62,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+    .page-header-text h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+    .page-header-text p { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; font-weight: 600; }
 
-    .page-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 28px;
-      position: relative;
-    }
+    .btn-compartilhar { display: flex; align-items: center; gap: 8px; padding: 11px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; white-space: nowrap; }
+    .btn-compartilhar:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.4); color: var(--branco); }
 
-    .page-header-text h2 {
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-    }
-
-    .page-header-text p {
-      color: rgba(255,255,255,0.45);
-      font-size: 14px;
-      margin-top: 4px;
-      font-weight: 600;
-    }
-
-    .btn-compartilhar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 11px 20px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.7);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      font-family: inherit;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-compartilhar:hover {
-      background: rgba(221,48,62,0.15);
-      border-color: rgba(221,48,62,0.4);
-      color: var(--branco);
-    }
-
-    /* BARRA DE PROGRESSO */
-    .progresso-bar {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      backdrop-filter: blur(10px);
-    }
-
-    .prog-numeros {
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .prog-numeros strong {
-      font-size: 36px;
-      font-weight: 900;
-      color: var(--vermelho);
-      line-height: 1;
-      display: block;
-    }
-
-    .prog-numeros span {
-      font-size: 12px;
-      color: rgba(255,255,255,0.4);
-      font-weight: 700;
-    }
-
+    /* PROGRESSO */
+    .progresso-bar { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; }
+    .prog-numeros { text-align: center; flex-shrink: 0; }
+    .prog-numeros strong { font-size: 36px; font-weight: 900; color: var(--vermelho); line-height: 1; display: block; }
+    .prog-numeros span { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 700; }
     .prog-direita { flex: 1; }
-
-    .prog-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 10px;
-    }
-
-    .prog-barra-wrap {
-      background: rgba(255,255,255,0.08);
-      border-radius: 100px;
-      height: 10px;
-      overflow: hidden;
-    }
-
-    .prog-barra {
-      height: 100%;
-      background: linear-gradient(90deg, var(--vermelho), #ff5566);
-      border-radius: 100px;
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 0 10px rgba(221,48,62,0.5);
-    }
+    .prog-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+    .prog-barra-wrap { background: rgba(255,255,255,0.08); border-radius: 100px; height: 10px; overflow: hidden; }
+    .prog-barra { height: 100%; background: linear-gradient(90deg, var(--vermelho), #ff5566); border-radius: 100px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 10px rgba(221,48,62,0.5); }
 
     /* RESGATE */
-    .resgate-box {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .resgate-icon {
-      font-size: 32px;
-      flex-shrink: 0;
-    }
-
+    .resgate-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .resgate-icon { font-size: 32px; flex-shrink: 0; }
     .resgate-texto { flex: 1; min-width: 160px; }
     .resgate-texto strong { font-size: 15px; font-weight: 800; display: block; margin-bottom: 2px; }
-    .resgate-texto span { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 600; }
-
+    .resgate-texto span { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 600; }
     .resgate-input-group { display: flex; gap: 10px; flex: 2; min-width: 260px; }
-
-    .resgate-input-group input {
-      flex: 1;
-      padding: 13px 18px;
-      background: rgba(13,19,76,0.7);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      color: var(--branco);
-      font-size: 16px;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      outline: none;
-      transition: all 0.2s;
-      font-weight: 700;
-    }
-
-    .resgate-input-group input:focus {
-      border-color: var(--vermelho);
-      box-shadow: 0 0 0 3px rgba(221,48,62,0.15);
-    }
-
+    .resgate-input-group input { flex: 1; padding: 13px 18px; background: rgba(13,19,76,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--branco); font-size: 16px; font-family: 'Courier New', monospace; letter-spacing: 4px; text-transform: uppercase; outline: none; transition: all 0.2s; font-weight: 700; }
+    .resgate-input-group input:focus { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(221,48,62,0.15); }
     .resgate-input-group input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.2); font-weight: 400; }
-
-    .btn-resgatar {
-      padding: 13px 24px;
-      background: var(--vermelho);
-      color: var(--branco);
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(221,48,62,0.35);
-    }
-
-    .btn-resgatar:hover { background: #e8384a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(221,48,62,0.45); }
+    .btn-resgatar { padding: 13px 24px; background: var(--vermelho); color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 16px rgba(221,48,62,0.35); }
+    .btn-resgatar:hover { background: #e8384a; transform: translateY(-1px); }
     .btn-resgatar:disabled { background: rgba(255,255,255,0.1); box-shadow: none; cursor: not-allowed; transform: none; }
-
     .msg-resgate { width: 100%; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; display: none; }
     .msg-resgate.erro { background: rgba(221,48,62,0.15); color: #ff8090; border: 1px solid rgba(221,48,62,0.3); }
     .msg-resgate.sucesso { background: rgba(40,200,100,0.15); color: #6bff9a; border: 1px solid rgba(40,200,100,0.3); }
 
     /* FILTROS */
     .filtros-wrap { margin-bottom: 24px; }
-
-    .filtros-titulo {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 10px;
-    }
-
+    .filtros-titulo { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
     .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .filtro-btn {
-      padding: 7px 16px;
-      border-radius: 100px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.5);
-      font-size: 12px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
+    .filtro-btn { padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
     .filtro-btn:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); background: rgba(221,48,62,0.1); }
     .filtro-btn.ativo { background: var(--vermelho); border-color: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
 
-    /* GRADE DE FIGURINHAS */
+    /* GRADE DE FIGURINHAS — proporção 2:3 */
     .grade {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
     }
 
+    /* CARD FIGURINHA */
     .figurinha {
-      border-radius: 16px;
-      padding: 20px 12px 16px;
-      text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 14px;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
       position: relative;
       cursor: default;
+      aspect-ratio: 2 / 3;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
+    /* BLOQUEADA */
     .figurinha.bloqueada {
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
+    .figurinha.bloqueada:hover {
+      border-color: rgba(221,48,62,0.25);
+      transform: translateY(-3px);
+    }
+
+    /* DESBLOQUEADA — exibe a arte como imagem de fundo */
     .figurinha.desbloqueada {
-      background: linear-gradient(145deg, rgba(22,32,96,0.9), rgba(30,45,122,0.9));
-      border: 1px solid rgba(221,48,62,0.4);
-      box-shadow: 0 0 24px rgba(221,48,62,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+      border: 2px solid rgba(221,48,62,0.5);
+      box-shadow: 0 0 28px rgba(221,48,62,0.15), 0 8px 32px rgba(0,0,0,0.4);
     }
 
     .figurinha.desbloqueada:hover {
       transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 16px 40px rgba(221,48,62,0.25), 0 0 0 1px rgba(221,48,62,0.5);
+      box-shadow: 0 20px 48px rgba(221,48,62,0.3), 0 0 0 2px rgba(221,48,62,0.6);
     }
 
-    /* Número da figurinha */
-    .figurinha-numero {
+    /* Arte da figurinha (imagem completa) */
+    .figurinha-arte {
       position: absolute;
-      top: 10px;
-      left: 12px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    /* Overlay para figurinha bloqueada */
+    .figurinha-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 10px 12px;
+      border-radius: 12px;
+    }
+
+    /* Topo do card bloqueado */
+    .figurinha-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .figurinha-numero {
       font-size: 10px;
       font-weight: 900;
-      color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.2);
       letter-spacing: 0.5px;
+      background: rgba(255,255,255,0.05);
+      padding: 3px 7px;
+      border-radius: 6px;
     }
 
-    .figurinha.desbloqueada .figurinha-numero { color: rgba(221,48,62,0.5); }
+    .figurinha.desbloqueada .figurinha-numero { color: rgba(255,255,255,0.8); background: rgba(0,0,0,0.4); }
 
-    .foto-wrapper {
-      width: 84px;
-      height: 84px;
+    /* Centro — silhueta ou foto */
+    .figurinha-centro {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .silhueta {
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      margin: 0 auto 12px;
-      overflow: hidden;
-      background: rgba(13,19,76,0.8);
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      border: 2px solid rgba(255,255,255,0.06);
+      font-size: 28px;
+      color: rgba(255,255,255,0.15);
     }
 
-    .figurinha.desbloqueada .foto-wrapper {
-      border-color: rgba(221,48,62,0.4);
-      box-shadow: 0 0 16px rgba(221,48,62,0.2);
+    /* Rodapé do card */
+    .figurinha-rodape {
+      width: 100%;
     }
 
-    .figurinha.bloqueada .foto-wrapper { filter: grayscale(1) brightness(0.2); }
+    /* Card bloqueado — rodapé com nome e rede social */
+    .figurinha-info-bloqueada {
+      background: rgba(13,19,76,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 10px 8px;
+      text-align: center;
+    }
 
-    .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-    .foto-inicial {
-      font-size: 30px;
+    .figurinha-nome-bloqueada {
+      font-size: 11px;
       font-weight: 900;
-      color: var(--vermelho);
-    }
-
-    .figurinha.bloqueada .foto-inicial { color: rgba(255,255,255,0.1); }
-
-    .lock-icon {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 22px;
-      display: none;
-      opacity: 0.4;
-    }
-
-    .figurinha.bloqueada .lock-icon { display: block; }
-
-    .figurinha-nome {
-      font-size: 12px;
-      font-weight: 800;
       color: var(--branco);
-      margin-bottom: 5px;
-      line-height: 1.3;
+      margin-bottom: 6px;
+      line-height: 1.2;
     }
 
-    .figurinha.bloqueada .figurinha-nome { color: rgba(255,255,255,0.12); }
-
-    .figurinha-area {
+    .figurinha-area-bloqueada {
       font-size: 9px;
-      color: var(--vermelho);
-      font-weight: 800;
+      color: rgba(255,255,255,0.45);
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
     }
 
-    .figurinha.bloqueada .figurinha-area { color: rgba(255,255,255,0.08); }
+    .btn-rede-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 6px 8px;
+      background: var(--vermelho);
+      border: none;
+      border-radius: 7px;
+      color: var(--branco);
+      font-size: 10px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-rede-social:hover { background: #e8384a; transform: scale(1.02); }
+
+    /* Card desbloqueado — a arte cobre tudo */
+    .figurinha-overlay-desbloqueada {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      background: transparent;
+      pointer-events: none;
+    }
 
     .badge-novo {
       position: absolute;
-      top: -6px;
-      right: -6px;
+      top: -8px; right: -8px;
       background: linear-gradient(135deg, #ff6b35, var(--vermelho));
-      color: var(--branco);
-      font-size: 9px;
-      font-weight: 900;
-      padding: 3px 8px;
-      border-radius: 100px;
-      letter-spacing: 0.5px;
+      color: var(--branco); font-size: 9px; font-weight: 900;
+      padding: 3px 8px; border-radius: 100px;
       box-shadow: 0 4px 8px rgba(221,48,62,0.4);
+      z-index: 2;
     }
 
-    .carregando {
-      text-align: center;
-      color: rgba(255,255,255,0.15);
-      padding: 60px 0;
-      font-size: 15px;
-      font-weight: 700;
-      grid-column: 1/-1;
-    }
+    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; grid-column: 1/-1; }
 
-    /* MODAL FIGURINHA */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
+    /* MODAL REVELAÇÃO */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-overlay.visivel { display: flex; }
 
     .modal {
       background: linear-gradient(145deg, #162060, #1e2d7a);
       border: 1px solid rgba(221,48,62,0.4);
       border-radius: 24px;
-      padding: 44px 36px;
-      text-align: center;
-      max-width: 360px;
-      width: 90%;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(221,48,62,0.15);
-      animation: aparecer 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes aparecer {
-      from { transform: scale(0.6) translateY(20px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .modal-emoji { font-size: 52px; margin-bottom: 12px; }
-    .modal h2 { font-size: 20px; font-weight: 900; margin-bottom: 20px; }
-
-    .modal-foto-wrapper {
-      width: 108px; height: 108px;
-      border-radius: 50%;
-      margin: 0 auto 16px;
-      overflow: hidden;
-      background: rgba(13,19,76,0.8);
-      display: flex; align-items: center; justify-content: center;
-      border: 3px solid var(--vermelho);
-      box-shadow: 0 0 30px rgba(221,48,62,0.3);
-    }
-
-    .modal-foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .modal-foto-inicial { font-size: 40px; font-weight: 900; color: var(--vermelho); }
-    .modal-nome { font-size: 22px; font-weight: 900; color: var(--vermelho); margin-bottom: 4px; }
-    .modal-area { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 28px; }
-
-    .modal-acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-    .btn-fechar {
-      padding: 12px 28px;
-      background: var(--vermelho);
-      color: var(--branco);
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(221,48,62,0.35);
-    }
-
-    .btn-fechar:hover { background: #e8384a; transform: translateY(-1px); }
-
-    .btn-compartilhar-card {
-      padding: 12px 18px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.7);
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-compartilhar-card:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); background: rgba(221,48,62,0.1); }
-
-    /* MODAL COMPARTILHAMENTO */
-    .modal-comp {
-      background: linear-gradient(145deg, #162060, #1e2d7a);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
       padding: 36px;
       text-align: center;
       max-width: 420px;
       width: 90%;
-      animation: aparecer 0.3s ease;
-    }
-
-    .modal-comp h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
-    .modal-comp p { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 600; margin-bottom: 20px; }
-
-    .texto-preview {
-      background: rgba(13,19,76,0.8);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.8);
-      line-height: 1.6;
-      margin-bottom: 20px;
-      text-align: left;
-    }
-
-    .botoes-share { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-    .btn-share {
-      padding: 11px 18px;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(221,48,62,0.15);
+      animation: aparecer 0.4s cubic-bezier(0.34,1.56,0.64,1);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 7px;
     }
 
+    @keyframes aparecer { from { transform: scale(0.6) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+    .modal-emoji { font-size: 48px; margin-bottom: 10px; }
+    .modal h2 { font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+
+    /* Figurinha no modal — proporção 2:3 */
+    .modal-figurinha {
+      width: 200px;
+      aspect-ratio: 2 / 3;
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 0 auto 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 2px rgba(221,48,62,0.5);
+      position: relative;
+    }
+
+    .modal-figurinha img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-figurinha-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #0D134C, #162060);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .modal-inicial { font-size: 56px; font-weight: 900; color: var(--vermelho); }
+    .modal-nome { font-size: 18px; font-weight: 900; color: var(--vermelho); margin-bottom: 2px; }
+    .modal-area { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
+
+    .modal-acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
+
+    .btn-fechar { padding: 12px 28px; background: var(--vermelho); color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(221,48,62,0.35); }
+    .btn-fechar:hover { background: #e8384a; transform: translateY(-1px); }
+
+    .btn-comp-modal { padding: 12px 18px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-comp-modal:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); }
+
+    /* MODAL COMPARTILHAMENTO */
+    .modal-comp { background: linear-gradient(145deg, #162060, #1e2d7a); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 32px; text-align: center; max-width: 420px; width: 90%; animation: aparecer 0.3s ease; }
+    .modal-comp h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+    .modal-comp p { color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+    .texto-preview { background: rgba(13,19,76,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 20px; text-align: left; }
+    .botoes-share { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-share { padding: 11px 18px; border: none; border-radius: 10px; font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px; }
     .btn-share:hover { transform: translateY(-2px); }
     .btn-whatsapp { background: #25D366; color: #fff; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
     .btn-twitter { background: #1DA1F2; color: #fff; box-shadow: 0 4px 12px rgba(29,161,242,0.3); }
-    .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; box-shadow: 0 4px 12px rgba(220,39,67,0.3); }
+    .btn-instagram { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; }
     .btn-copiar-link { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
     .btn-copiar-link:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); }
-
-    .msg-instagram {
-      display: none;
-      margin-top: 14px;
-      padding: 10px 14px;
-      background: rgba(240,100,50,0.1);
-      border: 1px solid rgba(240,100,50,0.3);
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #ffaa6b;
-    }
-
-    .btn-cancelar {
-      margin-top: 16px;
-      background: none;
-      border: 1px solid rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.35);
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
+    .msg-instagram { display: none; margin-top: 14px; padding: 10px 14px; background: rgba(240,100,50,0.1); border: 1px solid rgba(240,100,50,0.3); border-radius: 10px; font-size: 13px; font-weight: 700; color: #ffaa6b; }
+    .btn-cancelar { margin-top: 16px; background: none; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
     .btn-cancelar:hover { border-color: rgba(221,48,62,0.3); color: rgba(255,255,255,0.7); }
   </style>
 </head>
@@ -652,24 +348,20 @@
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-marca">
-      <div class="logo-icone">🎴</div>
+      <div class="logo-icone">🏆</div>
       <div class="logo-texto">
         <h1>Gran <span>Seleção</span></h1>
         <p>Álbum de figurinhas</p>
       </div>
     </div>
   </div>
-
   <div class="sidebar-nav">
     <div class="nav-section-title">Menu</div>
     <a href="album.html" class="nav-item ativo"><span class="icon">📖</span> Meu Álbum</a>
     <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
     <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
-    <a href="admin.html" class="nav-item" id="link-admin" style="display:none">
-      <span class="icon">⚙️</span> Admin
-    </a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
   </div>
-
   <div class="sidebar-footer">
     <button class="btn-sair" onclick="sair()">↩ Sair</button>
   </div>
@@ -691,9 +383,7 @@
     </div>
     <div class="prog-direita">
       <div class="prog-label">Figurinhas colecionadas</div>
-      <div class="prog-barra-wrap">
-        <div class="prog-barra" id="prog-barra" style="width:0%"></div>
-      </div>
+      <div class="prog-barra-wrap"><div class="prog-barra" id="prog-barra" style="width:0%"></div></div>
     </div>
   </div>
 
@@ -720,19 +410,17 @@
   </div>
 </div>
 
-<!-- MODAL FIGURINHA -->
+<!-- MODAL REVELAÇÃO -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-emoji">🎉</div>
     <h2>Figurinha desbloqueada!</h2>
-    <div class="modal-foto-wrapper" id="modal-foto-wrapper">
-      <span class="modal-foto-inicial" id="modal-inicial"></span>
-    </div>
+    <div class="modal-figurinha" id="modal-figurinha-wrap"></div>
     <div class="modal-nome" id="modal-nome"></div>
     <div class="modal-area" id="modal-area"></div>
     <div class="modal-acoes">
       <button class="btn-fechar" onclick="fecharModal()">Colar no álbum!</button>
-      <button class="btn-compartilhar-card" onclick="compartilharFigurinha()">📤 Compartilhar</button>
+      <button class="btn-comp-modal" onclick="compartilharFigurinha()">📤 Compartilhar</button>
     </div>
   </div>
 </div>
@@ -749,9 +437,7 @@
       <button class="btn-share btn-instagram" onclick="shareInstagram()">📸 Instagram</button>
       <button class="btn-share btn-copiar-link" onclick="copiarTexto()">📋 Copiar</button>
     </div>
-    <div class="msg-instagram" id="msg-instagram">
-      ✅ Texto copiado! Abra o Instagram e cole nos Stories ou Feed.
-    </div>
+    <div class="msg-instagram" id="msg-instagram">✅ Texto copiado! Abra o Instagram e cole nos Stories ou Feed.</div>
     <br>
     <button class="btn-cancelar" onclick="fecharCompartilhamento()">Cancelar</button>
   </div>
@@ -766,6 +452,8 @@
   let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas da Gran Seleção! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
   let profModal = null
 
+  const iconeRede = { 'Instagram': '📸', 'YouTube': '▶️', 'TikTok': '🎵', 'Twitter': '🐦', 'LinkedIn': '💼', 'Facebook': '👥' }
+
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
@@ -778,7 +466,7 @@
   }
 
   async function carregarProfessores() {
-    const { data } = await sb.from('professores').select('id, nome, area, foto_url').order('area')
+    const { data } = await sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url').order('area')
     professores = data || []
     document.getElementById('qtd-total').textContent = professores.length
     renderizarFiltros()
@@ -804,19 +492,39 @@
     const lista = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
     const grade = document.getElementById('grade')
     if (lista.length === 0) { grade.innerHTML = '<div class="carregando">Nenhum professor nessa área.</div>'; return; }
+
     grade.innerHTML = lista.map((p, i) => {
       const desbloqueada = desbloqueados.includes(p.id)
       const isNovo = novosNessaSessao.includes(p.id)
       const num = String(i + 1).padStart(2, '0')
-      const foto = desbloqueada && p.foto_url
-        ? '<img src="' + p.foto_url + '" alt="' + p.nome + '">'
-        : '<span class="foto-inicial">' + p.nome.charAt(0) + '</span>'
-      return '<div class="figurinha ' + (desbloqueada ? 'desbloqueada' : 'bloqueada') + '">' +
-        '<span class="figurinha-numero">#' + num + '</span>' +
-        (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
-        '<div class="foto-wrapper">' + foto + '<span class="lock-icon">🔒</span></div>' +
-        '<div class="figurinha-nome">' + (desbloqueada ? p.nome : '???') + '</div>' +
-        '<div class="figurinha-area">' + p.area + '</div></div>'
+
+      if (desbloqueada) {
+        // CARD DESBLOQUEADO — mostra a arte completa
+        return '<div class="figurinha desbloqueada">' +
+          (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
+          (p.foto_url
+            ? '<img class="figurinha-arte" src="' + p.foto_url + '" alt="' + p.nome + '">'
+            : '<div class="figurinha-overlay" style="background:linear-gradient(145deg,#0D134C,#162060);align-items:center;justify-content:center;"><div style="font-size:48px;font-weight:900;color:var(--vermelho);">' + p.nome.charAt(0) + '</div><div style="font-size:11px;font-weight:900;color:#fff;text-align:center;padding:0 10px;">' + p.nome + '</div><div style="font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;">' + p.area + '</div></div>'
+          ) +
+          '<div class="figurinha-overlay-desbloqueada"></div>' +
+          '</div>'
+      } else {
+        // CARD BLOQUEADO — mostra nome, área e link da rede social
+        const btnRede = p.rede_social && p.rede_social_url
+          ? '<a href="' + p.rede_social_url + '" target="_blank" class="btn-rede-social">' + (iconeRede[p.rede_social] || '🔗') + ' ' + p.rede_social + '</a>'
+          : '<div style="font-size:10px;color:rgba(255,255,255,0.25);font-weight:700;">Código em breve</div>'
+
+        return '<div class="figurinha bloqueada">' +
+          '<div class="figurinha-overlay">' +
+          '<div class="figurinha-topo"><span class="figurinha-numero">#' + num + '</span></div>' +
+          '<div class="figurinha-centro"><div class="silhueta">🔒</div></div>' +
+          '<div class="figurinha-rodape"><div class="figurinha-info-bloqueada">' +
+          '<div class="figurinha-nome-bloqueada">' + p.nome + '</div>' +
+          '<div class="figurinha-area-bloqueada">' + p.area + '</div>' +
+          btnRede +
+          '</div></div>' +
+          '</div></div>'
+      }
     }).join('')
   }
 
@@ -832,7 +540,7 @@
     const { data, error } = await sb.rpc('resgatar_codigo', { p_codigo: codigo })
     btn.disabled = false; btn.textContent = 'Desbloquear'
     if (error || !data || !data.sucesso) {
-      msg.textContent = data?.mensagem || 'Erro ao resgatar código.'
+      msg.textContent = data?.mensagem || 'Código inválido ou já utilizado.'
       msg.className = 'msg-resgate erro'; msg.style.display = 'block'; return;
     }
     const professor = professores.find(p => p.id === data.professor_id)
@@ -841,17 +549,20 @@
       const qtd = desbloqueados.length
       document.getElementById('qtd-desbloqueadas').textContent = qtd
       document.getElementById('prog-barra').style.width = (qtd / professores.length * 100) + '%'
-      renderizarGrade(); mostrarModal(professor)
+      renderizarGrade()
+      mostrarModal(professor)
     }
     document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
   }
 
   function mostrarModal(professor) {
     profModal = professor
-    const wrapper = document.getElementById('modal-foto-wrapper')
-    wrapper.innerHTML = professor.foto_url
-      ? '<img src="' + professor.foto_url + '" alt="' + professor.nome + '">'
-      : '<span class="modal-foto-inicial">' + professor.nome.charAt(0) + '</span>'
+    const wrap = document.getElementById('modal-figurinha-wrap')
+    if (professor.foto_url) {
+      wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;">'
+    } else {
+      wrap.innerHTML = '<div class="modal-figurinha-placeholder"><span class="modal-inicial">' + professor.nome.charAt(0) + '</span><div style="font-size:13px;font-weight:900;color:#fff;padding:0 12px;text-align:center;">' + professor.nome + '</div></div>'
+    }
     document.getElementById('modal-nome').textContent = professor.nome
     document.getElementById('modal-area').textContent = professor.area
     document.getElementById('modal').classList.add('visivel')
@@ -868,8 +579,7 @@
   }
 
   function abrirCompartilhamento() {
-    const qtd = desbloqueados.length
-    const total = professores.length
+    const qtd = desbloqueados.length, total = professores.length
     const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', total)
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'

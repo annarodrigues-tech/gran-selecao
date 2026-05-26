@@ -164,6 +164,18 @@
                 <option>Tecnologia da Informação</option><option>Tribunais</option>
               </select>
             </div>
+            <div class="form-group"><label>Rede Social</label>
+              <select id="prof-rede-social">
+                <option value="">Selecione...</option>
+                <option>Instagram</option>
+                <option>YouTube</option>
+                <option>TikTok</option>
+                <option>Twitter</option>
+                <option>LinkedIn</option>
+                <option>Facebook</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Link da Rede Social</label><input type="url" id="prof-rede-social-url" placeholder="https://instagram.com/professor"></div>
           </div>
           <button class="btn" onclick="cadastrarProfessor()">Cadastrar e gerar código</button>
           <div class="mensagem" id="msg-prof"></div>
@@ -254,7 +266,9 @@
       if (error) { mostrarMsg('msg-prof', 'Erro no upload: ' + error.message, 'erro'); btn.disabled = false; btn.textContent = 'Cadastrar e gerar código'; return; }
       foto_url = sb.storage.from('fotos').getPublicUrl(nomeArq).data.publicUrl
     }
-    const { data: prof, error: errProf } = await sb.from('professores').insert({ nome, area, foto_url }).select().single()
+    const rede_social = document.getElementById('prof-rede-social').value
+    const rede_social_url = document.getElementById('prof-rede-social-url').value.trim()
+    const { data: prof, error: errProf } = await sb.from('professores').insert({ nome, area, foto_url, rede_social: rede_social || null, rede_social_url: rede_social_url || null }).select().single()
     if (errProf) { mostrarMsg('msg-prof', 'Erro: ' + errProf.message, 'erro'); btn.disabled = false; btn.textContent = 'Cadastrar e gerar código'; return; }
     let codigo = gerarCodigoAleatorio()
     for (let i = 0; i < 10; i++) {
@@ -266,6 +280,8 @@
     mostrarMsg('msg-prof', '✅ Cadastrado! Código gerado: ' + codigo, 'sucesso')
     document.getElementById('prof-nome').value = ''
     document.getElementById('prof-area').value = ''
+    document.getElementById('prof-rede-social').value = ''
+    document.getElementById('prof-rede-social-url').value = ''
     document.getElementById('foto-preview').innerHTML = '📷'
     fotoArquivo = null
     btn.disabled = false; btn.textContent = 'Cadastrar e gerar código'
