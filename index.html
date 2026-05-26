@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gran Seleção</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a1628;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
+    }
+    .container {
+      background: #0d1f3c;
+      border: 1px solid #1a3a6b;
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 60px rgba(220, 30, 50, 0.1);
+    }
+    .logo { text-align: center; margin-bottom: 32px; }
+    .logo h1 { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .logo h1 span { color: #dc1e32; }
+    .logo p { color: #7a9cc4; font-size: 14px; margin-top: 6px; }
+    .tabs {
+      display: flex; background: #071224;
+      border-radius: 8px; padding: 4px; margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      border-radius: 6px; cursor: pointer;
+      font-size: 14px; font-weight: 600;
+      color: #5a7fa8; transition: all 0.2s;
+      border: none; background: none;
+    }
+    .tab.ativo { background: #dc1e32; color: #fff; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: #7a9cc4; margin-bottom: 6px; }
+    input {
+      width: 100%; padding: 12px 16px;
+      background: #071224; border: 1px solid #1a3a6b;
+      border-radius: 8px; color: #fff; font-size: 15px;
+      outline: none; transition: border 0.2s;
+    }
+    input:focus { border-color: #dc1e32; }
+    .btn {
+      width: 100%; padding: 14px;
+      background: #dc1e32; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #f02035; }
+    .btn:disabled { background: #333; cursor: not-allowed; }
+    .mensagem {
+      margin-top: 16px; padding: 12px;
+      border-radius: 8px; font-size: 14px;
+      text-align: center; display: none;
+    }
+    .mensagem.erro { background: #2a0a0a; color: #ff6b6b; border: 1px solid #5a1a1a; }
+    .mensagem.sucesso { background: #0a2a0a; color: #6bff6b; border: 1px solid #1a5a1a; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <h1>Gran <span>Seleção</span></h1>
+    <p>Colecione os professores do Gran</p>
+  </div>
+  <div class="tabs">
+    <button class="tab ativo" id="tab-login" onclick="mostrarAba('login')">Entrar</button>
+    <button class="tab" id="tab-cadastro" onclick="mostrarAba('cadastro')">Cadastrar</button>
+  </div>
+  <div id="aba-login">
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••">
+    </div>
+    <button class="btn" id="btn-login" onclick="fazerLogin()">Entrar</button>
+  </div>
+  <div id="aba-cadastro" style="display:none">
+    <div class="form-group">
+      <label>Nome completo</label>
+      <input type="text" id="cadastro-nome" placeholder="Seu nome">
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="cadastro-email" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="cadastro-senha" placeholder="mínimo 6 caracteres">
+    </div>
+    <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Criar conta</button>
+  </div>
+  <div class="mensagem" id="mensagem"></div>
+</div>
+<script>
+  const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
+  const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
+  const sb = window.supabase.createClient(_url, _key)
+
+  function mostrarAba(aba) {
+    document.getElementById('aba-login').style.display = aba === 'login' ? 'block' : 'none'
+    document.getElementById('aba-cadastro').style.display = aba === 'cadastro' ? 'block' : 'none'
+    document.getElementById('tab-login').classList.toggle('ativo', aba === 'login')
+    document.getElementById('tab-cadastro').classList.toggle('ativo', aba === 'cadastro')
+  }
+
+  function mostrarMensagem(texto, tipo) {
+    const el = document.getElementById('mensagem')
+    el.textContent = texto
+    el.className = 'mensagem ' + tipo
+    el.style.display = 'block'
+  }
+
+  async function fazerLogin() {
+    const email = document.getElementById('login-email').value
+    const senha = document.getElementById('login-senha').value
+    const btn = document.getElementById('btn-login')
+    btn.disabled = true
+    btn.textContent = 'Entrando...'
+    const { error } = await sb.auth.signInWithPassword({ email, password: senha })
+    if (error) {
+      mostrarMensagem('E-mail ou senha incorretos.', 'erro')
+      btn.disabled = false
+      btn.textContent = 'Entrar'
+    } else {
+      window.location.href = 'album.html'
+    }
+  }
+
+  async function fazerCadastro() {
+    const nome = document.getElementById('cadastro-nome').value
+    const email = document.getElementById('cadastro-email').value
+    const senha = document.getElementById('cadastro-senha').value
+    const btn = document.getElementById('btn-cadastro')
+    btn.disabled = true
+    btn.textContent = 'Criando conta...'
+    const { error } = await sb.auth.signUp({
+      email, password: senha,
+      options: { data: { nome_completo: nome } }
+    })
+    if (error) {
+      mostrarMensagem('Erro: ' + error.message, 'erro')
+      btn.disabled = false
+      btn.textContent = 'Criar conta'
+    } else {
+      mostrarMensagem('Conta criada! Verifique seu e-mail para confirmar.', 'sucesso')
+      btn.disabled = false
+      btn.textContent = 'Criar conta'
+    }
+  }
+
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'album.html'
+  })
+</script>
+</body>
+</html>

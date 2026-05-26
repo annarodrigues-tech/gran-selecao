@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gran Seleção — Meu Álbum</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a1628; min-height: 100vh;
+      color: #fff; display: flex;
+      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
+    }
+    .sidebar {
+      width: 220px; min-height: 100vh;
+      background: #0d1f3c; border-right: 1px solid #1a3a6b;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid #1a3a6b; }
+    .sidebar-logo h1 { font-size: 20px; font-weight: 800; }
+    .sidebar-logo h1 span { color: #dc1e32; }
+    .sidebar-logo p { font-size: 11px; color: #7a9cc4; margin-top: 4px; }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-radius: 8px;
+      font-size: 14px; font-weight: 600; color: #7a9cc4;
+      transition: all 0.2s; text-decoration: none; margin-bottom: 4px;
+    }
+    .nav-item:hover { background: #071224; color: #fff; }
+    .nav-item.ativo { background: #dc1e32; color: #fff; }
+    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+    .nav-item.admin-item { margin-top: 8px; border-top: 1px solid #1a3a6b; padding-top: 16px; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid #1a3a6b; }
+    .btn-sair {
+      width: 100%; padding: 10px; background: none;
+      border: 1px solid #1a3a6b; color: #7a9cc4;
+      border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+    }
+    .btn-sair:hover { border-color: #dc1e32; color: #fff; }
+    .content { margin-left: 220px; flex: 1; padding: 32px; max-width: calc(100% - 220px); }
+    .page-header { margin-bottom: 20px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .page-header-text h2 { font-size: 22px; font-weight: 800; }
+    .page-header-text p { color: #7a9cc4; font-size: 14px; margin-top: 4px; }
+    .btn-compartilhar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; background: none;
+      border: 1px solid #1a3a6b; color: #7a9cc4;
+      border-radius: 8px; cursor: pointer; font-size: 13px;
+      font-weight: 600; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-compartilhar:hover { border-color: #dc1e32; color: #fff; }
+    .progresso-bar {
+      background: #0d1f3c; border: 1px solid #1a3a6b;
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .prog-texto { font-size: 14px; color: #7a9cc4; }
+    .prog-texto strong { color: #dc1e32; font-size: 22px; display: block; }
+    .prog-barra-wrap { flex: 1; background: #071224; border-radius: 10px; height: 8px; overflow: hidden; }
+    .prog-barra { height: 100%; background: #dc1e32; border-radius: 10px; transition: width 0.5s; }
+    .resgate-box {
+      background: #0d1f3c; border: 1px solid #1a3a6b;
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .resgate-box p { color: #7a9cc4; font-size: 14px; flex: 1; min-width: 180px; }
+    .resgate-box p strong { color: #fff; display: block; margin-bottom: 2px; font-size: 15px; }
+    .resgate-input-group { display: flex; gap: 10px; flex: 2; min-width: 260px; }
+    .resgate-input-group input {
+      flex: 1; padding: 11px 16px; background: #071224;
+      border: 1px solid #1a3a6b; border-radius: 8px; color: #fff;
+      font-size: 15px; letter-spacing: 3px; text-transform: uppercase;
+      outline: none; transition: border 0.2s;
+    }
+    .resgate-input-group input:focus { border-color: #dc1e32; }
+    .btn-resgatar {
+      padding: 11px 22px; background: #dc1e32; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-resgatar:hover { background: #f02035; }
+    .btn-resgatar:disabled { background: #333; cursor: not-allowed; }
+    .msg-resgate { width: 100%; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: none; }
+    .msg-resgate.erro { background: #2a0a0a; color: #ff6b6b; border: 1px solid #5a1a1a; }
+    .msg-resgate.sucesso { background: #0a2a0a; color: #6bff6b; border: 1px solid #1a5a1a; }
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filtro-btn {
+      padding: 7px 14px; border-radius: 20px; border: 1px solid #1a3a6b;
+      background: none; color: #7a9cc4; font-size: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .filtro-btn:hover { border-color: #dc1e32; color: #fff; }
+    .filtro-btn.ativo { background: #dc1e32; border-color: #dc1e32; color: #fff; }
+    .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+    .figurinha {
+      background: #0d1f3c; border: 1px solid #1a3a6b;
+      border-radius: 12px; padding: 18px 10px 14px;
+      text-align: center; transition: all 0.3s; position: relative;
+    }
+    .figurinha.desbloqueada { border-color: #dc1e32; box-shadow: 0 0 20px rgba(220,30,50,0.15); }
+    .figurinha.desbloqueada:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(220,30,50,0.3); }
+    .foto-wrapper {
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 10px; overflow: hidden; background: #071224;
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .figurinha.bloqueada .foto-wrapper { filter: grayscale(1) brightness(0.25); }
+    .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .foto-inicial { font-size: 28px; font-weight: 800; color: #dc1e32; }
+    .figurinha.bloqueada .foto-inicial { color: #1a3a6b; }
+    .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 24px; display: none; }
+    .figurinha.bloqueada .lock-icon { display: block; }
+    .figurinha-nome { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
+    .figurinha.bloqueada .figurinha-nome { color: #1a3a6b; }
+    .figurinha-area { font-size: 10px; color: #dc1e32; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .figurinha.bloqueada .figurinha-area { color: #1a3a6b; }
+    .badge-novo { position: absolute; top: -8px; right: -8px; background: #dc1e32; color: #fff; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 10px; }
+    .carregando { text-align: center; color: #1a3a6b; padding: 60px 0; font-size: 15px; grid-column: 1/-1; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.visivel { display: flex; }
+    .modal {
+      background: #0d1f3c; border: 2px solid #dc1e32;
+      border-radius: 20px; padding: 40px; text-align: center;
+      max-width: 360px; width: 90%;
+      box-shadow: 0 0 80px rgba(220,30,50,0.4);
+      animation: aparecer 0.4s ease;
+    }
+    @keyframes aparecer { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-emoji { font-size: 52px; margin-bottom: 12px; }
+    .modal h2 { font-size: 20px; margin-bottom: 16px; }
+    .modal-foto-wrapper {
+      width: 100px; height: 100px; border-radius: 50%;
+      margin: 0 auto 14px; overflow: hidden; background: #071224;
+      display: flex; align-items: center; justify-content: center;
+      border: 3px solid #dc1e32;
+    }
+    .modal-foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-foto-inicial { font-size: 38px; font-weight: 800; color: #dc1e32; }
+    .modal-nome { font-size: 22px; font-weight: 800; color: #dc1e32; margin-bottom: 4px; }
+    .modal-area { font-size: 13px; color: #7a9cc4; margin-bottom: 20px; }
+    .modal-acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-fechar {
+      padding: 11px 24px; background: #dc1e32; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-fechar:hover { background: #f02035; }
+    .btn-compartilhar-card {
+      padding: 11px 18px; background: none;
+      border: 1px solid #1a3a6b; color: #7a9cc4;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-compartilhar-card:hover { border-color: #dc1e32; color: #fff; }
+    .modal-comp {
+      background: #0d1f3c; border: 1px solid #1a3a6b;
+      border-radius: 20px; padding: 32px; text-align: center;
+      max-width: 420px; width: 90%;
+      animation: aparecer 0.3s ease;
+    }
+    .modal-comp h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .modal-comp p { color: #7a9cc4; font-size: 14px; margin-bottom: 20px; }
+    .texto-preview {
+      background: #071224; border: 1px solid #1a3a6b;
+      border-radius: 8px; padding: 14px; font-size: 14px;
+      color: #fff; line-height: 1.6; margin-bottom: 20px; text-align: left;
+    }
+    .botoes-share { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-share {
+      padding: 11px 18px; border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+    .btn-whatsapp:hover { background: #1fb855; }
+    .btn-twitter { background: #1DA1F2; color: #fff; }
+    .btn-twitter:hover { background: #0d8dd4; }
+    .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+    .btn-instagram:hover { opacity: 0.88; }
+    .btn-copiar-link { background: #071224; border: 1px solid #1a3a6b; color: #7a9cc4; }
+    .btn-copiar-link:hover { border-color: #dc1e32; color: #fff; }
+    .msg-instagram {
+      display: none; margin-top: 12px; padding: 10px 14px;
+      background: #2a1a0a; border: 1px solid #5a3a1a;
+      border-radius: 8px; font-size: 13px; color: #ffaa6b;
+    }
+    .btn-cancelar {
+      margin-top: 16px; background: none; border: 1px solid #1a3a6b;
+      color: #7a9cc4; padding: 10px 20px; border-radius: 8px;
+      font-size: 14px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-cancelar:hover { border-color: #dc1e32; color: #fff; }
+  </style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Gran <span>Seleção</span></h1>
+    <p>Colecione os professores</p>
+  </div>
+  <div class="sidebar-nav">
+    <a href="album.html" class="nav-item ativo"><span class="icon">📖</span> Meu Álbum</a>
+    <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
+    <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
+    <a href="admin.html" class="nav-item admin-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+  </div>
+  <div class="sidebar-footer">
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</nav>
+
+<div class="content">
+  <div class="page-header">
+    <div class="page-header-text">
+      <h2>Meu Álbum</h2>
+      <p>Insira os códigos que encontrar nas lives, e-mails e posts do Gran!</p>
+    </div>
+    <button class="btn-compartilhar" onclick="abrirCompartilhamento()">🔗 Compartilhar minha coleção</button>
+  </div>
+
+  <div class="progresso-bar">
+    <div class="prog-texto">
+      <strong id="qtd-desbloqueadas">0</strong>
+      <span>de <span id="qtd-total">0</span> figurinhas</span>
+    </div>
+    <div class="prog-barra-wrap">
+      <div class="prog-barra" id="prog-barra" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="resgate-box">
+    <p><strong>Tem um código?</strong>Digite abaixo para desbloquear a figurinha!</p>
+    <div class="resgate-input-group">
+      <input type="text" id="input-codigo" placeholder="EX: A3F9B2C1" maxlength="20">
+      <button class="btn-resgatar" onclick="resgatar()">Desbloquear</button>
+    </div>
+    <div class="msg-resgate" id="msg-resgate"></div>
+  </div>
+
+  <div class="filtros" id="filtros"></div>
+  <div class="grade" id="grade"><div class="carregando">Carregando álbum...</div></div>
+</div>
+
+<!-- MODAL FIGURINHA -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-emoji">🎉</div>
+    <h2>Figurinha desbloqueada!</h2>
+    <div class="modal-foto-wrapper" id="modal-foto-wrapper">
+      <span class="modal-foto-inicial" id="modal-inicial"></span>
+    </div>
+    <div class="modal-nome" id="modal-nome"></div>
+    <div class="modal-area" id="modal-area"></div>
+    <div class="modal-acoes">
+      <button class="btn-fechar" onclick="fecharModal()">Colar no álbum!</button>
+      <button class="btn-compartilhar-card" onclick="compartilharFigurinha()">📤 Compartilhar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COMPARTILHAMENTO -->
+<div class="modal-overlay" id="modal-comp">
+  <div class="modal-comp">
+    <h3>📤 Compartilhar</h3>
+    <p>Chame seus amigos para participar da Gran Seleção!</p>
+    <div class="texto-preview" id="texto-preview"></div>
+    <div class="botoes-share">
+      <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
+      <button class="btn-share btn-twitter" onclick="shareTwitter()">🐦 X (Twitter)</button>
+      <button class="btn-share btn-instagram" onclick="shareInstagram()">📸 Instagram</button>
+      <button class="btn-share btn-copiar-link" onclick="copiarTexto()">📋 Copiar</button>
+    </div>
+    <div class="msg-instagram" id="msg-instagram">
+      ✅ Texto copiado! Abra o Instagram e cole nos seus Stories ou Feed.
+    </div>
+    <br>
+    <button class="btn-cancelar" onclick="fecharCompartilhamento()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+  const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
+  const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
+  const sb = window.supabase.createClient(_url, _key)
+
+  let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = []
+  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas da Gran Seleção! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.netlify.app'
+  let profModal = null
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) { window.location.href = 'index.html'; return; }
+    const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
+    if (admin) document.getElementById('link-admin').style.display = 'flex'
+    const { data: config } = await sb.from('configuracoes').select('valor').eq('chave', 'texto_compartilhamento').single()
+    if (config) textoCompartilhamento = config.valor
+    await carregarProfessores()
+    await carregarDesbloqueados()
+  }
+
+  async function carregarProfessores() {
+    const { data } = await sb.from('professores').select('id, nome, area, foto_url').order('area')
+    professores = data || []
+    document.getElementById('qtd-total').textContent = professores.length
+    renderizarFiltros()
+  }
+
+  async function carregarDesbloqueados() {
+    const { data } = await sb.from('resgates').select('professor_id')
+    desbloqueados = (data || []).map(r => r.professor_id)
+    const qtd = desbloqueados.length
+    document.getElementById('qtd-desbloqueadas').textContent = qtd
+    document.getElementById('prog-barra').style.width = professores.length > 0 ? (qtd / professores.length * 100) + '%' : '0%'
+    renderizarGrade()
+  }
+
+  function renderizarFiltros() {
+    const areas = ['Todos', ...new Set(professores.map(p => p.area))]
+    document.getElementById('filtros').innerHTML = areas.map(area =>
+      '<button class="filtro-btn ' + (area === filtroAtivo ? 'ativo' : '') + '" onclick="filtrar(\'' + area.replace(/'/g, "\\'") + '\')">' + area + '</button>'
+    ).join('')
+  }
+
+  function renderizarGrade() {
+    const lista = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
+    const grade = document.getElementById('grade')
+    if (lista.length === 0) { grade.innerHTML = '<div class="carregando">Nenhum professor nessa área.</div>'; return; }
+    grade.innerHTML = lista.map(p => {
+      const desbloqueada = desbloqueados.includes(p.id)
+      const isNovo = novosNessaSessao.includes(p.id)
+      const foto = desbloqueada && p.foto_url ? '<img src="' + p.foto_url + '" alt="' + p.nome + '">' : '<span class="foto-inicial">' + p.nome.charAt(0) + '</span>'
+      return '<div class="figurinha ' + (desbloqueada ? 'desbloqueada' : 'bloqueada') + '">' +
+        (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
+        '<div class="foto-wrapper">' + foto + '<span class="lock-icon">🔒</span></div>' +
+        '<div class="figurinha-nome">' + (desbloqueada ? p.nome : '???') + '</div>' +
+        '<div class="figurinha-area">' + p.area + '</div></div>'
+    }).join('')
+  }
+
+  function filtrar(area) { filtroAtivo = area; renderizarFiltros(); renderizarGrade(); }
+
+  async function resgatar() {
+    const codigo = document.getElementById('input-codigo').value.trim().toUpperCase()
+    const btn = document.querySelector('.btn-resgatar')
+    const msg = document.getElementById('msg-resgate')
+    if (!codigo) return
+    btn.disabled = true; btn.textContent = 'Verificando...'
+    msg.style.display = 'none'
+    const { data, error } = await sb.rpc('resgatar_codigo', { p_codigo: codigo })
+    btn.disabled = false; btn.textContent = 'Desbloquear'
+    if (error || !data || !data.sucesso) {
+      msg.textContent = data?.mensagem || 'Erro ao resgatar código.'
+      msg.className = 'msg-resgate erro'; msg.style.display = 'block'; return;
+    }
+    const professor = professores.find(p => p.id === data.professor_id)
+    if (professor) {
+      desbloqueados.push(professor.id); novosNessaSessao.push(professor.id)
+      const qtd = desbloqueados.length
+      document.getElementById('qtd-desbloqueadas').textContent = qtd
+      document.getElementById('prog-barra').style.width = (qtd / professores.length * 100) + '%'
+      renderizarGrade(); mostrarModal(professor)
+    }
+    document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
+  }
+
+  function mostrarModal(professor) {
+    profModal = professor
+    const wrapper = document.getElementById('modal-foto-wrapper')
+    wrapper.innerHTML = professor.foto_url
+      ? '<img src="' + professor.foto_url + '" alt="' + professor.nome + '">'
+      : '<span class="modal-foto-inicial">' + professor.nome.charAt(0) + '</span>'
+    document.getElementById('modal-nome').textContent = professor.nome
+    document.getElementById('modal-area').textContent = professor.area
+    document.getElementById('modal').classList.add('visivel')
+  }
+
+  function fecharModal() { document.getElementById('modal').classList.remove('visivel') }
+
+  function compartilharFigurinha() {
+    fecharModal()
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Seleção! Venha colecionar também: granselecao.netlify.app'
+    document.getElementById('texto-preview').textContent = texto
+    document.getElementById('msg-instagram').style.display = 'none'
+    document.getElementById('modal-comp').classList.add('visivel')
+  }
+
+  function abrirCompartilhamento() {
+    const qtd = desbloqueados.length
+    const total = professores.length
+    const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', total)
+    document.getElementById('texto-preview').textContent = texto
+    document.getElementById('msg-instagram').style.display = 'none'
+    document.getElementById('modal-comp').classList.add('visivel')
+  }
+
+  function fecharCompartilhamento() { document.getElementById('modal-comp').classList.remove('visivel') }
+
+  function getTextoAtual() { return document.getElementById('texto-preview').textContent }
+
+  function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
+
+  function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
+
+  function shareInstagram() {
+    navigator.clipboard.writeText(getTextoAtual())
+    document.getElementById('msg-instagram').style.display = 'block'
+    setTimeout(() => { window.open('https://www.instagram.com/', '_blank') }, 800)
+  }
+
+  function copiarTexto() {
+    navigator.clipboard.writeText(getTextoAtual())
+    alert('Texto copiado!')
+  }
+
+  async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
+
+  init()
+</script>
+</body>
+</html>
