@@ -5,108 +5,393 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gran Seleção</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --vermelho: #DD303E;
+      --azul: #0D134C;
+      --azul-medio: #162060;
+      --branco: #FFFFFF;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0a1628;
+      font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+      background: var(--azul);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
+      position: relative;
+      overflow: hidden;
     }
+
+    /* Fundo com padrão geométrico sutil — só azul, sem vermelho no fundo */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.018) 40px,
+        rgba(255,255,255,0.018) 41px
+      );
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px; right: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(22,32,96,0.6) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      max-width: 900px;
+      width: 100%;
+      padding: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* LADO ESQUERDO — apresentação */
+    .apresentacao {
+      flex: 1;
+      display: none;
+    }
+
+    @media (min-width: 820px) {
+      .apresentacao { display: block; }
+    }
+
+    .apresentacao-icone {
+      font-size: 52px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .apresentacao h2 {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+      color: var(--branco);
+    }
+
+    .apresentacao h2 span { color: var(--vermelho); }
+
+    .apresentacao p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .beneficios { list-style: none; }
+
+    .beneficios li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 10px;
+    }
+
+    .beneficios li span {
+      width: 28px;
+      height: 28px;
+      background: rgba(221,48,62,0.15);
+      border: 1px solid rgba(221,48,62,0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* LADO DIREITO — formulário */
     .container {
-      background: #0d1f3c;
-      border: 1px solid #1a3a6b;
-      border-radius: 16px;
-      padding: 48px 40px;
+      background: rgba(22,32,96,0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 24px;
+      padding: 40px 36px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 0 60px rgba(220, 30, 50, 0.1);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+      animation: entrar 0.5s ease;
     }
-    .logo { text-align: center; margin-bottom: 32px; }
-    .logo h1 { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-    .logo h1 span { color: #dc1e32; }
-    .logo p { color: #7a9cc4; font-size: 14px; margin-top: 6px; }
+
+    @keyframes entrar {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--vermelho);
+      border-radius: 14px;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 20px rgba(221,48,62,0.4);
+    }
+
+    .logo h1 { font-size: 26px; font-weight: 900; color: var(--branco); }
+    .logo h1 span { color: var(--vermelho); }
+    .logo p { color: rgba(255,255,255,0.9); font-size: 13px; margin-top: 4px; font-weight: 600; }
+
     .tabs {
-      display: flex; background: #071224;
-      border-radius: 8px; padding: 4px; margin-bottom: 28px;
+      display: flex;
+      background: rgba(13,19,76,0.8);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
+
     .tab {
-      flex: 1; padding: 10px; text-align: center;
-      border-radius: 6px; cursor: pointer;
-      font-size: 14px; font-weight: 600;
-      color: #5a7fa8; transition: all 0.2s;
-      border: none; background: none;
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      font-family: inherit;
     }
-    .tab.ativo { background: #dc1e32; color: #fff; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; color: #7a9cc4; margin-bottom: 6px; }
+
+    .tab.ativo {
+      background: var(--vermelho);
+      color: var(--branco);
+      box-shadow: 0 4px 12px rgba(221,48,62,0.35);
+    }
+
+    .form-group { margin-bottom: 14px; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 7px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
     input {
-      width: 100%; padding: 12px 16px;
-      background: #071224; border: 1px solid #1a3a6b;
-      border-radius: 8px; color: #fff; font-size: 15px;
-      outline: none; transition: border 0.2s;
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(13,19,76,0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      color: var(--branco);
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s;
     }
-    input:focus { border-color: #dc1e32; }
+
+    input:focus {
+      border-color: var(--vermelho);
+      background: rgba(13,19,76,0.9);
+      box-shadow: 0 0 0 3px rgba(221,48,62,0.12);
+    }
+
+    input::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; }
+
+    .campo-opcional {
+      position: relative;
+    }
+
+    .tag-opcional {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .campo-opcional input { padding-right: 72px; }
+
     .btn {
-      width: 100%; padding: 14px;
-      background: #dc1e32; color: #fff;
-      border: none; border-radius: 8px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; margin-top: 8px;
-      transition: background 0.2s;
+      width: 100%;
+      padding: 13px;
+      background: var(--vermelho);
+      color: var(--branco);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 16px rgba(221,48,62,0.35);
     }
-    .btn:hover { background: #f02035; }
-    .btn:disabled { background: #333; cursor: not-allowed; }
+
+    .btn:hover { background: #e8384a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(221,48,62,0.45); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; transform: none; color: rgba(255,255,255,0.3); }
+
+    .link-esqueci {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+      margin-top: 10px;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0;
+      width: 100%;
+    }
+
+    .link-esqueci:hover { color: var(--vermelho); }
+
     .mensagem {
-      margin-top: 16px; padding: 12px;
-      border-radius: 8px; font-size: 14px;
-      text-align: center; display: none;
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      display: none;
     }
-    .mensagem.erro { background: #2a0a0a; color: #ff6b6b; border: 1px solid #5a1a1a; }
-    .mensagem.sucesso { background: #0a2a0a; color: #6bff6b; border: 1px solid #1a5a1a; }
+
+    .mensagem.erro { background: rgba(221,48,62,0.12); color: #ff8090; border: 1px solid rgba(221,48,62,0.25); }
+    .mensagem.sucesso { background: rgba(40,200,100,0.12); color: #6bff9a; border: 1px solid rgba(40,200,100,0.25); }
+    .mensagem.info { background: rgba(100,150,255,0.12); color: #90b8ff; border: 1px solid rgba(100,150,255,0.25); }
+
+    .rodape {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 10px 24px;
+      background: rgba(10,15,60,0.9);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      font-size: 10px;
+      color: rgba(255,255,255,0.28);
+      font-weight: 600;
+      line-height: 1.6;
+      z-index: 10;
+    }
+    .rodape a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    .rodape a:hover { color: var(--vermelho); }
+    body { padding-bottom: 80px; }
+    .wrapper { padding-bottom: 80px; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo">
-    <h1>Gran <span>Seleção</span></h1>
-    <p>Colecione os professores do Gran</p>
+<div class="wrapper">
+
+  <!-- APRESENTAÇÃO (visível só em telas largas) -->
+  <div class="apresentacao">
+    <span class="apresentacao-icone">🏆</span>
+    <h2>Colecione os melhores professores <span>do Brasil</span></h2>
+    <p>A Gran Seleção é o álbum de figurinhas digital dos professores do Gran. Desbloqueie figurinhas exclusivas participando das lives, e-mails e posts do Gran.</p>
+    <ul class="beneficios">
+      <li><span>🎥</span> Assista lives e resgate figurinhas com códigos secretos</li>
+      <li><span>📧</span> Baixe materiais e ganhe figurinhas por e-mail</li>
+      <li><span>🏆</span> Suba no ranking dos melhores colecionadores</li>
+      <li><span>🎯</span> Complete missões e ganhe figurinhas exclusivas</li>
+    </ul>
   </div>
-  <div class="tabs">
-    <button class="tab ativo" id="tab-login" onclick="mostrarAba('login')">Entrar</button>
-    <button class="tab" id="tab-cadastro" onclick="mostrarAba('cadastro')">Cadastrar</button>
+
+  <!-- FORMULÁRIO -->
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🏆</div>
+      <h1>Gran <span>Seleção</span></h1>
+      <p>Álbum de figurinhas digital</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab" id="tab-login" onclick="mostrarAba('login')">Entrar</button>
+      <button class="tab ativo" id="tab-cadastro" onclick="mostrarAba('cadastro')">Cadastrar</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="aba-login" style="display:none">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••">
+      </div>
+      <button class="btn" id="btn-login" onclick="fazerLogin()">Entrar na coleção</button>
+      <button class="link-esqueci" onclick="esqueceuSenha()">Esqueci minha senha</button>
+    </div>
+
+    <!-- CADASTRO -->
+    <div id="aba-cadastro">
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" id="cadastro-nome" placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="cadastro-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="cadastro-senha" placeholder="mínimo 6 caracteres">
+      </div>
+      <div class="form-group">
+        <label>WhatsApp</label>
+        <div class="campo-opcional">
+          <input type="tel" id="cadastro-whatsapp" placeholder="(11) 99999-9999">
+          <span class="tag-opcional">opcional</span>
+        </div>
+      </div>
+      <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Começar a colecionar!</button>
+    </div>
+
+    <div class="mensagem" id="mensagem"></div>
   </div>
-  <div id="aba-login">
-    <div class="form-group">
-      <label>E-mail</label>
-      <input type="email" id="login-email" placeholder="seu@email.com">
-    </div>
-    <div class="form-group">
-      <label>Senha</label>
-      <input type="password" id="login-senha" placeholder="••••••••">
-    </div>
-    <button class="btn" id="btn-login" onclick="fazerLogin()">Entrar</button>
-  </div>
-  <div id="aba-cadastro" style="display:none">
-    <div class="form-group">
-      <label>Nome completo</label>
-      <input type="text" id="cadastro-nome" placeholder="Seu nome">
-    </div>
-    <div class="form-group">
-      <label>E-mail</label>
-      <input type="email" id="cadastro-email" placeholder="seu@email.com">
-    </div>
-    <div class="form-group">
-      <label>Senha</label>
-      <input type="password" id="cadastro-senha" placeholder="mínimo 6 caracteres">
-    </div>
-    <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Criar conta</button>
-  </div>
-  <div class="mensagem" id="mensagem"></div>
+
 </div>
+
 <script>
   const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
@@ -117,6 +402,7 @@
     document.getElementById('aba-cadastro').style.display = aba === 'cadastro' ? 'block' : 'none'
     document.getElementById('tab-login').classList.toggle('ativo', aba === 'login')
     document.getElementById('tab-cadastro').classList.toggle('ativo', aba === 'cadastro')
+    document.getElementById('mensagem').style.display = 'none'
   }
 
   function mostrarMensagem(texto, tipo) {
@@ -127,40 +413,65 @@
   }
 
   async function fazerLogin() {
-    const email = document.getElementById('login-email').value
+    const email = document.getElementById('login-email').value.trim()
     const senha = document.getElementById('login-senha').value
     const btn = document.getElementById('btn-login')
-    btn.disabled = true
-    btn.textContent = 'Entrando...'
+    if (!email || !senha) { mostrarMensagem('Preencha e-mail e senha.', 'erro'); return; }
+    btn.disabled = true; btn.textContent = 'Entrando...'
     const { error } = await sb.auth.signInWithPassword({ email, password: senha })
     if (error) {
       mostrarMensagem('E-mail ou senha incorretos.', 'erro')
-      btn.disabled = false
-      btn.textContent = 'Entrar'
+      btn.disabled = false; btn.textContent = 'Entrar na coleção'
     } else {
       window.location.href = 'album.html'
     }
   }
 
   async function fazerCadastro() {
-    const nome = document.getElementById('cadastro-nome').value
-    const email = document.getElementById('cadastro-email').value
+    const nome = document.getElementById('cadastro-nome').value.trim()
+    const email = document.getElementById('cadastro-email').value.trim()
     const senha = document.getElementById('cadastro-senha').value
+    const whatsapp = document.getElementById('cadastro-whatsapp').value.trim()
     const btn = document.getElementById('btn-cadastro')
-    btn.disabled = true
-    btn.textContent = 'Criando conta...'
+
+    if (!nome || !email || !senha) { mostrarMensagem('Preencha nome, e-mail e senha.', 'erro'); return; }
+    if (senha.length < 6) { mostrarMensagem('A senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
+
+    btn.disabled = true; btn.textContent = 'Criando conta...'
+
     const { error } = await sb.auth.signUp({
-      email, password: senha,
-      options: { data: { nome_completo: nome } }
+      email,
+      password: senha,
+      options: {
+        data: {
+          nome_completo: nome,
+          whatsapp: whatsapp || null
+        }
+      }
     })
+
     if (error) {
       mostrarMensagem('Erro: ' + error.message, 'erro')
-      btn.disabled = false
-      btn.textContent = 'Criar conta'
+      btn.disabled = false; btn.textContent = 'Começar a colecionar!'
     } else {
-      mostrarMensagem('Conta criada! Verifique seu e-mail para confirmar.', 'sucesso')
-      btn.disabled = false
-      btn.textContent = 'Criar conta'
+      window.location.href = 'album.html'
+    }
+  }
+
+  async function esqueceuSenha() {
+    const email = document.getElementById('login-email').value.trim()
+    if (!email) {
+      mostrarMensagem('Digite seu e-mail no campo acima primeiro.', 'info')
+      document.getElementById('login-email').focus()
+      return
+    }
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/index.html'
+    })
+    if (error) {
+      mostrarMensagem('Erro ao enviar. Verifique o e-mail digitado.', 'erro')
+    } else {
+      mostrarMensagem('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'sucesso')
     }
   }
 
@@ -168,5 +479,10 @@
     if (session) window.location.href = 'album.html'
   })
 </script>
+
+<footer class="rodape">
+  Gran Tecnologia e Educação S/A — CNPJ: 18.260.822/0001-77 — SBS Quadra 02, Bloco J, Lote 10, Ed. Carlton Tower, Sala 201, Asa Sul, Brasília-DF, CEP 70.070-120 —
+  <a href="http://grancursosonline.com.br/" target="_blank">grancursosonline.com.br</a> — Gran © 2026 · Todos os direitos reservados ®
+</footer>
 </body>
 </html>

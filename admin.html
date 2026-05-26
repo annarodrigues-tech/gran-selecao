@@ -5,190 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gran Seleção — Admin</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0a1628; min-height: 100vh;
-      color: #fff; display: flex;
-      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
-    }
-    .sidebar {
-      width: 220px; min-height: 100vh;
-      background: #0d1f3c; border-right: 1px solid #1a3a6b;
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; z-index: 100;
-    }
-    .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid #1a3a6b; }
-    .sidebar-logo h1 { font-size: 20px; font-weight: 800; }
-    .sidebar-logo h1 span { color: #dc1e32; }
-    .sidebar-logo p { font-size: 11px; color: #7a9cc4; margin-top: 4px; }
+    :root { --vermelho: #DD303E; --azul: #0D134C; --branco: #FFFFFF; }
+    body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .logo-marca { display: flex; align-items: center; gap: 10px; }
+    .logo-icone { width: 38px; height: 38px; background: var(--vermelho); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(221,48,62,0.4); }
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
+    .logo-texto h1 span { color: var(--vermelho); }
+    .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
     .sidebar-nav { padding: 16px 12px; flex: 1; }
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border-radius: 8px; cursor: pointer;
-      font-size: 14px; font-weight: 600; color: #7a9cc4;
-      transition: all 0.2s; text-decoration: none; margin-bottom: 4px;
-    }
-    .nav-item:hover { background: #071224; color: #fff; }
-    .nav-item.ativo { background: #dc1e32; color: #fff; }
-    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
-    .nav-item.admin-item { margin-top: 8px; border-top: 1px solid #1a3a6b; padding-top: 16px; }
-    .sidebar-footer { padding: 16px 12px; border-top: 1px solid #1a3a6b; }
-    .btn-sair {
-      width: 100%; padding: 10px; background: none;
-      border: 1px solid #1a3a6b; color: #7a9cc4;
-      border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
-    }
-    .btn-sair:hover { border-color: #dc1e32; color: #fff; }
-    .content { margin-left: 220px; flex: 1; padding: 32px; max-width: calc(100% - 220px); }
+    .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
+    .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
+    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: calc(100% - 230px); }
     .page-header { margin-bottom: 28px; }
-    .page-header h2 { font-size: 22px; font-weight: 800; }
-    .page-header p { color: #7a9cc4; font-size: 14px; margin-top: 4px; }
-
-    /* ABAS ADMIN */
-    .admin-tabs {
-      display: flex; gap: 4px;
-      background: #071224; border-radius: 10px;
-      padding: 4px; margin-bottom: 28px;
-      width: fit-content;
-    }
-    .admin-tab {
-      padding: 10px 20px; border-radius: 7px;
-      border: none; background: none;
-      color: #7a9cc4; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .admin-tab.ativo { background: #dc1e32; color: #fff; }
-    .admin-tab:hover:not(.ativo) { color: #fff; }
-
+    .page-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+    .page-header p { color: rgba(255,255,255,0.45); font-size: 14px; margin-top: 4px; font-weight: 600; }
+    .admin-tabs { display: flex; gap: 4px; background: rgba(10,15,60,0.8); border-radius: 12px; padding: 4px; margin-bottom: 28px; width: fit-content; border: 1px solid rgba(255,255,255,0.07); }
+    .admin-tab { padding: 10px 20px; border-radius: 9px; border: none; background: none; color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .admin-tab.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .admin-tab:hover:not(.ativo) { color: var(--branco); background: rgba(255,255,255,0.05); }
     .secao { display: none; }
     .secao.ativa { display: block; }
-
-    .card {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 12px; padding: 28px; margin-bottom: 28px;
-    }
-    .card h3 { font-size: 14px; font-weight: 700; color: #dc1e32; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+    .card h3 { font-size: 12px; font-weight: 900; color: var(--vermelho); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     .form-group { margin-bottom: 0; }
     .form-group.full { grid-column: 1 / -1; }
-    label { display: block; font-size: 13px; color: #7a9cc4; margin-bottom: 6px; }
-    input, select, textarea {
-      width: 100%; padding: 12px 16px;
-      background: #071224; border: 1px solid #1a3a6b;
-      border-radius: 8px; color: #fff; font-size: 14px;
-      outline: none; transition: border 0.2s; font-family: inherit;
-    }
-    input:focus, select:focus, textarea:focus { border-color: #dc1e32; }
-    select option { background: #071224; }
+    label { display: block; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.4); margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase; }
+    input, select, textarea { width: 100%; padding: 12px 16px; background: rgba(13,19,76,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--branco); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; }
+    input:focus, select:focus, textarea:focus { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(221,48,62,0.12); }
+    select option { background: #0D134C; }
     textarea { resize: vertical; min-height: 80px; }
     .foto-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-    .foto-preview {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: #071224; border: 2px dashed #1a3a6b;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; cursor: pointer; overflow: hidden;
-      transition: border 0.2s; flex-shrink: 0;
-    }
-    .foto-preview:hover { border-color: #dc1e32; }
+    .foto-preview { width: 80px; height: 80px; border-radius: 50%; background: rgba(13,19,76,0.7); border: 2px dashed rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; overflow: hidden; transition: all 0.2s; flex-shrink: 0; }
+    .foto-preview:hover { border-color: var(--vermelho); }
     .foto-preview img { width: 100%; height: 100%; object-fit: cover; }
-    .foto-info { font-size: 13px; color: #7a9cc4; }
-    .foto-info strong { display: block; color: #fff; margin-bottom: 4px; }
+    .foto-info strong { display: block; color: var(--branco); font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+    .foto-info span { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; }
     input[type="file"] { display: none; }
-    .btn {
-      padding: 12px 24px; background: #dc1e32;
-      color: #fff; border: none; border-radius: 8px;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: background 0.2s; margin-top: 20px;
-    }
-    .btn:hover { background: #f02035; }
-    .btn:disabled { background: #333; cursor: not-allowed; }
-    .btn-secundario {
-      padding: 12px 24px; background: none;
-      color: #7a9cc4; border: 1px solid #1a3a6b; border-radius: 8px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; margin-top: 20px; margin-left: 10px;
-    }
-    .btn-secundario:hover { border-color: #dc1e32; color: #fff; }
-    .mensagem {
-      margin-top: 16px; padding: 12px; border-radius: 8px;
-      font-size: 14px; display: none;
-    }
-    .mensagem.erro { background: #2a0a0a; color: #ff6b6b; border: 1px solid #5a1a1a; }
-    .mensagem.sucesso { background: #0a2a0a; color: #6bff6b; border: 1px solid #1a5a1a; }
+    .btn { padding: 12px 24px; background: var(--vermelho); color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; margin-top: 20px; box-shadow: 0 4px 16px rgba(221,48,62,0.3); }
+    .btn:hover { background: #e8384a; transform: translateY(-1px); }
+    .btn:disabled { background: rgba(255,255,255,0.1); box-shadow: none; cursor: not-allowed; transform: none; }
+    .mensagem { margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; display: none; }
+    .mensagem.erro { background: rgba(221,48,62,0.15); color: #ff8090; border: 1px solid rgba(221,48,62,0.3); }
+    .mensagem.sucesso { background: rgba(40,200,100,0.15); color: #6bff9a; border: 1px solid rgba(40,200,100,0.3); }
     .tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .tabela th {
-      text-align: left; padding: 10px 12px; color: #7a9cc4;
-      border-bottom: 1px solid #1a3a6b; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.5px; font-size: 11px;
-    }
-    .tabela td { padding: 12px; border-bottom: 1px solid #071224; vertical-align: middle; }
+    .tabela th { text-align: left; padding: 10px 12px; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.06); font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; font-size: 10px; }
+    .tabela td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; font-weight: 600; }
     .tabela tr:last-child td { border-bottom: none; }
-    .tabela tr:hover td { background: #071224; }
-    .foto-mini {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: #071224; display: flex; align-items: center;
-      justify-content: center; font-size: 14px; font-weight: 800;
-      color: #dc1e32; overflow: hidden; flex-shrink: 0;
-    }
+    .tabela tr:hover td { background: rgba(255,255,255,0.02); }
+    .foto-mini { width: 36px; height: 36px; border-radius: 50%; background: rgba(13,19,76,0.8); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: var(--vermelho); overflow: hidden; flex-shrink: 0; border: 2px solid rgba(221,48,62,0.2); }
     .foto-mini img { width: 100%; height: 100%; object-fit: cover; }
     .professor-cell { display: flex; align-items: center; gap: 10px; }
-    .codigo-badge {
-      background: #071224; border: 1px solid #1a3a6b;
-      padding: 4px 10px; border-radius: 6px;
-      font-family: monospace; font-size: 13px;
-      letter-spacing: 2px; color: #dc1e32;
-    }
-    .badge-status {
-      padding: 3px 10px; border-radius: 10px;
-      font-size: 11px; font-weight: 700;
-    }
-    .badge-status.ativo { background: #0a2a0a; color: #6bff6b; }
-    .badge-status.inativo { background: #2a0a0a; color: #ff6b6b; }
-    .btn-copiar {
-      background: none; border: 1px solid #1a3a6b;
-      color: #7a9cc4; padding: 4px 10px; border-radius: 6px;
-      font-size: 12px; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-copiar:hover { border-color: #dc1e32; color: #fff; }
-    .carregando { text-align: center; color: #1a3a6b; padding: 32px; }
-    .acesso-negado {
-      text-align: center; padding: 80px 32px; color: #7a9cc4; font-size: 16px;
-    }
-    .acesso-negado strong { display: block; font-size: 24px; color: #dc1e32; margin-bottom: 8px; }
-    .missao-lista-item {
-      padding: 16px; border-bottom: 1px solid #071224;
-      display: flex; align-items: flex-start; gap: 16px;
-    }
+    .codigo-badge { background: rgba(13,19,76,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 5px 12px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; letter-spacing: 3px; color: var(--vermelho); font-weight: 700; }
+    .badge-status { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 800; }
+    .badge-status.ativo { background: rgba(40,200,100,0.15); color: #6bff9a; }
+    .badge-status.inativo { background: rgba(221,48,62,0.15); color: #ff8090; }
+    .btn-copiar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-copiar:hover { border-color: rgba(221,48,62,0.4); color: var(--branco); background: rgba(221,48,62,0.1); }
+    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 40px; font-weight: 700; }
+    .acesso-negado { text-align: center; padding: 80px 32px; }
+    .acesso-negado strong { display: block; font-size: 24px; color: var(--vermelho); margin-bottom: 8px; font-weight: 900; }
+    .acesso-negado p { color: rgba(255,255,255,0.4); font-weight: 600; }
+    .missao-lista-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: flex-start; gap: 16px; }
     .missao-lista-item:last-child { border-bottom: none; }
     .missao-info { flex: 1; }
-    .missao-titulo-item { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .missao-desc-item { font-size: 13px; color: #7a9cc4; margin-bottom: 6px; }
-    .missao-meta { font-size: 11px; color: #5a7fa8; }
-    .tipo-badge {
-      padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;
-      background: #071224; border: 1px solid #1a3a6b; color: #7a9cc4;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .hint { font-size: 12px; color: #5a7fa8; margin-top: 6px; }
+    .missao-titulo-item { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .missao-desc-item { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 6px; font-weight: 600; line-height: 1.5; }
+    .missao-status { font-size: 11px; font-weight: 800; }
+    .tipo-badge { padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; background: rgba(221,48,62,0.1); border: 1px solid rgba(221,48,62,0.2); color: var(--vermelho); white-space: nowrap; flex-shrink: 0; }
+    .hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 8px; font-weight: 600; line-height: 1.5; }
   </style>
 </head>
 <body>
 <nav class="sidebar">
   <div class="sidebar-logo">
-    <h1>Gran <span>Seleção</span></h1>
-    <p>Colecione os professores</p>
+    <div class="logo-marca">
+      <div class="logo-icone">🎴</div>
+      <div class="logo-texto">
+        <h1>Gran <span>Seleção</span></h1>
+        <p>Álbum de figurinhas</p>
+      </div>
+    </div>
   </div>
   <div class="sidebar-nav">
+    <div class="nav-section-title">Menu</div>
     <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
     <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
     <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
-    <a href="admin.html" class="nav-item admin-item ativo"><span class="icon">⚙️</span> Admin</a>
+    <a href="admin.html" class="nav-item ativo"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
-    <button class="btn-sair" onclick="sair()">Sair</button>
+    <button class="btn-sair" onclick="sair()">↩ Sair</button>
   </div>
 </nav>
 <div class="content" id="content">
@@ -205,11 +124,11 @@
     if (!session) { window.location.href = 'index.html'; return; }
     const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
     if (!admin) {
-      document.getElementById('content').innerHTML = '<div class="acesso-negado"><strong>Acesso negado</strong>Você não tem permissão para acessar esta área.</div>'
+      document.getElementById('content').innerHTML = '<div class="acesso-negado"><strong>Acesso negado</strong><p>Você não tem permissão para acessar esta área.</p></div>'
       return
     }
     renderizarAdmin()
-    mostrarSecao('professores')
+    mostrarSecao('professores', { target: document.querySelector('.admin-tab') })
   }
 
   function renderizarAdmin() {
@@ -218,48 +137,31 @@
         <h2>Painel Admin</h2>
         <p>Gerencie professores, missões e configurações da plataforma.</p>
       </div>
-
       <div class="admin-tabs">
-        <button class="admin-tab ativo" onclick="mostrarSecao('professores')">👨‍🏫 Professores</button>
-        <button class="admin-tab" onclick="mostrarSecao('missoes')">🎯 Missões</button>
-        <button class="admin-tab" onclick="mostrarSecao('configuracoes')">⚙️ Configurações</button>
+        <button class="admin-tab ativo" onclick="mostrarSecao('professores', event)">👨‍🏫 Professores</button>
+        <button class="admin-tab" onclick="mostrarSecao('missoes', event)">🎯 Missões</button>
+        <button class="admin-tab" onclick="mostrarSecao('configuracoes', event)">⚙️ Configurações</button>
       </div>
 
-      <!-- SEÇÃO PROFESSORES -->
       <div class="secao ativa" id="secao-professores">
         <div class="card">
           <h3>Cadastrar Professor</h3>
           <div class="foto-row">
             <div class="foto-preview" id="foto-preview" onclick="document.getElementById('input-foto').click()">📷</div>
-            <div class="foto-info"><strong>Clique para selecionar foto</strong>JPG ou PNG, máximo 2MB</div>
+            <div class="foto-info"><strong>Foto do professor</strong><span>Clique para selecionar — JPG ou PNG, máx. 2MB</span></div>
             <input type="file" id="input-foto" accept="image/*" onchange="previewFoto(event)">
           </div>
           <div class="form-grid">
-            <div class="form-group">
-              <label>Nome completo</label>
-              <input type="text" id="prof-nome" placeholder="Ex: Alexandre Meirelles">
-            </div>
-            <div class="form-group">
-              <label>Carreira</label>
+            <div class="form-group"><label>Nome completo</label><input type="text" id="prof-nome" placeholder="Ex: Alexandre Meirelles"></div>
+            <div class="form-group"><label>Carreira</label>
               <select id="prof-area">
                 <option value="">Selecione...</option>
-                <option>Administrativa</option>
-                <option>Bancárias</option>
-                <option>Carreira Diplomática</option>
-                <option>Carreiras Policiais</option>
-                <option>Controle e Gestão</option>
-                <option>Delegado</option>
-                <option>Educação</option>
-                <option>Exame CFC</option>
-                <option>Exame da OAB</option>
-                <option>Fiscal</option>
-                <option>Jurídico</option>
-                <option>Legislativa</option>
-                <option>Residências</option>
-                <option>Saúde</option>
-                <option>Segurança Pública</option>
-                <option>Tecnologia da Informação</option>
-                <option>Tribunais</option>
+                <option>Administrativa</option><option>Bancárias</option><option>Carreira Diplomática</option>
+                <option>Carreiras Policiais</option><option>Controle e Gestão</option><option>Delegado</option>
+                <option>Educação</option><option>Exame CFC</option><option>Exame da OAB</option>
+                <option>Fiscal</option><option>Jurídico</option><option>Legislativa</option>
+                <option>Residências</option><option>Saúde</option><option>Segurança Pública</option>
+                <option>Tecnologia da Informação</option><option>Tribunais</option>
               </select>
             </div>
           </div>
@@ -272,38 +174,21 @@
         </div>
       </div>
 
-      <!-- SEÇÃO MISSÕES -->
       <div class="secao" id="secao-missoes">
         <div class="card">
           <h3>Cadastrar Missão</h3>
           <div class="form-grid">
-            <div class="form-group">
-              <label>Título da missão</label>
-              <input type="text" id="missao-titulo" placeholder="Ex: Assista a live de Fiscal">
-            </div>
-            <div class="form-group">
-              <label>Tipo</label>
+            <div class="form-group"><label>Título</label><input type="text" id="missao-titulo" placeholder="Ex: Assista a live de Fiscal"></div>
+            <div class="form-group"><label>Tipo</label>
               <select id="missao-tipo">
                 <option value="">Selecione...</option>
-                <option>Live</option>
-                <option>E-mail</option>
-                <option>Blog</option>
-                <option>Redes Sociais</option>
-                <option>Indicação</option>
+                <option>Live</option><option>E-mail</option><option>Blog</option>
+                <option>Redes Sociais</option><option>Indicação</option>
               </select>
             </div>
-            <div class="form-group">
-              <label>Data do evento (opcional)</label>
-              <input type="date" id="missao-data">
-            </div>
-            <div class="form-group">
-              <label>Horário do evento (opcional)</label>
-              <input type="time" id="missao-horario">
-            </div>
-            <div class="form-group full">
-              <label>Descrição</label>
-              <textarea id="missao-desc" placeholder="Explique o que o aluno precisa fazer para ganhar a figurinha..."></textarea>
-            </div>
+            <div class="form-group"><label>Data do evento (opcional)</label><input type="date" id="missao-data"></div>
+            <div class="form-group"><label>Horário do evento (opcional)</label><input type="time" id="missao-horario"></div>
+            <div class="form-group full"><label>Descrição</label><textarea id="missao-desc" placeholder="Explique o que o aluno precisa fazer..."></textarea></div>
           </div>
           <button class="btn" onclick="cadastrarMissao()">Publicar missão</button>
           <div class="mensagem" id="msg-missao"></div>
@@ -314,14 +199,13 @@
         </div>
       </div>
 
-      <!-- SEÇÃO CONFIGURAÇÕES -->
       <div class="secao" id="secao-configuracoes">
         <div class="card">
           <h3>Texto de Compartilhamento</h3>
           <div class="form-group">
             <label>Texto exibido quando o aluno compartilha o álbum</label>
             <textarea id="texto-compartilhamento" style="min-height:100px"></textarea>
-            <div class="hint">Use {qtd} para o número de figurinhas do aluno e {total} para o total disponível.</div>
+            <div class="hint">Use {qtd} para o número de figurinhas do aluno e {total} para o total disponível. Exemplo: "Já tenho {qtd} de {total} figurinhas!"</div>
           </div>
           <button class="btn" onclick="salvarConfiguracao()">Salvar texto</button>
           <div class="mensagem" id="msg-config"></div>
@@ -330,17 +214,16 @@
     `
   }
 
-  function mostrarSecao(secao) {
+  function mostrarSecao(secao, event) {
     document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'))
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('ativo'))
     document.getElementById('secao-' + secao).classList.add('ativa')
-    event.target.classList.add('ativo')
+    if (event && event.target) event.target.classList.add('ativo')
     if (secao === 'professores') carregarProfessores()
     if (secao === 'missoes') carregarMissoes()
     if (secao === 'configuracoes') carregarConfiguracao()
   }
 
-  // ---- PROFESSORES ----
   function previewFoto(event) {
     const file = event.target.files[0]
     if (!file) return
@@ -380,7 +263,7 @@
       codigo = gerarCodigoAleatorio()
     }
     await sb.from('codigos').insert({ codigo, professor_id: prof.id, ativo: true })
-    mostrarMsg('msg-prof', '✅ Cadastrado! Código: ' + codigo, 'sucesso')
+    mostrarMsg('msg-prof', '✅ Cadastrado! Código gerado: ' + codigo, 'sucesso')
     document.getElementById('prof-nome').value = ''
     document.getElementById('prof-area').value = ''
     document.getElementById('foto-preview').innerHTML = '📷'
@@ -395,18 +278,19 @@
     const linhas = data.map(p => {
       const cod = p.codigos?.[0]
       const foto = p.foto_url ? '<img src="' + p.foto_url + '">' : p.nome.charAt(0)
-      return '<tr><td><div class="professor-cell"><div class="foto-mini">' + foto + '</div>' + p.nome + '</div></td>' +
+      return '<tr>' +
+        '<td><div class="professor-cell"><div class="foto-mini">' + foto + '</div>' + p.nome + '</div></td>' +
         '<td>' + p.area + '</td>' +
         '<td>' + (cod ? '<span class="codigo-badge">' + cod.codigo + '</span>' : '—') + '</td>' +
         '<td>' + (cod ? '<span class="badge-status ' + (cod.ativo ? 'ativo' : 'inativo') + '">' + (cod.ativo ? 'Ativo' : 'Inativo') + '</span>' : '—') + '</td>' +
-        '<td>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">Copiar</button>' : '—') + '</td></tr>'
+        '<td>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">Copiar</button>' : '—') + '</td>' +
+        '</tr>'
     }).join('')
     document.getElementById('tabela-professores').innerHTML = '<table class="tabela"><thead><tr><th>Professor</th><th>Carreira</th><th>Código</th><th>Status</th><th>Ação</th></tr></thead><tbody>' + linhas + '</tbody></table>'
   }
 
   function copiar(codigo) { navigator.clipboard.writeText(codigo); alert('Código ' + codigo + ' copiado!') }
 
-  // ---- MISSÕES ----
   async function cadastrarMissao() {
     const titulo = document.getElementById('missao-titulo').value.trim()
     const tipo = document.getElementById('missao-tipo').value
@@ -416,11 +300,11 @@
     const btn = document.querySelector('#secao-missoes .btn')
     if (!titulo || !tipo || !desc) { mostrarMsg('msg-missao', 'Preencha título, tipo e descrição.', 'erro'); return; }
     btn.disabled = true; btn.textContent = 'Publicando...'
-    const descCompleta = desc + (data ? '\n📅 Data: ' + formatarData(data) + (horario ? ' às ' + horario : '') : '')
+    const descCompleta = desc + (data ? '\n📅 ' + formatarData(data) + (horario ? ' às ' + horario : '') : '')
     const { error } = await sb.from('missoes').insert({ titulo, tipo, descricao: descCompleta, ativa: true })
     if (error) { mostrarMsg('msg-missao', 'Erro: ' + error.message, 'erro') }
     else {
-      mostrarMsg('msg-missao', '✅ Missão publicada com sucesso!', 'sucesso')
+      mostrarMsg('msg-missao', '✅ Missão publicada!', 'sucesso')
       document.getElementById('missao-titulo').value = ''
       document.getElementById('missao-tipo').value = ''
       document.getElementById('missao-data').value = ''
@@ -438,20 +322,17 @@
 
   async function carregarMissoes() {
     const { data } = await sb.from('missoes').select('*').order('criado_em', { ascending: false })
-    if (!data || data.length === 0) { document.getElementById('lista-missoes').innerHTML = '<div class="carregando">Nenhuma missão cadastrada ainda.</div>'; return; }
+    if (!data || data.length === 0) { document.getElementById('lista-missoes').innerHTML = '<div class="carregando">Nenhuma missão ainda.</div>'; return; }
     document.getElementById('lista-missoes').innerHTML = data.map(m =>
       '<div class="missao-lista-item">' +
       '<div class="missao-info">' +
       '<div class="missao-titulo-item">' + m.titulo + '</div>' +
       '<div class="missao-desc-item">' + m.descricao.replace(/\n/g, '<br>') + '</div>' +
-      '<div class="missao-meta">' + (m.ativa ? '🟢 Ativa' : '🔴 Inativa') + '</div>' +
-      '</div>' +
-      '<span class="tipo-badge">' + m.tipo + '</span>' +
-      '</div>'
+      '<div class="missao-status">' + (m.ativa ? '🟢 Ativa' : '🔴 Inativa') + '</div>' +
+      '</div><span class="tipo-badge">' + m.tipo + '</span></div>'
     ).join('')
   }
 
-  // ---- CONFIGURAÇÕES ----
   async function carregarConfiguracao() {
     const { data } = await sb.from('configuracoes').select('valor').eq('chave', 'texto_compartilhamento').single()
     if (data) document.getElementById('texto-compartilhamento').value = data.valor
@@ -463,8 +344,8 @@
     if (!valor) { mostrarMsg('msg-config', 'O texto não pode estar vazio.', 'erro'); return; }
     btn.disabled = true; btn.textContent = 'Salvando...'
     const { error } = await sb.from('configuracoes').upsert({ chave: 'texto_compartilhamento', valor, atualizado_em: new Date().toISOString() })
-    if (error) mostrarMsg('msg-config', 'Erro ao salvar: ' + error.message, 'erro')
-    else mostrarMsg('msg-config', '✅ Texto salvo com sucesso!', 'sucesso')
+    if (error) mostrarMsg('msg-config', 'Erro: ' + error.message, 'erro')
+    else mostrarMsg('msg-config', '✅ Texto salvo!', 'sucesso')
     btn.disabled = false; btn.textContent = 'Salvar texto'
   }
 

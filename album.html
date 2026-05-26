@@ -5,211 +5,673 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gran Seleção — Meu Álbum</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --vermelho: #DD303E;
+      --azul: #0D134C;
+      --azul-medio: #162060;
+      --azul-claro: #1e2d7a;
+      --cinza: #939597;
+      --branco: #FFFFFF;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0a1628; min-height: 100vh;
-      color: #fff; display: flex;
-      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
+      font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+      background: var(--azul);
+      min-height: 100vh;
+      color: var(--branco);
+      display: flex;
     }
+
+    /* SIDEBAR */
     .sidebar {
-      width: 220px; min-height: 100vh;
-      background: #0d1f3c; border-right: 1px solid #1a3a6b;
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; z-index: 100;
+      width: 230px;
+      min-height: 100vh;
+      background: rgba(10,15,60,0.95);
+      border-right: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
     }
-    .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid #1a3a6b; }
-    .sidebar-logo h1 { font-size: 20px; font-weight: 800; }
-    .sidebar-logo h1 span { color: #dc1e32; }
-    .sidebar-logo p { font-size: 11px; color: #7a9cc4; margin-top: 4px; }
+
+    .sidebar-logo {
+      padding: 28px 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .logo-marca {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .logo-icone {
+      width: 38px;
+      height: 38px;
+      background: var(--vermelho);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(221,48,62,0.4);
+    }
+
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
+    .logo-texto h1 span { color: var(--vermelho); }
+    .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+
     .sidebar-nav { padding: 16px 12px; flex: 1; }
+
+    .nav-section-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      padding: 0 10px;
+      margin: 16px 0 8px;
+    }
+
+    .nav-section-title:first-child { margin-top: 0; }
+
     .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border-radius: 8px;
-      font-size: 14px; font-weight: 600; color: #7a9cc4;
-      transition: all 0.2s; text-decoration: none; margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.45);
+      transition: all 0.2s;
+      text-decoration: none;
+      margin-bottom: 2px;
     }
-    .nav-item:hover { background: #071224; color: #fff; }
-    .nav-item.ativo { background: #dc1e32; color: #fff; }
-    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
-    .nav-item.admin-item { margin-top: 8px; border-top: 1px solid #1a3a6b; padding-top: 16px; }
-    .sidebar-footer { padding: 16px 12px; border-top: 1px solid #1a3a6b; }
+
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+
+    .nav-item.ativo {
+      background: var(--vermelho);
+      color: var(--branco);
+      box-shadow: 0 4px 12px rgba(221,48,62,0.3);
+    }
+
+    .nav-item .icon {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
     .btn-sair {
-      width: 100%; padding: 10px; background: none;
-      border: 1px solid #1a3a6b; color: #7a9cc4;
-      border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+      width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: all 0.2s;
     }
-    .btn-sair:hover { border-color: #dc1e32; color: #fff; }
-    .content { margin-left: 220px; flex: 1; padding: 32px; max-width: calc(100% - 220px); }
-    .page-header { margin-bottom: 20px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .page-header-text h2 { font-size: 22px; font-weight: 800; }
-    .page-header-text p { color: #7a9cc4; font-size: 14px; margin-top: 4px; }
+
+    .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
+
+    /* CONTEÚDO */
+    .content {
+      margin-left: 230px;
+      flex: 1;
+      padding: 36px;
+      background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .content::before {
+      content: '';
+      position: fixed;
+      top: 0; right: 0;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(221,48,62,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .page-header-text h2 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .page-header-text p {
+      color: rgba(255,255,255,0.45);
+      font-size: 14px;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
     .btn-compartilhar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 18px; background: none;
-      border: 1px solid #1a3a6b; color: #7a9cc4;
-      border-radius: 8px; cursor: pointer; font-size: 13px;
-      font-weight: 600; transition: all 0.2s; white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
-    .btn-compartilhar:hover { border-color: #dc1e32; color: #fff; }
+
+    .btn-compartilhar:hover {
+      background: rgba(221,48,62,0.15);
+      border-color: rgba(221,48,62,0.4);
+      color: var(--branco);
+    }
+
+    /* BARRA DE PROGRESSO */
     .progresso-bar {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
-      display: flex; align-items: center; gap: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      backdrop-filter: blur(10px);
     }
-    .prog-texto { font-size: 14px; color: #7a9cc4; }
-    .prog-texto strong { color: #dc1e32; font-size: 22px; display: block; }
-    .prog-barra-wrap { flex: 1; background: #071224; border-radius: 10px; height: 8px; overflow: hidden; }
-    .prog-barra { height: 100%; background: #dc1e32; border-radius: 10px; transition: width 0.5s; }
+
+    .prog-numeros {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .prog-numeros strong {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--vermelho);
+      line-height: 1;
+      display: block;
+    }
+
+    .prog-numeros span {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 700;
+    }
+
+    .prog-direita { flex: 1; }
+
+    .prog-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 10px;
+    }
+
+    .prog-barra-wrap {
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .prog-barra {
+      height: 100%;
+      background: linear-gradient(90deg, var(--vermelho), #ff5566);
+      border-radius: 100px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(221,48,62,0.5);
+    }
+
+    /* RESGATE */
     .resgate-box {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
-      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    .resgate-box p { color: #7a9cc4; font-size: 14px; flex: 1; min-width: 180px; }
-    .resgate-box p strong { color: #fff; display: block; margin-bottom: 2px; font-size: 15px; }
+
+    .resgate-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .resgate-texto { flex: 1; min-width: 160px; }
+    .resgate-texto strong { font-size: 15px; font-weight: 800; display: block; margin-bottom: 2px; }
+    .resgate-texto span { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 600; }
+
     .resgate-input-group { display: flex; gap: 10px; flex: 2; min-width: 260px; }
+
     .resgate-input-group input {
-      flex: 1; padding: 11px 16px; background: #071224;
-      border: 1px solid #1a3a6b; border-radius: 8px; color: #fff;
-      font-size: 15px; letter-spacing: 3px; text-transform: uppercase;
-      outline: none; transition: border 0.2s;
+      flex: 1;
+      padding: 13px 18px;
+      background: rgba(13,19,76,0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--branco);
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      outline: none;
+      transition: all 0.2s;
+      font-weight: 700;
     }
-    .resgate-input-group input:focus { border-color: #dc1e32; }
+
+    .resgate-input-group input:focus {
+      border-color: var(--vermelho);
+      box-shadow: 0 0 0 3px rgba(221,48,62,0.15);
+    }
+
+    .resgate-input-group input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.2); font-weight: 400; }
+
     .btn-resgatar {
-      padding: 11px 22px; background: #dc1e32; color: #fff;
-      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+      padding: 13px 24px;
+      background: var(--vermelho);
+      color: var(--branco);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(221,48,62,0.35);
     }
-    .btn-resgatar:hover { background: #f02035; }
-    .btn-resgatar:disabled { background: #333; cursor: not-allowed; }
-    .msg-resgate { width: 100%; padding: 10px 14px; border-radius: 8px; font-size: 14px; display: none; }
-    .msg-resgate.erro { background: #2a0a0a; color: #ff6b6b; border: 1px solid #5a1a1a; }
-    .msg-resgate.sucesso { background: #0a2a0a; color: #6bff6b; border: 1px solid #1a5a1a; }
-    .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    .btn-resgatar:hover { background: #e8384a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(221,48,62,0.45); }
+    .btn-resgatar:disabled { background: rgba(255,255,255,0.1); box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .msg-resgate { width: 100%; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; display: none; }
+    .msg-resgate.erro { background: rgba(221,48,62,0.15); color: #ff8090; border: 1px solid rgba(221,48,62,0.3); }
+    .msg-resgate.sucesso { background: rgba(40,200,100,0.15); color: #6bff9a; border: 1px solid rgba(40,200,100,0.3); }
+
+    /* FILTROS */
+    .filtros-wrap { margin-bottom: 24px; }
+
+    .filtros-titulo {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 10px;
+    }
+
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+
     .filtro-btn {
-      padding: 7px 14px; border-radius: 20px; border: 1px solid #1a3a6b;
-      background: none; color: #7a9cc4; font-size: 12px; cursor: pointer; transition: all 0.2s;
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .filtro-btn:hover { border-color: #dc1e32; color: #fff; }
-    .filtro-btn.ativo { background: #dc1e32; border-color: #dc1e32; color: #fff; }
-    .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+
+    .filtro-btn:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); background: rgba(221,48,62,0.1); }
+    .filtro-btn.ativo { background: var(--vermelho); border-color: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+
+    /* GRADE DE FIGURINHAS */
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 16px;
+    }
+
     .figurinha {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 12px; padding: 18px 10px 14px;
-      text-align: center; transition: all 0.3s; position: relative;
+      border-radius: 16px;
+      padding: 20px 12px 16px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: default;
     }
-    .figurinha.desbloqueada { border-color: #dc1e32; box-shadow: 0 0 20px rgba(220,30,50,0.15); }
-    .figurinha.desbloqueada:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(220,30,50,0.3); }
+
+    .figurinha.bloqueada {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .figurinha.desbloqueada {
+      background: linear-gradient(145deg, rgba(22,32,96,0.9), rgba(30,45,122,0.9));
+      border: 1px solid rgba(221,48,62,0.4);
+      box-shadow: 0 0 24px rgba(221,48,62,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .figurinha.desbloqueada:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(221,48,62,0.25), 0 0 0 1px rgba(221,48,62,0.5);
+    }
+
+    /* Número da figurinha */
+    .figurinha-numero {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.5px;
+    }
+
+    .figurinha.desbloqueada .figurinha-numero { color: rgba(221,48,62,0.5); }
+
     .foto-wrapper {
-      width: 80px; height: 80px; border-radius: 50%;
-      margin: 0 auto 10px; overflow: hidden; background: #071224;
-      display: flex; align-items: center; justify-content: center; position: relative;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      overflow: hidden;
+      background: rgba(13,19,76,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border: 2px solid rgba(255,255,255,0.06);
     }
-    .figurinha.bloqueada .foto-wrapper { filter: grayscale(1) brightness(0.25); }
+
+    .figurinha.desbloqueada .foto-wrapper {
+      border-color: rgba(221,48,62,0.4);
+      box-shadow: 0 0 16px rgba(221,48,62,0.2);
+    }
+
+    .figurinha.bloqueada .foto-wrapper { filter: grayscale(1) brightness(0.2); }
+
     .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .foto-inicial { font-size: 28px; font-weight: 800; color: #dc1e32; }
-    .figurinha.bloqueada .foto-inicial { color: #1a3a6b; }
-    .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 24px; display: none; }
+
+    .foto-inicial {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--vermelho);
+    }
+
+    .figurinha.bloqueada .foto-inicial { color: rgba(255,255,255,0.1); }
+
+    .lock-icon {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      display: none;
+      opacity: 0.4;
+    }
+
     .figurinha.bloqueada .lock-icon { display: block; }
-    .figurinha-nome { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
-    .figurinha.bloqueada .figurinha-nome { color: #1a3a6b; }
-    .figurinha-area { font-size: 10px; color: #dc1e32; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .figurinha.bloqueada .figurinha-area { color: #1a3a6b; }
-    .badge-novo { position: absolute; top: -8px; right: -8px; background: #dc1e32; color: #fff; font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 10px; }
-    .carregando { text-align: center; color: #1a3a6b; padding: 60px 0; font-size: 15px; grid-column: 1/-1; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; }
+
+    .figurinha-nome {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--branco);
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+
+    .figurinha.bloqueada .figurinha-nome { color: rgba(255,255,255,0.12); }
+
+    .figurinha-area {
+      font-size: 9px;
+      color: var(--vermelho);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .figurinha.bloqueada .figurinha-area { color: rgba(255,255,255,0.08); }
+
+    .badge-novo {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: linear-gradient(135deg, #ff6b35, var(--vermelho));
+      color: var(--branco);
+      font-size: 9px;
+      font-weight: 900;
+      padding: 3px 8px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 8px rgba(221,48,62,0.4);
+    }
+
+    .carregando {
+      text-align: center;
+      color: rgba(255,255,255,0.15);
+      padding: 60px 0;
+      font-size: 15px;
+      font-weight: 700;
+      grid-column: 1/-1;
+    }
+
+    /* MODAL FIGURINHA */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
     .modal-overlay.visivel { display: flex; }
+
     .modal {
-      background: #0d1f3c; border: 2px solid #dc1e32;
-      border-radius: 20px; padding: 40px; text-align: center;
-      max-width: 360px; width: 90%;
-      box-shadow: 0 0 80px rgba(220,30,50,0.4);
-      animation: aparecer 0.4s ease;
+      background: linear-gradient(145deg, #162060, #1e2d7a);
+      border: 1px solid rgba(221,48,62,0.4);
+      border-radius: 24px;
+      padding: 44px 36px;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(221,48,62,0.15);
+      animation: aparecer 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    @keyframes aparecer { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    @keyframes aparecer {
+      from { transform: scale(0.6) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
     .modal-emoji { font-size: 52px; margin-bottom: 12px; }
-    .modal h2 { font-size: 20px; margin-bottom: 16px; }
+    .modal h2 { font-size: 20px; font-weight: 900; margin-bottom: 20px; }
+
     .modal-foto-wrapper {
-      width: 100px; height: 100px; border-radius: 50%;
-      margin: 0 auto 14px; overflow: hidden; background: #071224;
+      width: 108px; height: 108px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      overflow: hidden;
+      background: rgba(13,19,76,0.8);
       display: flex; align-items: center; justify-content: center;
-      border: 3px solid #dc1e32;
+      border: 3px solid var(--vermelho);
+      box-shadow: 0 0 30px rgba(221,48,62,0.3);
     }
+
     .modal-foto-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .modal-foto-inicial { font-size: 38px; font-weight: 800; color: #dc1e32; }
-    .modal-nome { font-size: 22px; font-weight: 800; color: #dc1e32; margin-bottom: 4px; }
-    .modal-area { font-size: 13px; color: #7a9cc4; margin-bottom: 20px; }
+    .modal-foto-inicial { font-size: 40px; font-weight: 900; color: var(--vermelho); }
+    .modal-nome { font-size: 22px; font-weight: 900; color: var(--vermelho); margin-bottom: 4px; }
+    .modal-area { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 28px; }
+
     .modal-acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
     .btn-fechar {
-      padding: 11px 24px; background: #dc1e32; color: #fff;
-      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: background 0.2s;
+      padding: 12px 28px;
+      background: var(--vermelho);
+      color: var(--branco);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(221,48,62,0.35);
     }
-    .btn-fechar:hover { background: #f02035; }
+
+    .btn-fechar:hover { background: #e8384a; transform: translateY(-1px); }
+
     .btn-compartilhar-card {
-      padding: 11px 18px; background: none;
-      border: 1px solid #1a3a6b; color: #7a9cc4;
-      border-radius: 8px; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
+      padding: 12px 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .btn-compartilhar-card:hover { border-color: #dc1e32; color: #fff; }
+
+    .btn-compartilhar-card:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); background: rgba(221,48,62,0.1); }
+
+    /* MODAL COMPARTILHAMENTO */
     .modal-comp {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 20px; padding: 32px; text-align: center;
-      max-width: 420px; width: 90%;
+      background: linear-gradient(145deg, #162060, #1e2d7a);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 36px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
       animation: aparecer 0.3s ease;
     }
-    .modal-comp h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-    .modal-comp p { color: #7a9cc4; font-size: 14px; margin-bottom: 20px; }
+
+    .modal-comp h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+    .modal-comp p { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+
     .texto-preview {
-      background: #071224; border: 1px solid #1a3a6b;
-      border-radius: 8px; padding: 14px; font-size: 14px;
-      color: #fff; line-height: 1.6; margin-bottom: 20px; text-align: left;
+      background: rgba(13,19,76,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: left;
     }
+
     .botoes-share { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
     .btn-share {
-      padding: 11px 18px; border: none; border-radius: 8px;
-      font-size: 13px; font-weight: 700; cursor: pointer;
-      transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+      padding: 11px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
-    .btn-whatsapp { background: #25D366; color: #fff; }
-    .btn-whatsapp:hover { background: #1fb855; }
-    .btn-twitter { background: #1DA1F2; color: #fff; }
-    .btn-twitter:hover { background: #0d8dd4; }
-    .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
-    .btn-instagram:hover { opacity: 0.88; }
-    .btn-copiar-link { background: #071224; border: 1px solid #1a3a6b; color: #7a9cc4; }
-    .btn-copiar-link:hover { border-color: #dc1e32; color: #fff; }
+
+    .btn-share:hover { transform: translateY(-2px); }
+    .btn-whatsapp { background: #25D366; color: #fff; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
+    .btn-twitter { background: #1DA1F2; color: #fff; box-shadow: 0 4px 12px rgba(29,161,242,0.3); }
+    .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; box-shadow: 0 4px 12px rgba(220,39,67,0.3); }
+    .btn-copiar-link { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+    .btn-copiar-link:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); }
+
     .msg-instagram {
-      display: none; margin-top: 12px; padding: 10px 14px;
-      background: #2a1a0a; border: 1px solid #5a3a1a;
-      border-radius: 8px; font-size: 13px; color: #ffaa6b;
+      display: none;
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: rgba(240,100,50,0.1);
+      border: 1px solid rgba(240,100,50,0.3);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffaa6b;
     }
+
     .btn-cancelar {
-      margin-top: 16px; background: none; border: 1px solid #1a3a6b;
-      color: #7a9cc4; padding: 10px 20px; border-radius: 8px;
-      font-size: 14px; cursor: pointer; transition: all 0.2s;
+      margin-top: 16px;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .btn-cancelar:hover { border-color: #dc1e32; color: #fff; }
+
+    .btn-cancelar:hover { border-color: rgba(221,48,62,0.3); color: rgba(255,255,255,0.7); }
   </style>
 </head>
 <body>
 
 <nav class="sidebar">
   <div class="sidebar-logo">
-    <h1>Gran <span>Seleção</span></h1>
-    <p>Colecione os professores</p>
+    <div class="logo-marca">
+      <div class="logo-icone">🎴</div>
+      <div class="logo-texto">
+        <h1>Gran <span>Seleção</span></h1>
+        <p>Álbum de figurinhas</p>
+      </div>
+    </div>
   </div>
+
   <div class="sidebar-nav">
+    <div class="nav-section-title">Menu</div>
     <a href="album.html" class="nav-item ativo"><span class="icon">📖</span> Meu Álbum</a>
     <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
     <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
-    <a href="admin.html" class="nav-item admin-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none">
+      <span class="icon">⚙️</span> Admin
+    </a>
   </div>
+
   <div class="sidebar-footer">
-    <button class="btn-sair" onclick="sair()">Sair</button>
+    <button class="btn-sair" onclick="sair()">↩ Sair</button>
   </div>
 </nav>
 
@@ -219,30 +681,43 @@
       <h2>Meu Álbum</h2>
       <p>Insira os códigos que encontrar nas lives, e-mails e posts do Gran!</p>
     </div>
-    <button class="btn-compartilhar" onclick="abrirCompartilhamento()">🔗 Compartilhar minha coleção</button>
+    <button class="btn-compartilhar" onclick="abrirCompartilhamento()">🔗 Compartilhar coleção</button>
   </div>
 
   <div class="progresso-bar">
-    <div class="prog-texto">
+    <div class="prog-numeros">
       <strong id="qtd-desbloqueadas">0</strong>
-      <span>de <span id="qtd-total">0</span> figurinhas</span>
+      <span>de <span id="qtd-total">0</span></span>
     </div>
-    <div class="prog-barra-wrap">
-      <div class="prog-barra" id="prog-barra" style="width:0%"></div>
+    <div class="prog-direita">
+      <div class="prog-label">Figurinhas colecionadas</div>
+      <div class="prog-barra-wrap">
+        <div class="prog-barra" id="prog-barra" style="width:0%"></div>
+      </div>
     </div>
   </div>
 
   <div class="resgate-box">
-    <p><strong>Tem um código?</strong>Digite abaixo para desbloquear a figurinha!</p>
+    <div class="resgate-icon">🔑</div>
+    <div class="resgate-texto">
+      <strong>Tem um código?</strong>
+      <span>Digite abaixo para desbloquear a figurinha!</span>
+    </div>
     <div class="resgate-input-group">
-      <input type="text" id="input-codigo" placeholder="EX: A3F9B2C1" maxlength="20">
+      <input type="text" id="input-codigo" placeholder="A3F9B2C1" maxlength="20">
       <button class="btn-resgatar" onclick="resgatar()">Desbloquear</button>
     </div>
     <div class="msg-resgate" id="msg-resgate"></div>
   </div>
 
-  <div class="filtros" id="filtros"></div>
-  <div class="grade" id="grade"><div class="carregando">Carregando álbum...</div></div>
+  <div class="filtros-wrap">
+    <div class="filtros-titulo">Filtrar por carreira</div>
+    <div class="filtros" id="filtros"></div>
+  </div>
+
+  <div class="grade" id="grade">
+    <div class="carregando">Carregando álbum...</div>
+  </div>
 </div>
 
 <!-- MODAL FIGURINHA -->
@@ -270,12 +745,12 @@
     <div class="texto-preview" id="texto-preview"></div>
     <div class="botoes-share">
       <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
-      <button class="btn-share btn-twitter" onclick="shareTwitter()">🐦 X (Twitter)</button>
+      <button class="btn-share btn-twitter" onclick="shareTwitter()">🐦 X</button>
       <button class="btn-share btn-instagram" onclick="shareInstagram()">📸 Instagram</button>
       <button class="btn-share btn-copiar-link" onclick="copiarTexto()">📋 Copiar</button>
     </div>
     <div class="msg-instagram" id="msg-instagram">
-      ✅ Texto copiado! Abra o Instagram e cole nos seus Stories ou Feed.
+      ✅ Texto copiado! Abra o Instagram e cole nos Stories ou Feed.
     </div>
     <br>
     <button class="btn-cancelar" onclick="fecharCompartilhamento()">Cancelar</button>
@@ -288,7 +763,7 @@
   const sb = window.supabase.createClient(_url, _key)
 
   let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = []
-  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas da Gran Seleção! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.netlify.app'
+  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas da Gran Seleção! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
   let profModal = null
 
   async function init() {
@@ -329,11 +804,15 @@
     const lista = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
     const grade = document.getElementById('grade')
     if (lista.length === 0) { grade.innerHTML = '<div class="carregando">Nenhum professor nessa área.</div>'; return; }
-    grade.innerHTML = lista.map(p => {
+    grade.innerHTML = lista.map((p, i) => {
       const desbloqueada = desbloqueados.includes(p.id)
       const isNovo = novosNessaSessao.includes(p.id)
-      const foto = desbloqueada && p.foto_url ? '<img src="' + p.foto_url + '" alt="' + p.nome + '">' : '<span class="foto-inicial">' + p.nome.charAt(0) + '</span>'
+      const num = String(i + 1).padStart(2, '0')
+      const foto = desbloqueada && p.foto_url
+        ? '<img src="' + p.foto_url + '" alt="' + p.nome + '">'
+        : '<span class="foto-inicial">' + p.nome.charAt(0) + '</span>'
       return '<div class="figurinha ' + (desbloqueada ? 'desbloqueada' : 'bloqueada') + '">' +
+        '<span class="figurinha-numero">#' + num + '</span>' +
         (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
         '<div class="foto-wrapper">' + foto + '<span class="lock-icon">🔒</span></div>' +
         '<div class="figurinha-nome">' + (desbloqueada ? p.nome : '???') + '</div>' +
@@ -382,7 +861,7 @@
 
   function compartilharFigurinha() {
     fecharModal()
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Seleção! Venha colecionar também: granselecao.netlify.app'
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Seleção! Venha colecionar também: granselecao.vercel.app'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
@@ -398,24 +877,15 @@
   }
 
   function fecharCompartilhamento() { document.getElementById('modal-comp').classList.remove('visivel') }
-
   function getTextoAtual() { return document.getElementById('texto-preview').textContent }
-
   function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
-
   function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
-
   function shareInstagram() {
     navigator.clipboard.writeText(getTextoAtual())
     document.getElementById('msg-instagram').style.display = 'block'
     setTimeout(() => { window.open('https://www.instagram.com/', '_blank') }, 800)
   }
-
-  function copiarTexto() {
-    navigator.clipboard.writeText(getTextoAtual())
-    alert('Texto copiado!')
-  }
-
+  function copiarTexto() { navigator.clipboard.writeText(getTextoAtual()); alert('Texto copiado!') }
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
 
   init()

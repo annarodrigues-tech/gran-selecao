@@ -3,125 +3,223 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Seleção — Missões</title>
+  <title>Gran Seleção — Ranking</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0a1628;
-      min-height: 100vh;
-      color: #fff;
-      display: flex;
-      background-image: radial-gradient(ellipse at top, #0d2145 0%, #0a1628 70%);
-    }
-    .sidebar {
-      width: 220px; min-height: 100vh;
-      background: #0d1f3c; border-right: 1px solid #1a3a6b;
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; z-index: 100;
-    }
-    .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid #1a3a6b; }
-    .sidebar-logo h1 { font-size: 20px; font-weight: 800; }
-    .sidebar-logo h1 span { color: #dc1e32; }
-    .sidebar-logo p { font-size: 11px; color: #7a9cc4; margin-top: 4px; }
+    :root { --vermelho: #DD303E; --azul: #0D134C; --branco: #FFFFFF; }
+    body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .logo-marca { display: flex; align-items: center; gap: 10px; }
+    .logo-icone { width: 38px; height: 38px; background: var(--vermelho); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(221,48,62,0.4); }
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
+    .logo-texto h1 span { color: var(--vermelho); }
+    .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
     .sidebar-nav { padding: 16px 12px; flex: 1; }
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border-radius: 8px; cursor: pointer;
-      font-size: 14px; font-weight: 600; color: #7a9cc4;
-      transition: all 0.2s; text-decoration: none; margin-bottom: 4px;
+    .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
+    .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
+    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 800px; }
+    .page-header { margin-bottom: 32px; }
+    .page-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+    .page-header p { color: rgba(255,255,255,0.45); font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+    .podium {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding: 0 20px;
     }
-    .nav-item:hover { background: #071224; color: #fff; }
-    .nav-item.ativo { background: #dc1e32; color: #fff; }
-    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
-    .nav-item.admin-item { margin-top: 8px; border-top: 1px solid #1a3a6b; padding-top: 16px; }
-    .sidebar-footer { padding: 16px 12px; border-top: 1px solid #1a3a6b; }
-    .btn-sair {
-      width: 100%; padding: 10px; background: none;
-      border: 1px solid #1a3a6b; color: #7a9cc4;
-      border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+
+    .podium-item {
+      flex: 1;
+      max-width: 160px;
+      text-align: center;
     }
-    .btn-sair:hover { border-color: #dc1e32; color: #fff; }
-    .content { margin-left: 220px; flex: 1; padding: 32px; }
-    .page-header { margin-bottom: 28px; }
-    .page-header h2 { font-size: 22px; font-weight: 800; }
-    .page-header p { color: #7a9cc4; font-size: 14px; margin-top: 4px; }
-    .missoes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .missao-card {
-      background: #0d1f3c; border: 1px solid #1a3a6b;
-      border-radius: 12px; padding: 20px;
-      transition: all 0.2s;
+
+    .podium-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      border: 3px solid;
     }
-    .missao-card:hover { border-color: #dc1e32; transform: translateY(-2px); }
-    .missao-tipo {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1px;
-      color: #dc1e32; margin-bottom: 10px;
+
+    .podium-item:nth-child(1) .podium-avatar { border-color: #C0C0C0; background: rgba(192,192,192,0.1); color: #C0C0C0; width: 48px; height: 48px; }
+    .podium-item:nth-child(2) .podium-avatar { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; width: 64px; height: 64px; font-size: 26px; }
+    .podium-item:nth-child(3) .podium-avatar { border-color: #CD7F32; background: rgba(205,127,50,0.1); color: #CD7F32; width: 48px; height: 48px; }
+
+    .podium-nome { font-size: 12px; font-weight: 800; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .podium-qtd { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; }
+
+    .podium-barra {
+      border-radius: 8px 8px 0 0;
+      margin-top: 12px;
     }
-    .missao-titulo { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-    .missao-desc { font-size: 13px; color: #7a9cc4; line-height: 1.5; }
-    .missao-recompensa {
-      margin-top: 14px; padding-top: 14px;
-      border-top: 1px solid #1a3a6b;
-      font-size: 12px; color: #7a9cc4;
-      display: flex; align-items: center; gap: 6px;
+
+    .podium-item:nth-child(1) .podium-barra { height: 60px; background: rgba(192,192,192,0.2); border: 1px solid rgba(192,192,192,0.3); }
+    .podium-item:nth-child(2) .podium-barra { height: 90px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
+    .podium-item:nth-child(3) .podium-barra { height: 45px; background: rgba(205,127,50,0.2); border: 1px solid rgba(205,127,50,0.3); }
+
+    .ranking-lista {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
     }
-    .missao-recompensa strong { color: #fff; }
-    .carregando { text-align: center; color: #1a3a6b; padding: 60px 0; font-size: 15px; }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.2s;
+    }
+
+    .ranking-item:last-child { border-bottom: none; }
+    .ranking-item:hover { background: rgba(255,255,255,0.03); }
+    .ranking-item.eu { background: rgba(221,48,62,0.06); border-color: rgba(221,48,62,0.1); }
+
+    .ranking-pos {
+      font-size: 16px;
+      font-weight: 900;
+      width: 32px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .ranking-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--vermelho);
+      flex-shrink: 0;
+      border: 2px solid rgba(221,48,62,0.2);
+    }
+
+    .ranking-info { flex: 1; }
+    .ranking-nome { font-size: 14px; font-weight: 800; }
+    .ranking-sub { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; margin-top: 2px; }
+
+    .ranking-qtd { text-align: right; flex-shrink: 0; }
+    .ranking-qtd strong { font-size: 22px; font-weight: 900; color: var(--vermelho); display: block; line-height: 1; }
+    .ranking-qtd span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; }
   </style>
 </head>
 <body>
 <nav class="sidebar">
   <div class="sidebar-logo">
-    <h1>Gran <span>Seleção</span></h1>
-    <p>Colecione os professores</p>
+    <div class="logo-marca">
+      <div class="logo-icone">🎴</div>
+      <div class="logo-texto">
+        <h1>Gran <span>Seleção</span></h1>
+        <p>Álbum de figurinhas</p>
+      </div>
+    </div>
   </div>
   <div class="sidebar-nav">
+    <div class="nav-section-title">Menu</div>
     <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
-    <a href="missoes.html" class="nav-item ativo"><span class="icon">🎯</span> Missões</a>
-    <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
-    <a href="admin.html" class="nav-item admin-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+    <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
+    <a href="ranking.html" class="nav-item ativo"><span class="icon">🏆</span> Ranking</a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
-    <button class="btn-sair" onclick="sair()">Sair</button>
+    <button class="btn-sair" onclick="sair()">↩ Sair</button>
   </div>
 </nav>
 <div class="content">
   <div class="page-header">
-    <h2>Missões</h2>
-    <p>Complete missões para desbloquear figurinhas exclusivas!</p>
+    <h2>Ranking</h2>
+    <p>Os colecionadores mais dedicados da Gran Seleção!</p>
   </div>
-  <div id="missoes-container"><div class="carregando">Carregando missões...</div></div>
+  <div id="ranking-container"><div class="carregando">Carregando ranking...</div></div>
 </div>
 <script>
   const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
+  let meuId = null
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
-    const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
+    meuId = session.user.id
+    const { data: admin } = await sb.from('admins').select('id').eq('user_id', meuId).single()
     if (admin) document.getElementById('link-admin').style.display = 'flex'
-    await carregarMissoes()
+    await carregarRanking()
   }
 
-  async function carregarMissoes() {
-    const { data, error } = await sb.from('missoes').select('*').eq('ativa', true).order('criado_em', { ascending: false })
-    const container = document.getElementById('missoes-container')
+  async function carregarRanking() {
+    const { data, error } = await sb.rpc('ranking_figurinhas')
+    const container = document.getElementById('ranking-container')
     if (error || !data || data.length === 0) {
-      container.innerHTML = '<div class="carregando">Nenhuma missão disponível no momento. Fique de olho!</div>'
+      container.innerHTML = '<div class="carregando">Nenhum dado ainda. Seja o primeiro a colecionar!</div>'
       return
     }
-    container.innerHTML = '<div class="missoes-grid">' + data.map(m =>
-      '<div class="missao-card">' +
-      '<div class="missao-tipo">' + m.tipo + '</div>' +
-      '<div class="missao-titulo">' + m.titulo + '</div>' +
-      '<div class="missao-desc">' + m.descricao + '</div>' +
-      '<div class="missao-recompensa">🎴 Recompensa: <strong>1 figurinha exclusiva</strong></div>' +
-      '</div>'
-    ).join('') + '</div>'
+
+    const top3 = data.slice(0, 3)
+    const resto = data.slice(3)
+
+    // Pódio
+    let podiumHTML = ''
+    if (top3.length >= 2) {
+      const ordem = top3.length === 1 ? [top3[0]] : top3.length === 2 ? [top3[1], top3[0]] : [top3[1], top3[0], top3[2]]
+      const medalhas = top3.length === 2 ? ['🥈', '🥇'] : ['🥈', '🥇', '🥉']
+      podiumHTML = '<div class="podium">' + ordem.map((item, i) => {
+        const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
+        const inicial = nome.charAt(0).toUpperCase()
+        return '<div class="podium-item">' +
+          '<div class="podium-avatar">' + inicial + '</div>' +
+          '<div class="podium-nome">' + medalhas[i] + ' ' + nome + '</div>' +
+          '<div class="podium-qtd">' + item.total + ' fig.</div>' +
+          '<div class="podium-barra"></div>' +
+          '</div>'
+      }).join('') + '</div>'
+    }
+
+    // Lista completa
+    const listaHTML = '<div class="ranking-lista">' + data.map((item, i) => {
+      const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
+      const inicial = nome.charAt(0).toUpperCase()
+      const euClass = item.user_id === meuId ? ' eu' : ''
+      const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)
+      return '<div class="ranking-item' + euClass + '">' +
+        '<div class="ranking-pos">' + medalha + '</div>' +
+        '<div class="ranking-avatar">' + inicial + '</div>' +
+        '<div class="ranking-info">' +
+        '<div class="ranking-nome">' + nome + (item.user_id === meuId ? ' 👈 você' : '') + '</div>' +
+        '<div class="ranking-sub">Colecionador Gran</div>' +
+        '</div>' +
+        '<div class="ranking-qtd"><strong>' + item.total + '</strong><span>figurinhas</span></div>' +
+        '</div>'
+    }).join('') + '</div>'
+
+    container.innerHTML = podiumHTML + listaHTML
   }
 
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
