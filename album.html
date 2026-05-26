@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Imparáveis — Meu Álbum</title>
+  <title>Imparáveis — Meu Álbum</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -88,6 +88,24 @@
     .carregando-vazia .vazia-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
     .carregando-vazia strong { display: block; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
     .carregando-vazia p { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35); }
+
+    /* PAGINAÇÃO */
+    .pag-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.6);
+      font-size: 14px; font-weight: 800;
+      font-family: inherit; cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pag-btn:hover:not(:disabled) { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.4); color: var(--branco); }
+    .pag-btn.ativo { background: var(--vermelho); border-color: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .pag-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    .pag-reticencias { color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; padding: 0 4px; line-height: 36px; }
+    .pag-info { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); margin-left: 8px; }
 
     /* GRADE DE FIGURINHAS — proporção 2:3 */
     .grade {
@@ -357,7 +375,7 @@
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-marca">
-      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo" alt="Gran" style="width:38px;height:38px;object-fit:contain;">
+      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran" style="width:38px;height:38px;object-fit:contain;">
       <div class="logo-texto">
         <h1>Gran <span>Seleção</span></h1>
         <p>Álbum de figurinhas</p>
@@ -417,6 +435,8 @@
   <div class="grade" id="grade">
     <div class="carregando">Carregando álbum...</div>
   </div>
+
+  <div id="paginacao" style="display:none;justify-content:center;align-items:center;gap:6px;margin-top:32px;flex-wrap:wrap;"></div>
 </div>
 
 <!-- MODAL REVELAÇÃO -->
@@ -438,7 +458,7 @@
 <div class="modal-overlay" id="modal-comp">
   <div class="modal-comp">
     <h3>📤 Compartilhar</h3>
-    <p>Chame seus amigos para participar dos Gran Imparáveis!</p>
+    <p>Chame seus amigos para participar dos Imparáveis!</p>
     <div class="texto-preview" id="texto-preview"></div>
     <div class="botoes-share">
       <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
@@ -458,7 +478,10 @@
   const sb = window.supabase.createClient(_url, _key)
 
   let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = [], carreiras = []
-  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Gran Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
+  const TOTAL_PREVISTO = 437
+  const POR_PAGINA = 48
+  let paginaAtual = 1
+  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
   let profModal = null
 
   const iconeRede = { 'Instagram': '📸', 'YouTube': '▶️', 'TikTok': '🎵', 'Twitter': '🐦', 'LinkedIn': '💼', 'Facebook': '👥' }
@@ -490,8 +513,10 @@
     const { data } = await sb.from('resgates').select('professor_id')
     desbloqueados = (data || []).map(r => r.professor_id)
     const qtd = desbloqueados.length
+    const total = Math.max(professores.length, TOTAL_PREVISTO)
     document.getElementById('qtd-desbloqueadas').textContent = qtd
-    document.getElementById('prog-barra').style.width = professores.length > 0 ? (qtd / professores.length * 100) + '%' : '0%'
+    document.getElementById('qtd-total').textContent = TOTAL_PREVISTO
+    document.getElementById('prog-barra').style.width = total > 0 ? (qtd / total * 100) + '%' : '0%'
     renderizarGrade()
   }
 
@@ -509,15 +534,21 @@
     }).join('')
   }
 
-  function renderizarGrade() {
-    const lista = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
+  function renderizarGrade(resetar = true) {
+    if (resetar) paginaAtual = 1
+    const listaFiltrada = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
+    const totalPaginas = Math.max(1, Math.ceil(listaFiltrada.length / POR_PAGINA))
+    if (paginaAtual > totalPaginas) paginaAtual = totalPaginas
+    const inicio = (paginaAtual - 1) * POR_PAGINA
+    const lista = listaFiltrada.slice(inicio, inicio + POR_PAGINA)
     const grade = document.getElementById('grade')
-    if (lista.length === 0) {
+    if (listaFiltrada.length === 0) {
       grade.innerHTML = '<div class="carregando-vazia">' +
         '<div class="vazia-icon">⏳</div>' +
         '<strong>Em breve!</strong>' +
         '<p>Os professores desta carreira serão anunciados em breve. Fique de olho!</p>' +
         '</div>'
+      document.getElementById('paginacao').style.display = 'none'
       return;
     }
 
@@ -554,9 +585,55 @@
           '</div></div>'
       }
     }).join('')
+
+    // Paginação
+    renderizarPaginacao(totalPaginas, listaFiltrada.length)
+
+    // Scroll pro topo da grade ao mudar de página
+    if (!resetar) {
+      document.getElementById('grade').scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
-  function filtrar(area) { filtroAtivo = area; renderizarFiltros(); renderizarGrade(); }
+  function renderizarPaginacao(totalPaginas, totalItens) {
+    const pag = document.getElementById('paginacao')
+    if (totalPaginas <= 1) { pag.style.display = 'none'; return; }
+    pag.style.display = 'flex'
+
+    let botoes = ''
+
+    // Anterior
+    botoes += '<button class="pag-btn" ' + (paginaAtual === 1 ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual - 1) + ')"') + '>‹</button>'
+
+    // Páginas
+    for (let i = 1; i <= totalPaginas; i++) {
+      if (
+        i === 1 || i === totalPaginas ||
+        (i >= paginaAtual - 1 && i <= paginaAtual + 1)
+      ) {
+        botoes += '<button class="pag-btn' + (i === paginaAtual ? ' ativo' : '') + '" onclick="irParaPagina(' + i + ')">' + i + '</button>'
+      } else if (i === paginaAtual - 2 || i === paginaAtual + 2) {
+        botoes += '<span class="pag-reticencias">...</span>'
+      }
+    }
+
+    // Próximo
+    botoes += '<button class="pag-btn" ' + (paginaAtual === totalPaginas ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual + 1) + ')"') + '>›</button>'
+
+    // Info
+    const inicio = (paginaAtual - 1) * POR_PAGINA + 1
+    const fim = Math.min(paginaAtual * POR_PAGINA, totalItens)
+    botoes += '<span class="pag-info">' + inicio + '–' + fim + ' de ' + totalItens + '</span>'
+
+    pag.innerHTML = botoes
+  }
+
+  function irParaPagina(pagina) {
+    paginaAtual = pagina
+    renderizarGrade(false)
+  }
+
+  function filtrar(area) { filtroAtivo = area; paginaAtual = 1; renderizarFiltros(); renderizarGrade(); }
 
   async function resgatar() {
     const codigo = document.getElementById('input-codigo').value.trim().toUpperCase()
@@ -600,7 +677,7 @@
 
   function compartilharFigurinha() {
     fecharModal()
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Imparáveis! Venha colecionar também: granselecao.vercel.app'
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' nos Imparáveis! Venha colecionar também: granselecao.vercel.app'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
@@ -625,6 +702,8 @@
   }
   function copiarTexto() { navigator.clipboard.writeText(getTextoAtual()); alert('Texto copiado!') }
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
+
+
 
   init()
 </script>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Imparáveis</title>
+  <title>Imparáveis</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -316,8 +316,8 @@
     }
     .rodape a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
     .rodape a:hover { color: var(--vermelho); }
-    body { padding-bottom: 80px; }
-    .wrapper { padding-bottom: 80px; }
+    body { padding-bottom: 100px; }
+    .wrapper { padding-bottom: 100px; }
   </style>
 </head>
 <body>
@@ -327,7 +327,7 @@
   <div class="apresentacao">
     <span class="apresentacao-icone">🏆</span>
     <h2>Colecione os melhores professores <span>do Brasil</span></h2>
-    <p>Gran Imparáveis é o álbum de figurinhas digital dos professores do Gran. Desbloqueie figurinhas exclusivas participando das lives, e-mails e posts do Gran.</p>
+    <p>Imparáveis é o álbum de figurinhas digital dos professores do Gran. Desbloqueie figurinhas exclusivas participando das lives, e-mails e posts do Gran.</p>
     <ul class="beneficios">
       <li><span>🎥</span> Assista lives e resgate figurinhas com códigos secretos</li>
       <li><span>📧</span> Baixe materiais e ganhe figurinhas por e-mail</li>
@@ -339,8 +339,8 @@
   <!-- FORMULÁRIO -->
   <div class="container">
     <div class="logo">
-      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo" alt="Gran" style="width:64px;height:64px;object-fit:contain;">
-      <h1>Gran <span>Seleção</span></h1>
+      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran" style="width:64px;height:64px;object-fit:contain;">
+      <h1><span>Imparáveis</span></h1>
       <p>Álbum de figurinhas digital</p>
     </div>
 
@@ -383,6 +383,12 @@
           <input type="tel" id="cadastro-whatsapp" placeholder="(11) 99999-9999">
           <span class="tag-opcional">opcional</span>
         </div>
+      </div>
+      <div class="lgpd-wrap">
+        <input type="checkbox" id="aceite-lgpd">
+        <span class="lgpd-texto">
+          Li e aceito a <a href="https://www.grancursosonline.com.br/politica-de-privacidade" target="_blank">Política de Privacidade</a> e os <a href="https://www.grancursosonline.com.br/termos-de-uso" target="_blank">Termos de Uso</a> do Gran. Concordo com o tratamento dos meus dados conforme a LGPD.
+        </span>
       </div>
       <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Começar a colecionar!</button>
     </div>
@@ -434,7 +440,9 @@
     const whatsapp = document.getElementById('cadastro-whatsapp').value.trim()
     const btn = document.getElementById('btn-cadastro')
 
+    const aceite = document.getElementById('aceite-lgpd').checked
     if (!nome || !email || !senha) { mostrarMensagem('Preencha nome, e-mail e senha.', 'erro'); return; }
+    if (!aceite) { mostrarMensagem('Aceite a Política de Privacidade e os Termos de Uso para continuar.', 'erro'); return; }
     if (senha.length < 6) { mostrarMensagem('A senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
 
     btn.disabled = true; btn.textContent = 'Criando conta...'
@@ -482,7 +490,10 @@
 
 <footer class="rodape">
   Gran Tecnologia e Educação S/A — CNPJ: 18.260.822/0001-77 — SBS Quadra 02, Bloco J, Lote 10, Ed. Carlton Tower, Sala 201, Asa Sul, Brasília-DF, CEP 70.070-120 —
-  <a href="http://grancursosonline.com.br/" target="_blank">grancursosonline.com.br</a> — Gran © 2026 · Todos os direitos reservados ®
+  <a href="http://grancursosonline.com.br/" target="_blank">grancursosonline.com.br</a> —
+  <a href="https://www.grancursosonline.com.br/politica-de-privacidade" target="_blank">Política de Privacidade</a> —
+  <a href="https://www.grancursosonline.com.br/termos-de-uso" target="_blank">Termos de Uso</a> —
+  Gran © 2026 · Todos os direitos reservados ®
 </footer>
 </body>
 </html>
