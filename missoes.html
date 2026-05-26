@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Seleção — Ranking</title>
+  <title>Gran Seleção — Missões</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,107 +27,39 @@
     .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
     .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
     .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
-    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 800px; }
+    .content { margin-left: 230px; flex: 1; padding: 36px; }
     .page-header { margin-bottom: 32px; }
     .page-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
     .page-header p { color: rgba(255,255,255,0.45); font-size: 14px; margin-top: 4px; font-weight: 600; }
-
-    .podium {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 32px;
-      padding: 0 20px;
-    }
-
-    .podium-item {
-      flex: 1;
-      max-width: 160px;
-      text-align: center;
-    }
-
-    .podium-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      margin: 0 auto 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 900;
-      border: 3px solid;
-    }
-
-    .podium-item:nth-child(1) .podium-avatar { border-color: #C0C0C0; background: rgba(192,192,192,0.1); color: #C0C0C0; width: 48px; height: 48px; }
-    .podium-item:nth-child(2) .podium-avatar { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; width: 64px; height: 64px; font-size: 26px; }
-    .podium-item:nth-child(3) .podium-avatar { border-color: #CD7F32; background: rgba(205,127,50,0.1); color: #CD7F32; width: 48px; height: 48px; }
-
-    .podium-nome { font-size: 12px; font-weight: 800; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .podium-qtd { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; }
-
-    .podium-barra {
-      border-radius: 8px 8px 0 0;
-      margin-top: 12px;
-    }
-
-    .podium-item:nth-child(1) .podium-barra { height: 60px; background: rgba(192,192,192,0.2); border: 1px solid rgba(192,192,192,0.3); }
-    .podium-item:nth-child(2) .podium-barra { height: 90px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
-    .podium-item:nth-child(3) .podium-barra { height: 45px; background: rgba(205,127,50,0.2); border: 1px solid rgba(205,127,50,0.3); }
-
-    .ranking-lista {
-      background: rgba(255,255,255,0.03);
+    .missoes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .missao-card {
+      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s;
+      position: relative;
       overflow: hidden;
     }
-
-    .ranking-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      transition: background 0.2s;
+    .missao-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--vermelho);
+      border-radius: 4px 0 0 4px;
     }
-
-    .ranking-item:last-child { border-bottom: none; }
-    .ranking-item:hover { background: rgba(255,255,255,0.03); }
-    .ranking-item.eu { background: rgba(221,48,62,0.06); border-color: rgba(221,48,62,0.1); }
-
-    .ranking-pos {
-      font-size: 16px;
-      font-weight: 900;
-      width: 32px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .ranking-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--vermelho);
-      flex-shrink: 0;
-      border: 2px solid rgba(221,48,62,0.2);
-    }
-
-    .ranking-info { flex: 1; }
-    .ranking-nome { font-size: 14px; font-weight: 800; }
-    .ranking-sub { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; margin-top: 2px; }
-
-    .ranking-qtd { text-align: right; flex-shrink: 0; }
-    .ranking-qtd strong { font-size: 22px; font-weight: 900; color: var(--vermelho); display: block; line-height: 1; }
-    .ranking-qtd span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
+    .missao-card:hover { border-color: rgba(221,48,62,0.3); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+    .missao-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .missao-tipo { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: var(--vermelho); background: rgba(221,48,62,0.1); border: 1px solid rgba(221,48,62,0.2); padding: 4px 10px; border-radius: 100px; }
+    .missao-titulo { font-size: 16px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    .missao-desc { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; font-weight: 600; }
+    .missao-rodape { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.4); }
     .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; }
+    .vazio { text-align: center; padding: 80px 32px; color: rgba(255,255,255,0.3); }
+    .vazio .vazio-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .vazio strong { display: block; font-size: 18px; font-weight: 800; margin-bottom: 8px; color: rgba(255,255,255,0.5); }
+    .vazio p { font-size: 14px; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -144,8 +76,8 @@
   <div class="sidebar-nav">
     <div class="nav-section-title">Menu</div>
     <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
-    <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
-    <a href="ranking.html" class="nav-item ativo"><span class="icon">🏆</span> Ranking</a>
+    <a href="missoes.html" class="nav-item ativo"><span class="icon">🎯</span> Missões</a>
+    <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
     <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
@@ -154,72 +86,39 @@
 </nav>
 <div class="content">
   <div class="page-header">
-    <h2>Ranking</h2>
-    <p>Os colecionadores mais dedicados da Gran Seleção!</p>
+    <h2>Missões</h2>
+    <p>Complete missões para desbloquear figurinhas exclusivas dos professores!</p>
   </div>
-  <div id="ranking-container"><div class="carregando">Carregando ranking...</div></div>
+  <div id="missoes-container"><div class="carregando">Carregando missões...</div></div>
 </div>
 <script>
   const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
-  let meuId = null
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
-    meuId = session.user.id
-    const { data: admin } = await sb.from('admins').select('id').eq('user_id', meuId).single()
+    const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
     if (admin) document.getElementById('link-admin').style.display = 'flex'
-    await carregarRanking()
+    await carregarMissoes()
   }
 
-  async function carregarRanking() {
-    const { data, error } = await sb.rpc('ranking_figurinhas')
-    const container = document.getElementById('ranking-container')
+  async function carregarMissoes() {
+    const { data, error } = await sb.from('missoes').select('*').eq('ativa', true).order('criado_em', { ascending: false })
+    const container = document.getElementById('missoes-container')
     if (error || !data || data.length === 0) {
-      container.innerHTML = '<div class="carregando">Nenhum dado ainda. Seja o primeiro a colecionar!</div>'
+      container.innerHTML = '<div class="vazio"><div class="vazio-icon">🎯</div><strong>Nenhuma missão disponível</strong><p>Fique de olho! Em breve novas missões serão publicadas.</p></div>'
       return
     }
-
-    const top3 = data.slice(0, 3)
-    const resto = data.slice(3)
-
-    // Pódio
-    let podiumHTML = ''
-    if (top3.length >= 2) {
-      const ordem = top3.length === 1 ? [top3[0]] : top3.length === 2 ? [top3[1], top3[0]] : [top3[1], top3[0], top3[2]]
-      const medalhas = top3.length === 2 ? ['🥈', '🥇'] : ['🥈', '🥇', '🥉']
-      podiumHTML = '<div class="podium">' + ordem.map((item, i) => {
-        const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
-        const inicial = nome.charAt(0).toUpperCase()
-        return '<div class="podium-item">' +
-          '<div class="podium-avatar">' + inicial + '</div>' +
-          '<div class="podium-nome">' + medalhas[i] + ' ' + nome + '</div>' +
-          '<div class="podium-qtd">' + item.total + ' fig.</div>' +
-          '<div class="podium-barra"></div>' +
-          '</div>'
-      }).join('') + '</div>'
-    }
-
-    // Lista completa
-    const listaHTML = '<div class="ranking-lista">' + data.map((item, i) => {
-      const nome = item.nome_completo || item.email?.split('@')[0] || 'Colecionador'
-      const inicial = nome.charAt(0).toUpperCase()
-      const euClass = item.user_id === meuId ? ' eu' : ''
-      const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)
-      return '<div class="ranking-item' + euClass + '">' +
-        '<div class="ranking-pos">' + medalha + '</div>' +
-        '<div class="ranking-avatar">' + inicial + '</div>' +
-        '<div class="ranking-info">' +
-        '<div class="ranking-nome">' + nome + (item.user_id === meuId ? ' 👈 você' : '') + '</div>' +
-        '<div class="ranking-sub">Colecionador Gran</div>' +
-        '</div>' +
-        '<div class="ranking-qtd"><strong>' + item.total + '</strong><span>figurinhas</span></div>' +
-        '</div>'
-    }).join('') + '</div>'
-
-    container.innerHTML = podiumHTML + listaHTML
+    container.innerHTML = '<div class="missoes-grid">' + data.map(m =>
+      '<div class="missao-card">' +
+      '<div class="missao-header"><span class="missao-tipo">' + m.tipo + '</span></div>' +
+      '<div class="missao-titulo">' + m.titulo + '</div>' +
+      '<div class="missao-desc">' + m.descricao.replace(/\n/g, '<br>') + '</div>' +
+      '<div class="missao-rodape">🎴 Recompensa: <strong style="color:#fff">1 figurinha exclusiva</strong></div>' +
+      '</div>'
+    ).join('') + '</div>'
   }
 
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
