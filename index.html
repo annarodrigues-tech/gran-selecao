@@ -13,7 +13,6 @@
     :root {
       --vermelho: #DD303E;
       --azul: #0D134C;
-      --azul-medio: #162060;
       --branco: #FFFFFF;
     }
 
@@ -22,80 +21,44 @@
       background: var(--azul);
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .pagina {
+      display: flex;
+      flex: 1;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Fundo com padrão geométrico sutil — só azul, sem vermelho no fundo */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 40px,
-        rgba(255,255,255,0.018) 40px,
-        rgba(255,255,255,0.018) 41px
-      );
-      pointer-events: none;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      top: -200px; right: -200px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(22,32,96,0.6) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .wrapper {
-      display: flex;
-      align-items: center;
       gap: 64px;
-      max-width: 900px;
+      padding: 40px 64px 72px;
+      max-width: 1100px;
+      margin: 0 auto;
       width: 100%;
-      padding: 32px;
-      position: relative;
-      z-index: 1;
     }
 
-    /* LADO ESQUERDO — apresentação */
-    .apresentacao {
+    .esquerda {
       flex: 1;
-      display: none;
+      max-width: 480px;
     }
 
-    @media (min-width: 820px) {
-      .apresentacao { display: block; }
-    }
-
-    .apresentacao-icone {
-      font-size: 52px;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .apresentacao h2 {
-      font-size: 32px;
+    .esquerda h2 {
+      font-size: 36px;
       font-weight: 900;
-      line-height: 1.2;
+      line-height: 1.15;
       margin-bottom: 16px;
       letter-spacing: -0.5px;
       color: var(--branco);
     }
 
-    .apresentacao h2 span { color: var(--vermelho); }
+    .esquerda h2 span { color: var(--vermelho); }
 
-    .apresentacao p {
+    .esquerda p {
       font-size: 15px;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255,255,255,0.7);
       font-weight: 600;
-      line-height: 1.6;
-      margin-bottom: 28px;
+      line-height: 1.7;
+      margin-bottom: 32px;
     }
 
     .beneficios { list-style: none; }
@@ -103,37 +66,52 @@
     .beneficios li {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-size: 14px;
       font-weight: 700;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 10px;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 12px;
     }
 
     .beneficios li span {
-      width: 28px;
-      height: 28px;
+      width: 32px; height: 32px;
       background: rgba(221,48,62,0.15);
       border: 1px solid rgba(221,48,62,0.3);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
     }
 
-    /* LADO DIREITO — formulário */
+    @media (max-width: 820px) {
+      .pagina { flex-direction: column; gap: 32px; padding: 32px 24px 80px; }
+      .esquerda { max-width: 100%; }
+      .esquerda h2 { font-size: 26px; }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        45deg, transparent, transparent 40px,
+        rgba(255,255,255,0.018) 40px, rgba(255,255,255,0.018) 41px
+      );
+      pointer-events: none;
+    }
+
+    /* CARD CENTRAL */
     .container {
       background: rgba(22,32,96,0.7);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.09);
       border-radius: 24px;
-      padding: 40px 36px;
+      padding: 36px 36px 32px;
       width: 100%;
-      max-width: 420px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      max-width: 400px;
       flex-shrink: 0;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      position: relative;
+      z-index: 1;
       animation: entrar 0.5s ease;
     }
 
@@ -142,125 +120,65 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .logo {
+    .form-titulo {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--branco);
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      letter-spacing: -0.3px;
     }
-
-    .logo-icon {
-      width: 56px;
-      height: 56px;
-      background: var(--vermelho);
-      border-radius: 14px;
-      margin: 0 auto 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 8px 20px rgba(221,48,62,0.4);
-    }
-
-    .logo h1 { font-size: 26px; font-weight: 900; color: var(--branco); }
-    .logo h1 span { color: var(--vermelho); }
-    .logo p { color: rgba(255,255,255,0.9); font-size: 13px; margin-top: 4px; font-weight: 600; }
 
     .tabs {
       display: flex;
       background: rgba(13,19,76,0.8);
       border-radius: 12px;
       padding: 4px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       border: 1px solid rgba(255,255,255,0.06);
     }
 
     .tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.85);
-      transition: all 0.2s;
-      border: none;
-      background: none;
-      font-family: inherit;
+      flex: 1; padding: 10px; text-align: center;
+      border-radius: 9px; cursor: pointer;
+      font-size: 14px; font-weight: 800;
+      color: rgba(255,255,255,0.35);
+      transition: all 0.2s; border: none;
+      background: none; font-family: inherit;
     }
 
-    .tab.ativo {
-      background: var(--vermelho);
-      color: var(--branco);
-      box-shadow: 0 4px 12px rgba(221,48,62,0.35);
-    }
+    .tab.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.35); }
 
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 12px; }
 
     label {
-      display: block;
-      font-size: 11px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 7px;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
+      display: block; font-size: 11px; font-weight: 800;
+      color: rgba(255,255,255,0.5); margin-bottom: 7px;
+      letter-spacing: 0.8px; text-transform: uppercase;
     }
 
     input {
-      width: 100%;
-      padding: 12px 14px;
+      width: 100%; padding: 12px 14px;
       background: rgba(13,19,76,0.7);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      color: var(--branco);
-      font-size: 14px;
-      font-family: inherit;
-      font-weight: 600;
-      outline: none;
-      transition: all 0.2s;
+      border-radius: 10px; color: var(--branco);
+      font-size: 14px; font-family: inherit; font-weight: 600;
+      outline: none; transition: all 0.2s;
     }
 
-    input:focus {
-      border-color: var(--vermelho);
-      background: rgba(13,19,76,0.9);
-      box-shadow: 0 0 0 3px rgba(221,48,62,0.12);
-    }
+    input:focus { border-color: var(--vermelho); background: rgba(13,19,76,0.9); box-shadow: 0 0 0 3px rgba(221,48,62,0.12); }
+    input::placeholder { color: rgba(255,255,255,0.18); font-weight: 400; }
 
-    input::placeholder { color: rgba(255,255,255,0.35); font-weight: 400; }
-
-    .campo-opcional {
-      position: relative;
-    }
-
-    .tag-opcional {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 10px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.4);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      pointer-events: none;
-    }
-
+    .campo-opcional { position: relative; }
+    .tag-opcional { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.25); letter-spacing: 0.5px; text-transform: uppercase; pointer-events: none; }
     .campo-opcional input { padding-right: 72px; }
 
     .btn {
-      width: 100%;
-      padding: 13px;
-      background: var(--vermelho);
-      color: var(--branco);
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 900;
-      font-family: inherit;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: all 0.2s;
-      letter-spacing: 0.3px;
+      width: 100%; padding: 13px;
+      background: var(--vermelho); color: var(--branco);
+      border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 900; font-family: inherit;
+      cursor: pointer; margin-top: 8px; transition: all 0.2s;
       box-shadow: 0 4px 16px rgba(221,48,62,0.35);
     }
 
@@ -269,37 +187,24 @@
     .btn:disabled { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; transform: none; color: rgba(255,255,255,0.3); }
 
     .link-esqueci {
-      display: block;
-      text-align: right;
-      font-size: 12px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.85);
-      cursor: pointer;
-      margin-top: 10px;
-      transition: color 0.2s;
-      background: none;
-      border: none;
-      font-family: inherit;
-      padding: 0;
-      width: 100%;
+      display: block; text-align: right;
+      font-size: 12px; font-weight: 700;
+      color: rgba(255,255,255,0.4); cursor: pointer;
+      margin-top: 10px; transition: color 0.2s;
+      background: none; border: none; font-family: inherit; padding: 0; width: 100%;
     }
-
     .link-esqueci:hover { color: var(--vermelho); }
 
     .mensagem {
-      margin-top: 14px;
-      padding: 11px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      text-align: center;
-      display: none;
+      margin-top: 12px; padding: 11px 14px;
+      border-radius: 10px; font-size: 13px; font-weight: 700;
+      text-align: center; display: none;
     }
-
     .mensagem.erro { background: rgba(221,48,62,0.12); color: #ff8090; border: 1px solid rgba(221,48,62,0.25); }
     .mensagem.sucesso { background: rgba(40,200,100,0.12); color: #6bff9a; border: 1px solid rgba(40,200,100,0.25); }
     .mensagem.info { background: rgba(100,150,255,0.12); color: #90b8ff; border: 1px solid rgba(100,150,255,0.25); }
 
+    /* RODAPÉ */
     .rodape {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -312,20 +217,22 @@
       color: rgba(255,255,255,0.28);
       font-weight: 600;
       line-height: 1.6;
-      z-index: 10;
+      z-index: 100;
     }
-    .rodape a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+
+    .rodape a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
     .rodape a:hover { color: var(--vermelho); }
-    body { padding-bottom: 100px; }
-    .wrapper { padding-bottom: 100px; }
   </style>
 </head>
 <body>
-<div class="wrapper">
 
-  <!-- APRESENTAÇÃO (visível só em telas largas) -->
-  <div class="apresentacao">
-    <span class="apresentacao-icone">🏆</span>
+  <div class="pagina">
+
+  <!-- ESQUERDA -->
+  <div class="esquerda">
+    <div style="margin-bottom:28px;">
+      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran" style="width:200px;height:auto;object-fit:contain;">
+    </div>
     <h2>Colecione os melhores professores <span>do Brasil</span></h2>
     <p>Imparáveis é o álbum de figurinhas digital dos professores do Gran. Desbloqueie figurinhas exclusivas participando das lives, e-mails e posts do Gran.</p>
     <ul class="beneficios">
@@ -338,12 +245,6 @@
 
   <!-- FORMULÁRIO -->
   <div class="container">
-    <div class="logo">
-      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran" style="width:64px;height:64px;object-fit:contain;">
-      <h1><span>Imparáveis</span></h1>
-      <p>Álbum de figurinhas digital</p>
-    </div>
-
     <div class="tabs">
       <button class="tab" id="tab-login" onclick="mostrarAba('login')">Entrar</button>
       <button class="tab ativo" id="tab-cadastro" onclick="mostrarAba('cadastro')">Cadastrar</button>
@@ -384,19 +285,26 @@
           <span class="tag-opcional">opcional</span>
         </div>
       </div>
-      <div class="lgpd-wrap">
-        <input type="checkbox" id="aceite-lgpd">
-        <span class="lgpd-texto">
-          Li e aceito a <a href="https://www.grancursosonline.com.br/politica-de-privacidade" target="_blank">Política de Privacidade</a> e os <a href="https://www.grancursosonline.com.br/termos-de-uso" target="_blank">Termos de Uso</a> do Gran. Concordo com o tratamento dos meus dados conforme a LGPD.
+
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-top:14px;margin-bottom:2px;">
+        <input type="checkbox" id="aceite-lgpd" style="width:16px;height:16px;min-width:16px;margin-top:3px;accent-color:#DD303E;cursor:pointer;flex-shrink:0;">
+        <span style="font-size:12px;font-weight:700;color:#ffffff;line-height:1.6;font-family:'Nunito','Trebuchet MS',sans-serif;">
+          Li e aceito a <a href="https://www.grancursosonline.com.br/politica-de-privacidade" target="_blank" style="color:#ffffff;text-decoration:underline;font-weight:800;">Política de Privacidade</a> e os <a href="https://www.grancursosonline.com.br/termos-de-uso" target="_blank" style="color:#ffffff;text-decoration:underline;font-weight:800;">Termos de Uso</a> do Gran. Concordo com o tratamento dos meus dados conforme a LGPD.
         </span>
       </div>
+
       <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Começar a colecionar!</button>
     </div>
 
     <div class="mensagem" id="mensagem"></div>
   </div>
 
-</div>
+  </div><!-- fim .pagina -->
+
+<!-- RODAPÉ -->
+<footer class="rodape">
+  Gran Tecnologia e Educação S/A — CNPJ: 18.260.822/0001-77 — SBS Quadra 02, Bloco J, Lote 10, Ed. Carlton Tower, Sala 201, Asa Sul, Brasília-DF, CEP 70.070-120 — <a href="http://grancursosonline.com.br/" target="_blank">grancursosonline.com.br</a> — Gran © 2026 · Todos os direitos reservados ®
+</footer>
 
 <script>
   const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
@@ -438,24 +346,17 @@
     const email = document.getElementById('cadastro-email').value.trim()
     const senha = document.getElementById('cadastro-senha').value
     const whatsapp = document.getElementById('cadastro-whatsapp').value.trim()
+    const aceite = document.getElementById('aceite-lgpd').checked
     const btn = document.getElementById('btn-cadastro')
 
-    const aceite = document.getElementById('aceite-lgpd').checked
     if (!nome || !email || !senha) { mostrarMensagem('Preencha nome, e-mail e senha.', 'erro'); return; }
-    if (!aceite) { mostrarMensagem('Aceite a Política de Privacidade e os Termos de Uso para continuar.', 'erro'); return; }
     if (senha.length < 6) { mostrarMensagem('A senha precisa ter pelo menos 6 caracteres.', 'erro'); return; }
+    if (!aceite) { mostrarMensagem('Aceite a Política de Privacidade e os Termos de Uso para continuar.', 'erro'); return; }
 
     btn.disabled = true; btn.textContent = 'Criando conta...'
-
     const { error } = await sb.auth.signUp({
-      email,
-      password: senha,
-      options: {
-        data: {
-          nome_completo: nome,
-          whatsapp: whatsapp || null
-        }
-      }
+      email, password: senha,
+      options: { data: { nome_completo: nome, whatsapp: whatsapp || null } }
     })
 
     if (error) {
@@ -487,13 +388,5 @@
     if (session) window.location.href = 'album.html'
   })
 </script>
-
-<footer class="rodape">
-  Gran Tecnologia e Educação S/A — CNPJ: 18.260.822/0001-77 — SBS Quadra 02, Bloco J, Lote 10, Ed. Carlton Tower, Sala 201, Asa Sul, Brasília-DF, CEP 70.070-120 —
-  <a href="http://grancursosonline.com.br/" target="_blank">grancursosonline.com.br</a> —
-  <a href="https://www.grancursosonline.com.br/politica-de-privacidade" target="_blank">Política de Privacidade</a> —
-  <a href="https://www.grancursosonline.com.br/termos-de-uso" target="_blank">Termos de Uso</a> —
-  Gran © 2026 · Todos os direitos reservados ®
-</footer>
 </body>
 </html>
