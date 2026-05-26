@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Seleção — Meu Álbum</title>
+  <title>Gran Imparáveis — Meu Álbum</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -79,6 +79,15 @@
     .filtro-btn { padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
     .filtro-btn:hover { border-color: rgba(221,48,62,0.5); color: var(--branco); background: rgba(221,48,62,0.1); }
     .filtro-btn.ativo { background: var(--vermelho); border-color: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .filtro-btn.vazia { opacity: 0.45; border-style: dashed; }
+    .filtro-btn.vazia:hover { opacity: 0.7; }
+    .filtro-qtd { background: rgba(255,255,255,0.15); border-radius: 100px; padding: 1px 6px; font-size: 10px; font-weight: 800; margin-left: 2px; }
+    .filtro-btn.ativo .filtro-qtd { background: rgba(255,255,255,0.25); }
+
+    .carregando-vazia { grid-column: 1/-1; text-align: center; padding: 60px 32px; color: rgba(255,255,255,0.4); }
+    .carregando-vazia .vazia-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+    .carregando-vazia strong { display: block; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+    .carregando-vazia p { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35); }
 
     /* GRADE DE FIGURINHAS — proporção 2:3 */
     .grade {
@@ -348,7 +357,7 @@
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-marca">
-      <div class="logo-icone">🏆</div>
+      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo" alt="Gran" style="width:38px;height:38px;object-fit:contain;">
       <div class="logo-texto">
         <h1>Gran <span>Seleção</span></h1>
         <p>Álbum de figurinhas</p>
@@ -429,7 +438,7 @@
 <div class="modal-overlay" id="modal-comp">
   <div class="modal-comp">
     <h3>📤 Compartilhar</h3>
-    <p>Chame seus amigos para participar da Gran Seleção!</p>
+    <p>Chame seus amigos para participar dos Gran Imparáveis!</p>
     <div class="texto-preview" id="texto-preview"></div>
     <div class="botoes-share">
       <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
@@ -448,8 +457,8 @@
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
 
-  let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = []
-  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas da Gran Seleção! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
+  let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = [], carreiras = []
+  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Gran Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
   let profModal = null
 
   const iconeRede = { 'Instagram': '📸', 'YouTube': '▶️', 'TikTok': '🎵', 'Twitter': '🐦', 'LinkedIn': '💼', 'Facebook': '👥' }
@@ -466,8 +475,13 @@
   }
 
   async function carregarProfessores() {
-    const { data } = await sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url').order('area')
-    professores = data || []
+    // Busca professores e carreiras em paralelo
+    const [{ data: profs }, { data: cars }] = await Promise.all([
+      sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url').order('area'),
+      sb.from('carreiras').select('nome').order('ordem')
+    ])
+    professores = profs || []
+    carreiras = (cars || []).map(c => c.nome)
     document.getElementById('qtd-total').textContent = professores.length
     renderizarFiltros()
   }
@@ -482,16 +496,30 @@
   }
 
   function renderizarFiltros() {
-    const areas = ['Todos', ...new Set(professores.map(p => p.area))]
-    document.getElementById('filtros').innerHTML = areas.map(area =>
-      '<button class="filtro-btn ' + (area === filtroAtivo ? 'ativo' : '') + '" onclick="filtrar(\'' + area.replace(/'/g, "\\'") + '\')">' + area + '</button>'
-    ).join('')
+    // Usa carreiras da tabela (garante todas aparecem) + Todos
+    const areasComProfs = new Set(professores.map(p => p.area))
+    const todasAreas = carreiras.length > 0 ? carreiras : [...areasComProfs]
+    const areas = ['Todos', ...todasAreas]
+    document.getElementById('filtros').innerHTML = areas.map(area => {
+      const temProfs = area === 'Todos' || areasComProfs.has(area)
+      const qtd = area === 'Todos' ? professores.length : professores.filter(p => p.area === area).length
+      return '<button class="filtro-btn ' + (area === filtroAtivo ? 'ativo' : '') + (temProfs ? '' : ' vazia') + '" onclick="filtrar(\'' + area.replace(/'/g, "\\'") + '\')">' +
+        area + (qtd > 0 ? ' <span class=\"filtro-qtd\">' + qtd + '</span>' : '') +
+        '</button>'
+    }).join('')
   }
 
   function renderizarGrade() {
     const lista = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
     const grade = document.getElementById('grade')
-    if (lista.length === 0) { grade.innerHTML = '<div class="carregando">Nenhum professor nessa área.</div>'; return; }
+    if (lista.length === 0) {
+      grade.innerHTML = '<div class="carregando-vazia">' +
+        '<div class="vazia-icon">⏳</div>' +
+        '<strong>Em breve!</strong>' +
+        '<p>Os professores desta carreira serão anunciados em breve. Fique de olho!</p>' +
+        '</div>'
+      return;
+    }
 
     grade.innerHTML = lista.map((p, i) => {
       const desbloqueada = desbloqueados.includes(p.id)
@@ -572,7 +600,7 @@
 
   function compartilharFigurinha() {
     fecharModal()
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Seleção! Venha colecionar também: granselecao.vercel.app'
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' na Gran Imparáveis! Venha colecionar também: granselecao.vercel.app'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
