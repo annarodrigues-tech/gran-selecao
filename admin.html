@@ -394,9 +394,9 @@
       '</div>' +
       '<div class="missao-acoes">' +
       '<span class="tipo-badge">' + m.tipo + '</span>' +
-      '<button class="btn-acao-missao btn-editar-missao" onclick="abrirEdicaoMissao('' + m.id + '')">✏️ Editar</button>' +
-      '<button class="btn-acao-missao btn-toggle-missao" onclick="toggleMissao('' + m.id + '',' + m.ativa + ')">' + (m.ativa ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
-      '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirMissao('' + m.id + '', '' + m.titulo.replace(/'/g, "\'") + '')">🗑 Excluir</button>' +
+      '<button class="btn-acao-missao btn-editar-missao" onclick="abrirEdicaoMissao(\'' + m.id + '\')">✏️ Editar</button>' +
+      '<button class="btn-acao-missao btn-toggle-missao" onclick="toggleMissao(\'' + m.id + '\',' + m.ativa + ')">' + (m.ativa ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
+      '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirMissao(\'' + m.id + '\')">🗑 Excluir</button>' +
       '</div></div>'
     ).join('')
   }
@@ -406,8 +406,8 @@
     if (!error) carregarMissoes()
   }
 
-  async function excluirMissao(id, titulo) {
-    if (!confirm('Excluir a missão "' + titulo + '"? Esta ação não pode ser desfeita.')) return
+  async function excluirMissao(id) {
+    if (!confirm('Excluir esta missão? Esta ação não pode ser desfeita.')) return
     const { error } = await sb.from('missoes').delete().eq('id', id)
     if (!error) carregarMissoes()
     else alert('Erro ao excluir: ' + error.message)
