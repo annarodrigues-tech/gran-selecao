@@ -140,17 +140,6 @@
       border-top: 1px solid rgba(255,255,255,0.06);
     }
 
-    .missao-recompensa {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.5);
-    }
-
-    .missao-recompensa strong { color: var(--branco); }
-
     .missao-data {
       font-size: 11px;
       font-weight: 700;
@@ -298,7 +287,7 @@
         '</div>' +
         '<div class="missao-titulo">' + m.titulo + '</div>' +
         '<div class="missao-desc">' + m.descricao + '</div>' +
-        '<div class="missao-rodape"><div class="missao-recompensa">🎴 Recompensa: <strong>1 figurinha</strong></div>' + (m.data ? '<div class="missao-data">📅 ' + m.data + '</div>' : '') + '</div>' +
+        (m.data ? '<div class="missao-data">📅 ' + m.data + '</div>' : '') +
         '<a href="' + (m.link || '#') + '" ' + (m.link ? 'target="_blank"' : 'onclick="return false"') + ' class="btn-cta-missao" style="' + (m.link ? '' : 'opacity:0.4;cursor:default;') + '">🎯 Resgatar figurinha</a>' +
         '</div>'
     }).join('') + '</div>'
