@@ -555,7 +555,7 @@
     grade.innerHTML = lista.map((p, i) => {
       const desbloqueada = desbloqueados.includes(p.id)
       const isNovo = novosNessaSessao.includes(p.id)
-      const num = String(p.numeroExibicao).padStart(3, '0')
+      const num = String(p.numeroExibicao !== null && p.numeroExibicao !== undefined ? p.numeroExibicao : 0).padStart(3, '0')
 
       if (desbloqueada) {
         // CARD DESBLOQUEADO — mostra a arte completa
