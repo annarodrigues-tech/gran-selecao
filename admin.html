@@ -228,6 +228,7 @@
             <div class="form-group"><label>Horário do evento (opcional)</label><input type="time" id="missao-horario"></div>
             <div class="form-group full"><label>Descrição</label><textarea id="missao-desc" placeholder="Explique o que o aluno precisa fazer..."></textarea></div>
             <div class="form-group full"><label>Link da ação (opcional)</label><input type="url" id="missao-link" placeholder="https://youtube.com/live/..."></div>
+            <div class="form-group full"><label>Texto do botão CTA (máx. 30 caracteres)</label><input type="text" id="missao-cta" placeholder="🎯 Resgatar figurinha" maxlength="30"><div class="hint">Deixe em branco para usar o padrão: 🎯 Resgatar figurinha</div></div>
           </div>
           <button class="btn" onclick="cadastrarMissao()">Publicar missão</button>
           <div class="mensagem" id="msg-missao"></div>
@@ -344,8 +345,9 @@
     if (!titulo || !tipo || !desc) { mostrarMsg('msg-missao', 'Preencha título, tipo e descrição.', 'erro'); return; }
     btn.disabled = true; btn.textContent = 'Publicando...'
     const link_acao = document.getElementById('missao-link').value.trim()
+    const cta_texto = document.getElementById('missao-cta').value.trim() || '🎯 Resgatar figurinha'
     const descCompleta = desc + (data ? '\n📅 ' + formatarData(data) + (horario ? ' às ' + horario : '') : '')
-    const { error } = await sb.from('missoes').insert({ titulo, tipo, descricao: descCompleta, link_acao: link_acao || null, ativa: true })
+    const { error } = await sb.from('missoes').insert({ titulo, tipo, descricao: descCompleta, link_acao: link_acao || null, cta_texto, ativa: true })
     if (error) { mostrarMsg('msg-missao', 'Erro: ' + error.message, 'erro') }
     else {
       mostrarMsg('msg-missao', '✅ Missão publicada!', 'sucesso')
@@ -355,6 +357,7 @@
       document.getElementById('missao-horario').value = ''
       document.getElementById('missao-desc').value = ''
       document.getElementById('missao-link').value = ''
+      document.getElementById('missao-cta').value = ''
       await carregarMissoes()
     }
     btn.disabled = false; btn.textContent = 'Publicar missão'
