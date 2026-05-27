@@ -66,8 +66,12 @@
       padding: 24px;
       transition: all 0.3s;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
     }
+
+    .missao-card .missao-desc { flex: 1; }
 
     .missao-card::before {
       content: '';
