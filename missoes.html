@@ -273,7 +273,7 @@
   }
 
   async function carregarMissoes() {
-    const { data, error } = await sb.from('missoes').select('id, titulo, tipo, descricao, link_acao, criado_em').eq('ativa', true).order('criado_em', { ascending: false })
+    const { data, error } = await sb.from('missoes').select('*').eq('ativa', true).order('criado_em', { ascending: false })
     const container = document.getElementById('missoes-container')
     const usandoPreview = error || !data || data.length === 0
 

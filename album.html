@@ -722,7 +722,8 @@
 
   function abrirCompartilhamento() {
     const qtd = desbloqueados.length, total = professores.length
-    const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', total)
+    const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', total) +
+      '\n\n🎁 Bônus: use o código 4606EAC4 para desbloquear a figurinha especial do Gran!'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
