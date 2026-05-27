@@ -9,26 +9,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --vermelho: #DD303E; --azul: #0D134C; --branco: #FFFFFF; }
+    :root { --amarelo: #F3BF1A;
+      --verde: #04492A; --azul: #0D134C; --branco: #FFFFFF; }
 
     body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
 
     .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
     .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .logo-marca { display: flex; align-items: center; gap: 10px; }
-    .logo-icone { width: 38px; height: 38px; background: var(--vermelho); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(221,48,62,0.4); }
+    .logo-icone { width: 38px; height: 38px; background: var(--amarelo); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(243,191,26,0.4); }
     .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
-    .logo-texto h1 span { color: var(--vermelho); }
+    .logo-texto h1 span { color: var(--amarelo); }
     .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
     .sidebar-nav { padding: 16px 12px; flex: 1; }
     .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
     .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
     .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-    .nav-item.ativo { background: var(--vermelho); color: var(--branco); box-shadow: 0 4px 12px rgba(221,48,62,0.3); }
+    .nav-item.ativo { background: #04492A; color: var(--branco); box-shadow: 0 4px 12px rgba(4,73,42,0.3); }
     .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
     .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
     .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
-    .btn-sair:hover { background: rgba(221,48,62,0.15); border-color: rgba(221,48,62,0.3); color: var(--branco); }
+    .btn-sair:hover { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.3); color: var(--branco); }
 
     .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 760px; }
 
@@ -38,8 +39,8 @@
 
     /* PREVIEW BANNER */
     .preview-banner {
-      background: rgba(221,48,62,0.1);
-      border: 1px solid rgba(221,48,62,0.25);
+      background: rgba(243,191,26,0.1);
+      border: 1px solid rgba(243,191,26,0.25);
       border-radius: 12px;
       padding: 12px 18px;
       margin-bottom: 28px;
@@ -176,8 +177,8 @@
     .ranking-item:hover { background: rgba(255,255,255,0.03); }
 
     .ranking-item.eu {
-      background: rgba(221,48,62,0.06);
-      border-left: 3px solid var(--vermelho);
+      background: rgba(243,191,26,0.06);
+      border-left: 3px solid var(--amarelo);
     }
 
     .ranking-item.preview-blur {
@@ -213,9 +214,9 @@
       justify-content: center;
       font-size: 15px;
       font-weight: 900;
-      color: var(--vermelho);
+      color: var(--amarelo);
       flex-shrink: 0;
-      border: 2px solid rgba(221,48,62,0.15);
+      border: 2px solid rgba(243,191,26,0.15);
     }
 
     .ranking-nome { font-size: 14px; font-weight: 800; }
@@ -225,7 +226,7 @@
       text-align: right;
     }
 
-    .ranking-qtd strong { font-size: 20px; font-weight: 900; color: var(--vermelho); display: block; line-height: 1; }
+    .ranking-qtd strong { font-size: 20px; font-weight: 900; color: var(--amarelo); display: block; line-height: 1; }
     .ranking-qtd span { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; }
 
     /* Lock overlay para posições desfocadas */
