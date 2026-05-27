@@ -88,6 +88,19 @@
     .tipo-badge { padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; background: rgba(243,191,26,0.1); border: 1px solid rgba(243,191,26,0.2); color: var(--amarelo); white-space: nowrap; flex-shrink: 0; }
     .hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 8px; font-weight: 600; line-height: 1.5; }
 
+    .missao-acoes { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .missao-link-item { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; word-break: break-all; }
+
+    .btn-acao-missao {
+      padding: 5px 12px; border-radius: 7px; font-size: 11px;
+      font-weight: 800; font-family: inherit; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1); background: none;
+      color: rgba(255,255,255,0.5); transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-editar-missao:hover { border-color: var(--amarelo); color: var(--amarelo); }
+    .btn-toggle-missao:hover { border-color: rgba(100,200,100,0.5); color: #6bff9a; }
+    .btn-excluir-missao:hover { border-color: rgba(255,100,100,0.5); color: #ff8090; }
+
     /* MODAL EDIÇÃO */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-overlay.visivel { display: flex; }
@@ -376,9 +389,68 @@
       '<div class="missao-info">' +
       '<div class="missao-titulo-item">' + m.titulo + '</div>' +
       '<div class="missao-desc-item">' + m.descricao.replace(/\n/g, '<br>') + '</div>' +
+      (m.link_acao ? '<div class="missao-link-item">🔗 ' + m.link_acao + '</div>' : '') +
       '<div class="missao-status">' + (m.ativa ? '🟢 Ativa' : '🔴 Inativa') + '</div>' +
-      '</div><span class="tipo-badge">' + m.tipo + '</span></div>'
+      '</div>' +
+      '<div class="missao-acoes">' +
+      '<span class="tipo-badge">' + m.tipo + '</span>' +
+      '<button class="btn-acao-missao btn-editar-missao" onclick="abrirEdicaoMissao('' + m.id + '')">✏️ Editar</button>' +
+      '<button class="btn-acao-missao btn-toggle-missao" onclick="toggleMissao('' + m.id + '',' + m.ativa + ')">' + (m.ativa ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
+      '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirMissao('' + m.id + '', '' + m.titulo.replace(/'/g, "\'") + '')">🗑 Excluir</button>' +
+      '</div></div>'
     ).join('')
+  }
+
+  async function toggleMissao(id, ativa) {
+    const { error } = await sb.from('missoes').update({ ativa: !ativa }).eq('id', id)
+    if (!error) carregarMissoes()
+  }
+
+  async function excluirMissao(id, titulo) {
+    if (!confirm('Excluir a missão "' + titulo + '"? Esta ação não pode ser desfeita.')) return
+    const { error } = await sb.from('missoes').delete().eq('id', id)
+    if (!error) carregarMissoes()
+    else alert('Erro ao excluir: ' + error.message)
+  }
+
+  async function abrirEdicaoMissao(id) {
+    const { data: m, error } = await sb.from('missoes').select('*').eq('id', id).single()
+    if (error || !m) { alert('Erro ao carregar missão.'); return; }
+
+    document.getElementById('edit-missao-id').value = m.id
+    document.getElementById('edit-missao-titulo').value = m.titulo || ''
+    document.getElementById('edit-missao-tipo').value = m.tipo || ''
+    document.getElementById('edit-missao-desc').value = m.descricao || ''
+    document.getElementById('edit-missao-link').value = m.link_acao || ''
+    document.getElementById('edit-missao-cta').value = m.cta_texto || ''
+    document.getElementById('msg-edicao-missao').style.display = 'none'
+    document.getElementById('modal-edicao-missao').classList.add('visivel')
+  }
+
+  async function salvarEdicaoMissao() {
+    const id = document.getElementById('edit-missao-id').value
+    const titulo = document.getElementById('edit-missao-titulo').value.trim()
+    const tipo = document.getElementById('edit-missao-tipo').value
+    const descricao = document.getElementById('edit-missao-desc').value.trim()
+    const link_acao = document.getElementById('edit-missao-link').value.trim()
+    const cta_texto = document.getElementById('edit-missao-cta').value.trim() || '🎯 Resgatar figurinha'
+    const btn = document.getElementById('btn-salvar-missao')
+
+    if (!titulo || !tipo || !descricao) { mostrarMsg('msg-edicao-missao', 'Preencha título, tipo e descrição.', 'erro'); return; }
+
+    btn.disabled = true; btn.textContent = 'Salvando...'
+    const { error } = await sb.from('missoes').update({ titulo, tipo, descricao, link_acao: link_acao || null, cta_texto }).eq('id', id)
+
+    if (error) mostrarMsg('msg-edicao-missao', 'Erro: ' + error.message, 'erro')
+    else {
+      mostrarMsg('msg-edicao-missao', '✅ Missão atualizada!', 'sucesso')
+      setTimeout(() => { fecharEdicaoMissao(); carregarMissoes() }, 800)
+    }
+    btn.disabled = false; btn.textContent = 'Salvar alterações'
+  }
+
+  function fecharEdicaoMissao() {
+    document.getElementById('modal-edicao-missao').classList.remove('visivel')
   }
 
   async function carregarConfiguracao() {
@@ -539,6 +611,32 @@
       <button class="btn-cancelar-modal" onclick="fecharEdicao()">Cancelar</button>
     </div>
     <div class="mensagem" id="msg-edicao" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- MODAL EDIÇÃO MISSÃO -->
+<div class="modal-overlay" id="modal-edicao-missao">
+  <div class="modal-edicao" style="max-width:560px;">
+    <h3>✏️ Editar Missão</h3>
+    <input type="hidden" id="edit-missao-id">
+    <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="form-group"><label>Título</label><input type="text" id="edit-missao-titulo" placeholder="Título da missão"></div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="edit-missao-tipo">
+          <option value="">Selecione...</option>
+          <option>Live</option><option>E-mail</option><option>Blog</option>
+          <option>Redes Sociais</option><option>Indicação</option>
+        </select>
+      </div>
+      <div class="form-group full" style="grid-column:1/-1;"><label>Descrição</label><textarea id="edit-missao-desc" style="min-height:80px;width:100%;padding:12px 16px;background:rgba(13,19,76,0.7);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;resize:vertical;"></textarea></div>
+      <div class="form-group full" style="grid-column:1/-1;"><label>Link da ação (opcional)</label><input type="url" id="edit-missao-link" placeholder="https://youtube.com/live/..."></div>
+      <div class="form-group full" style="grid-column:1/-1;"><label>Texto do botão CTA (máx. 30 caracteres)</label><input type="text" id="edit-missao-cta" placeholder="🎯 Resgatar figurinha" maxlength="30"></div>
+    </div>
+    <div class="modal-acoes">
+      <button class="btn-salvar" id="btn-salvar-missao" onclick="salvarEdicaoMissao()">Salvar alterações</button>
+      <button class="btn-cancelar-modal" onclick="fecharEdicaoMissao()">Cancelar</button>
+    </div>
+    <div class="mensagem" id="msg-edicao-missao" style="margin-top:12px;"></div>
   </div>
 </div>
 
