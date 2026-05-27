@@ -204,8 +204,8 @@ body {
     box-shadow: 0 6px 20px rgba(243, 191, 26, 0.6);
     background: #e2b012;
   }
-    .btn:active { transform: translateY(0); }
-    .btn:disabled { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; transform: none; color: rgba(255,255,255,0.3); 
+    .btn-acao:active { transform: translateY(0); }
+    .btn-acao:disabled  { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; transform: none; color: rgba(255,255,255,0.3); 
                   
   }
 
@@ -289,7 +289,7 @@ body {
         <label>Senha</label>
         <input type="password" id="login-senha" placeholder="••••••••">
       </div>
-      <button class="btn" id="btn-login" onclick="fazerLogin()">Entrar na coleção</button>
+      <button class="btn-acao" id="btn-login" onclick="fazerLogin()">Entrar na coleção</button>
       <button class="link-esqueci" onclick="esqueceuSenha()">Esqueci minha senha</button>
     </div>
 
@@ -322,7 +322,7 @@ body {
         </span>
       </div>
 
-      <button class="btn" id="btn-cadastro" onclick="fazerCadastro()">Começar a colecionar!</button>
+    <button class="btn-acao" id="btn-cadastro" onclick="fazerCadastro()">Começar a colecionar!</button>
     </div>
 
     <div class="mensagem" id="mensagem"></div>
