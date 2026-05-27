@@ -297,7 +297,9 @@
         '<div class="missao-rodape">' +
         '<div class="missao-recompensa">🎴 Recompensa: <strong>1 figurinha</strong></div>' +
         (m.data ? '<div class="missao-data">📅 ' + m.data + '</div>' : '') +
-        '</div></div>'
+        '</div>' +
+        (m.link ? '<a href="' + m.link + '" target="_blank" class="btn-cta-missao">Participar →</a>' : '') +
+        '</div>'
     }).join('') + '</div>'
     container.innerHTML = banner + cards
   }
