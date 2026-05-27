@@ -86,6 +86,31 @@
     .missao-status { font-size: 11px; font-weight: 800; }
     .tipo-badge { padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; background: rgba(221,48,62,0.1); border: 1px solid rgba(221,48,62,0.2); color: var(--vermelho); white-space: nowrap; flex-shrink: 0; }
     .hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 8px; font-weight: 600; line-height: 1.5; }
+
+    /* MODAL EDIÇÃO */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.visivel { display: flex; }
+    .modal-edicao {
+      background: linear-gradient(145deg, #162060, #1e2d7a);
+      border: 1px solid rgba(221,48,62,0.3);
+      border-radius: 20px; padding: 36px;
+      width: 90%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+      animation: aparecer 0.3s ease;
+    }
+    @keyframes aparecer { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-edicao h3 { font-size: 18px; font-weight: 900; margin-bottom: 24px; color: var(--vermelho); text-transform: uppercase; letter-spacing: 1px; font-size: 13px; }
+    .modal-acoes { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-salvar { flex: 1; padding: 12px; background: var(--vermelho); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-salvar:hover { background: #e8384a; }
+    .btn-salvar:disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; }
+    .btn-cancelar-modal { padding: 12px 20px; background: none; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-cancelar-modal:hover { border-color: rgba(221,48,62,0.4); color: #fff; }
+    .btn-editar { background: none; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; margin-right: 4px; }
+    .btn-editar:hover { border-color: rgba(221,48,62,0.4); color: #fff; }
+    .foto-edit-preview { width: 70px; height: 70px; border-radius: 50%; background: rgba(13,19,76,0.8); border: 2px dashed rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; overflow: hidden; flex-shrink: 0; transition: border 0.2s; }
+    .foto-edit-preview:hover { border-color: var(--vermelho); }
+    .foto-edit-preview img { width: 100%; height: 100%; object-fit: cover; }
   </style>
 </head>
 <body>
@@ -299,7 +324,7 @@
         '<td>' + p.area + '</td>' +
         '<td>' + (cod ? '<span class="codigo-badge">' + cod.codigo + '</span>' : '—') + '</td>' +
         '<td>' + (cod ? '<span class="badge-status ' + (cod.ativo ? 'ativo' : 'inativo') + '">' + (cod.ativo ? 'Ativo' : 'Inativo') + '</span>' : '—') + '</td>' +
-        '<td>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">Copiar</button>' : '—') + '</td>' +
+        '<td style="display:flex;gap:6px;align-items:center;">' + '<button class="btn-editar" onclick="abrirEdicao(\'' + p.id + '\')">✏️ Editar</button>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">' + 'Copiar</button>' : '') + '</td>' +
         '</tr>'
     }).join('')
     document.getElementById('tabela-professores').innerHTML = '<table class="tabela"><thead><tr><th>Professor</th><th>Carreira</th><th>Código</th><th>Status</th><th>Ação</th></tr></thead><tbody>' + linhas + '</tbody></table>'
@@ -372,8 +397,143 @@
     el.style.display = 'block'
   }
 
+  // ---- EDIÇÃO DE PROFESSOR ----
+  let fotoEditArquivo = null
+  let professorEditAtual = null
+
+  async function abrirEdicao(id) {
+    const { data: p, error } = await sb.from('professores').select('*').eq('id', id).single()
+    if (error || !p) { alert('Erro ao carregar professor.'); return; }
+
+    professorEditAtual = p
+    fotoEditArquivo = null
+
+    document.getElementById('edit-id').value = p.id
+    document.getElementById('edit-nome').value = p.nome || ''
+    document.getElementById('edit-area').value = p.area || ''
+    document.getElementById('edit-rede-social').value = p.rede_social || ''
+    document.getElementById('edit-rede-social-url').value = p.rede_social_url || ''
+    document.getElementById('msg-edicao').style.display = 'none'
+
+    const preview = document.getElementById('foto-edit-preview')
+    preview.innerHTML = p.foto_url
+      ? '<img src="' + p.foto_url + '" alt="foto">'
+      : '📷'
+
+    document.getElementById('modal-edicao').classList.add('visivel')
+  }
+
+  function previewFotoEdit(event) {
+    const file = event.target.files[0]
+    if (!file) return
+    fotoEditArquivo = file
+    const reader = new FileReader()
+    reader.onload = (e) => { document.getElementById('foto-edit-preview').innerHTML = '<img src="' + e.target.result + '">' }
+    reader.readAsDataURL(file)
+  }
+
+  async function salvarEdicao() {
+    const id = document.getElementById('edit-id').value
+    const nome = document.getElementById('edit-nome').value.trim()
+    const area = document.getElementById('edit-area').value
+    const rede_social = document.getElementById('edit-rede-social').value
+    const rede_social_url = document.getElementById('edit-rede-social-url').value.trim()
+    const btn = document.getElementById('btn-salvar-edicao')
+    const msg = document.getElementById('msg-edicao')
+
+    if (!nome || !area) { mostrarMsg('msg-edicao', 'Preencha nome e carreira.', 'erro'); return; }
+
+    btn.disabled = true; btn.textContent = 'Salvando...'
+
+    let foto_url = professorEditAtual.foto_url
+
+    if (fotoEditArquivo) {
+      const ext = fotoEditArquivo.name.split('.').pop()
+      const nomeArq = Date.now() + '.' + ext
+      const { error } = await sb.storage.from('fotos').upload(nomeArq, fotoEditArquivo, { upsert: true })
+      if (error) { mostrarMsg('msg-edicao', 'Erro no upload: ' + error.message, 'erro'); btn.disabled = false; btn.textContent = 'Salvar alterações'; return; }
+      foto_url = sb.storage.from('fotos').getPublicUrl(nomeArq).data.publicUrl
+    }
+
+    const { error } = await sb.from('professores').update({
+      nome, area, foto_url,
+      rede_social: rede_social || null,
+      rede_social_url: rede_social_url || null
+    }).eq('id', id)
+
+    if (error) {
+      mostrarMsg('msg-edicao', 'Erro ao salvar: ' + error.message, 'erro')
+    } else {
+      mostrarMsg('msg-edicao', '✅ Professor atualizado!', 'sucesso')
+      setTimeout(() => { fecharEdicao(); carregarProfessores() }, 1000)
+    }
+
+    btn.disabled = false; btn.textContent = 'Salvar alterações'
+  }
+
+  function fecharEdicao() {
+    document.getElementById('modal-edicao').classList.remove('visivel')
+    document.getElementById('input-foto-edit').value = ''
+    fotoEditArquivo = null
+  }
+
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
   init()
 </script>
+<!-- MODAL EDIÇÃO -->
+<div class="modal-overlay" id="modal-edicao">
+  <div class="modal-edicao">
+    <h3>✏️ Editar Professor</h3>
+    <input type="hidden" id="edit-id">
+
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <div class="foto-edit-preview" id="foto-edit-preview" onclick="document.getElementById('input-foto-edit').click()">📷</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6);font-weight:600;">Clique para trocar a foto<br><span style="font-size:11px;color:rgba(255,255,255,0.3);">JPG ou PNG, máx. 2MB</span></div>
+      <input type="file" id="input-foto-edit" accept="image/*" onchange="previewFotoEdit(event)" style="display:none;">
+    </div>
+
+    <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" id="edit-nome" placeholder="Nome do professor">
+      </div>
+      <div class="form-group">
+        <label>Carreira</label>
+        <select id="edit-area">
+          <option value="">Selecione...</option>
+          <option>Administrativa</option><option>Bancárias</option>
+          <option>Carreira Diplomática</option><option>Carreiras Policiais</option>
+          <option>Controle e Gestão</option><option>Delegado</option>
+          <option>Educação</option><option>Exame CFC</option>
+          <option>Exame da OAB</option><option>Especiais</option>
+          <option>Fiscal</option><option>Jurídico</option>
+          <option>Legislativa</option><option>Residências</option>
+          <option>Saúde</option><option>Segurança Pública</option>
+          <option>Tecnologia da Informação</option><option>Tribunais</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rede Social</label>
+        <select id="edit-rede-social">
+          <option value="">Selecione...</option>
+          <option>Instagram</option><option>YouTube</option>
+          <option>TikTok</option><option>Twitter</option>
+          <option>LinkedIn</option><option>Facebook</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Link da Rede Social</label>
+        <input type="url" id="edit-rede-social-url" placeholder="https://instagram.com/professor">
+      </div>
+    </div>
+
+    <div class="modal-acoes">
+      <button class="btn-salvar" id="btn-salvar-edicao" onclick="salvarEdicao()">Salvar alterações</button>
+      <button class="btn-cancelar-modal" onclick="fecharEdicao()">Cancelar</button>
+    </div>
+    <div class="mensagem" id="msg-edicao" style="margin-top:12px;"></div>
+  </div>
+</div>
+
 </body>
 </html>
