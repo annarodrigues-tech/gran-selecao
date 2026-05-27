@@ -155,6 +155,23 @@
       gap: 4px;
     }
 
+    .btn-cta-missao {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      background: var(--vermelho);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+      box-shadow: 0 4px 12px rgba(221,48,62,0.3);
+    }
+    .btn-cta-missao:hover { background: #e8384a; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(221,48,62,0.4); }
+
     .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; }
   </style>
 </head>
@@ -255,7 +272,7 @@
   }
 
   async function carregarMissoes() {
-    const { data, error } = await sb.from('missoes').select('*').eq('ativa', true).order('criado_em', { ascending: false })
+    const { data, error } = await sb.from('missoes').select('id, titulo, tipo, descricao, link_acao, criado_em').eq('ativa', true).order('criado_em', { ascending: false })
     const container = document.getElementById('missoes-container')
     const usandoPreview = error || !data || data.length === 0
 

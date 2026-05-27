@@ -454,6 +454,19 @@
   </div>
 </div>
 
+<!-- MODAL VISUALIZAÇÃO FIGURINHA -->
+<div class="modal-overlay" id="modal-ver">
+  <div class="modal" style="max-width:320px;padding:24px 24px 28px;">
+    <div class="modal-figurinha" id="modal-ver-figurinha" style="width:220px;margin:0 auto 18px;"></div>
+    <div class="modal-nome" id="modal-ver-nome"></div>
+    <div class="modal-area" id="modal-ver-area"></div>
+    <div class="modal-acoes" style="margin-top:20px;">
+      <button class="btn-fechar" onclick="fecharVerFigurinha()">Fechar</button>
+      <button class="btn-comp-modal" onclick="compartilharDaVisualizacao()">📤 Compartilhar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL COMPARTILHAMENTO -->
 <div class="modal-overlay" id="modal-comp">
   <div class="modal-comp">
@@ -558,8 +571,9 @@
       const num = String(p.numeroExibicao !== null && p.numeroExibicao !== undefined ? p.numeroExibicao : 0).padStart(3, '0')
 
       if (desbloqueada) {
-        // CARD DESBLOQUEADO — mostra a arte completa
-        return '<div class="figurinha desbloqueada">' +
+        // CARD DESBLOQUEADO — clicável para abrir modal de visualização
+        const pidx = professores.indexOf(p)
+        return '<div class="figurinha desbloqueada" onclick="verFigurinha(' + pidx + ')" style="cursor:pointer;">' +
           (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
           (p.foto_url
             ? '<img class="figurinha-arte" src="' + p.foto_url + '" alt="' + p.nome + '">'
@@ -674,6 +688,28 @@
   }
 
   function fecharModal() { document.getElementById('modal').classList.remove('visivel') }
+
+  function verFigurinha(idx) {
+    const professor = professores[idx]
+    if (!professor) return
+    profModal = professor
+    const wrap = document.getElementById('modal-ver-figurinha')
+    if (professor.foto_url) {
+      wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">'
+    } else {
+      wrap.innerHTML = '<div style="width:100%;height:100%;background:linear-gradient(145deg,#0D134C,#162060);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><span style=\"font-size:48px;font-weight:900;color:var(--vermelho);\">' + professor.nome.charAt(0) + '</span><span style=\"font-size:13px;font-weight:900;color:#fff;\">' + professor.nome + '</span></div>'
+    }
+    document.getElementById('modal-ver-nome').textContent = professor.nome
+    document.getElementById('modal-ver-area').textContent = professor.area
+    document.getElementById('modal-ver').classList.add('visivel')
+  }
+
+  function fecharVerFigurinha() { document.getElementById('modal-ver').classList.remove('visivel') }
+
+  function compartilharDaVisualizacao() {
+    fecharVerFigurinha()
+    compartilharFigurinha()
+  }
 
   function compartilharFigurinha() {
     fecharModal()

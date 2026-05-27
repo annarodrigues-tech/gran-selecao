@@ -226,6 +226,7 @@
             <div class="form-group"><label>Data do evento (opcional)</label><input type="date" id="missao-data"></div>
             <div class="form-group"><label>Horário do evento (opcional)</label><input type="time" id="missao-horario"></div>
             <div class="form-group full"><label>Descrição</label><textarea id="missao-desc" placeholder="Explique o que o aluno precisa fazer..."></textarea></div>
+            <div class="form-group full"><label>Link da ação (opcional)</label><input type="url" id="missao-link" placeholder="https://youtube.com/live/..."></div>
           </div>
           <button class="btn" onclick="cadastrarMissao()">Publicar missão</button>
           <div class="mensagem" id="msg-missao"></div>
@@ -341,8 +342,9 @@
     const btn = document.querySelector('#secao-missoes .btn')
     if (!titulo || !tipo || !desc) { mostrarMsg('msg-missao', 'Preencha título, tipo e descrição.', 'erro'); return; }
     btn.disabled = true; btn.textContent = 'Publicando...'
+    const link_acao = document.getElementById('missao-link').value.trim()
     const descCompleta = desc + (data ? '\n📅 ' + formatarData(data) + (horario ? ' às ' + horario : '') : '')
-    const { error } = await sb.from('missoes').insert({ titulo, tipo, descricao: descCompleta, ativa: true })
+    const { error } = await sb.from('missoes').insert({ titulo, tipo, descricao: descCompleta, link_acao: link_acao || null, ativa: true })
     if (error) { mostrarMsg('msg-missao', 'Erro: ' + error.message, 'erro') }
     else {
       mostrarMsg('msg-missao', '✅ Missão publicada!', 'sucesso')
@@ -351,6 +353,7 @@
       document.getElementById('missao-data').value = ''
       document.getElementById('missao-horario').value = ''
       document.getElementById('missao-desc').value = ''
+      document.getElementById('missao-link').value = ''
       await carregarMissoes()
     }
     btn.disabled = false; btn.textContent = 'Publicar missão'
