@@ -294,11 +294,8 @@
         '</div>' +
         '<div class="missao-titulo">' + m.titulo + '</div>' +
         '<div class="missao-desc">' + m.descricao + '</div>' +
-        '<div class="missao-rodape">' +
-        '<div class="missao-recompensa">🎴 Recompensa: <strong>1 figurinha</strong></div>' +
-        (m.data ? '<div class="missao-data">📅 ' + m.data + '</div>' : '') +
-        '</div>' +
-        (m.link ? '<a href="' + m.link + '" target="_blank" class="btn-cta-missao">Participar →</a>' : '') +
+        '<div class="missao-rodape"><div class="missao-recompensa">🎴 Recompensa: <strong>1 figurinha</strong></div>' + (m.data ? '<div class="missao-data">📅 ' + m.data + '</div>' : '') + '</div>' +
+        '<a href="' + (m.link || '#') + '" ' + (m.link ? 'target="_blank"' : 'onclick="return false"') + ' class="btn-cta-missao" style="' + (m.link ? '' : 'opacity:0.4;cursor:default;') + '">🎯 Resgatar figurinha</a>' +
         '</div>'
     }).join('') + '</div>'
     container.innerHTML = banner + cards
