@@ -309,7 +309,8 @@
     }
     const rede_social = document.getElementById('prof-rede-social').value
     const rede_social_url = document.getElementById('prof-rede-social-url').value.trim()
-    const { data: prof, error: errProf } = await sb.from('professores').insert({ nome, area, foto_url, rede_social: rede_social || null, rede_social_url: rede_social_url || null }).select().single()
+    const disciplinas = document.getElementById('prof-disciplinas').value.trim()
+    const { data: prof, error: errProf } = await sb.from('professores').insert({ nome, area, foto_url, rede_social: rede_social || null, rede_social_url: rede_social_url || null, disciplinas: disciplinas || null }).select().single()
     if (errProf) { mostrarMsg('msg-prof', 'Erro: ' + errProf.message, 'erro'); btn.disabled = false; btn.textContent = 'Cadastrar e gerar código'; return; }
     let codigo = gerarCodigoAleatorio()
     for (let i = 0; i < 10; i++) {
@@ -323,6 +324,7 @@
     document.getElementById('prof-area').value = ''
     document.getElementById('prof-rede-social').value = ''
     document.getElementById('prof-rede-social-url').value = ''
+    document.getElementById('prof-disciplinas').value = ''
     document.getElementById('foto-preview').innerHTML = '📷'
     fotoArquivo = null
     btn.disabled = false; btn.textContent = 'Cadastrar e gerar código'
@@ -492,6 +494,7 @@
     document.getElementById('edit-area').value = p.area || ''
     document.getElementById('edit-rede-social').value = p.rede_social || ''
     document.getElementById('edit-rede-social-url').value = p.rede_social_url || ''
+    document.getElementById('edit-disciplinas').value = p.disciplinas || ''
     document.getElementById('msg-edicao').style.display = 'none'
 
     const preview = document.getElementById('foto-edit-preview')
@@ -534,10 +537,12 @@
       foto_url = sb.storage.from('fotos').getPublicUrl(nomeArq).data.publicUrl
     }
 
+    const disciplinas = document.getElementById('edit-disciplinas').value.trim()
     const { error } = await sb.from('professores').update({
       nome, area, foto_url,
       rede_social: rede_social || null,
-      rede_social_url: rede_social_url || null
+      rede_social_url: rede_social_url || null,
+      disciplinas: disciplinas || null
     }).eq('id', id)
 
     if (error) {
