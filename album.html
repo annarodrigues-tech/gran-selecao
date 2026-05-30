@@ -74,16 +74,28 @@
     .msg-resgate.sucesso { background: rgba(40,200,100,0.15); color: #6bff9a; border: 1px solid rgba(40,200,100,0.3); }
 
     /* FILTROS */
-    .filtros-wrap { margin-bottom: 24px; }
-    .filtros-titulo { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
-    .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filtro-btn { padding: 7px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-    .filtro-btn:hover { border-color: rgba(243,191,26,0.5); color: var(--branco); background: rgba(243,191,26,0.1); }
-    .filtro-btn.ativo { background: var(--amarelo); border-color: var(--amarelo); color: var(--azul); box-shadow: 0 4px 12px rgba(243,191,26,0.3); font-weight: 900; }
-    .filtro-btn.vazia { opacity: 0.45; border-style: dashed; }
-    .filtro-btn.vazia:hover { opacity: 0.7; }
-    .filtro-qtd { background: rgba(255,255,255,0.15); border-radius: 100px; padding: 1px 6px; font-size: 10px; font-weight: 800; margin-left: 2px; }
-    .filtro-btn.ativo .filtro-qtd { background: rgba(255,255,255,0.25); }
+    .filtros-wrap { margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
+    .filtros-titulo { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); white-space: nowrap; }
+    .filtro-select {
+      flex: 1; max-width: 320px;
+      padding: 10px 16px;
+      background: rgba(13,19,76,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--branco);
+      font-size: 14px; font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F3BF1A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    .filtro-select:focus { border-color: var(--amarelo); box-shadow: 0 0 0 3px rgba(243,191,26,0.12); }
+    .filtro-select option { background: #0D134C; color: #fff; }
 
     .carregando-vazia { grid-column: 1/-1; text-align: center; padding: 60px 32px; color: rgba(255,255,255,0.4); }
     .carregando-vazia .vazia-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
@@ -108,11 +120,11 @@
     .pag-reticencias { color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; padding: 0 4px; line-height: 36px; }
     .pag-info { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); margin-left: 8px; }
 
-    /* GRADE DE FIGURINHAS — proporção 2:3 */
+    /* GRADE DE FIGURINHAS — proporção 2:3, cards maiores */
     .grade {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
     }
 
     /* CARD FIGURINHA */
@@ -248,10 +260,10 @@
     }
 
     .figurinha-disciplinas {
-      font-size: 9px;
-      color: rgba(255,255,255,0.6);
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
       font-weight: 600;
-      line-height: 1.3;
+      line-height: 1.4;
       margin-bottom: 8px;
       font-style: italic;
     }
@@ -439,7 +451,9 @@
 
   <div class="filtros-wrap">
     <div class="filtros-titulo">Filtrar por carreira</div>
-    <div class="filtros" id="filtros"></div>
+    <select id="filtro-dropdown" class="filtro-select" onchange="filtrar(this.value)">
+      <option value="Todos">Todas as carreiras</option>
+    </select>
   </div>
 
   <div class="grade" id="grade">
@@ -546,17 +560,17 @@
   }
 
   function renderizarFiltros() {
-    // Usa carreiras da tabela (garante todas aparecem) + Todos
     const areasComProfs = new Set(professores.map(p => p.area))
     const todasAreas = carreiras.length > 0 ? carreiras : [...areasComProfs]
-    const areas = ['Todos', ...todasAreas]
-    document.getElementById('filtros').innerHTML = areas.map(area => {
-      const temProfs = area === 'Todos' || areasComProfs.has(area)
-      const qtd = area === 'Todos' ? professores.length : professores.filter(p => p.area === area).length
-      return '<button class="filtro-btn ' + (area === filtroAtivo ? 'ativo' : '') + (temProfs ? '' : ' vazia') + '" onclick="filtrar(\'' + area.replace(/'/g, "\\'") + '\')">' +
-        area + (qtd > 0 ? ' <span class=\"filtro-qtd\">' + qtd + '</span>' : '') +
-        '</button>'
-    }).join('')
+    const select = document.getElementById('filtro-dropdown')
+    const valorAtual = select.value
+    select.innerHTML = '<option value="Todos">Todas as carreiras (' + professores.length + ')</option>' +
+      todasAreas.map(area => {
+        const qtd = professores.filter(p => p.area === area).length
+        const label = qtd > 0 ? area + ' (' + qtd + ')' : area + ' — em breve'
+        return '<option value="' + area + '"' + (area === filtroAtivo ? ' selected' : '') + '>' + label + '</option>'
+      }).join('')
+    if (filtroAtivo !== 'Todos') select.value = filtroAtivo
   }
 
   function renderizarGrade(resetar = true) {
