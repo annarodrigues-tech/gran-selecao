@@ -539,7 +539,7 @@
   async function carregarProfessores() {
     // Busca professores e carreiras em paralelo
     const [{ data: profs }, { data: cars }] = await Promise.all([
-      sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url').order('area'),
+      sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url, numero, disciplinas').order('area'),
       sb.from('carreiras').select('nome').order('ordem')
     ])
     professores = profs || []
