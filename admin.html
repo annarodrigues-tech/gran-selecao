@@ -215,6 +215,7 @@
               </select>
             </div>
             <div class="form-group"><label>Link da Rede Social</label><input type="url" id="prof-rede-social-url" placeholder="https://instagram.com/professor"></div>
+            <div class="form-group full" style="grid-column:1/-1"><label>Disciplinas</label><input type="text" id="prof-disciplinas" placeholder="Ex: Direito Constitucional, Direito Administrativo"><div class="hint">Separe as disciplinas por vírgula</div></div>
           </div>
           <button class="btn" onclick="cadastrarProfessor()">Cadastrar e gerar código</button>
           <div class="mensagem" id="msg-prof"></div>
@@ -608,6 +609,11 @@
       <div class="form-group">
         <label>Link da Rede Social</label>
         <input type="url" id="edit-rede-social-url" placeholder="https://instagram.com/professor">
+      </div>
+      <div class="form-group full" style="grid-column:1/-1">
+        <label>Disciplinas</label>
+        <input type="text" id="edit-disciplinas" placeholder="Ex: Direito Constitucional, Direito Administrativo">
+        <div class="hint">Separe as disciplinas por vírgula</div>
       </div>
     </div>
 
