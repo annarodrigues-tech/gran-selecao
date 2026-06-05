@@ -573,6 +573,66 @@
     fotoEditArquivo = null
   }
 
+  // ---- PRÊMIOS ----
+  async function carregarPremios() {
+    const { data } = await sb.from('premios').select('*').order('criado_em', { ascending: false })
+    const lista = document.getElementById('lista-premios')
+    if (!data || data.length === 0) { lista.innerHTML = '<div class="carregando">Nenhum prêmio cadastrado.</div>'; return; }
+    lista.innerHTML = '<table class="tabela"><thead><tr><th>Prêmio</th><th>Estoque</th><th>Prob. (%)</th><th>Status</th><th>Ação</th></tr></thead><tbody>' +
+      data.map(p =>
+        '<tr>' +
+        '<td><strong>' + p.nome + '</strong>' + (p.descricao ? '<br><small style="color:rgba(255,255,255,0.4)">' + p.descricao + '</small>' : '') + '</td>' +
+        '<td><strong style="color:var(--amarelo)">' + p.estoque + '</strong></td>' +
+        '<td>' + p.probabilidade + '%</td>' +
+        '<td><span style="color:' + (p.ativo ? '#6bff9a' : 'rgba(255,255,255,0.3)') + ';font-weight:800;">' + (p.ativo ? '🟢 Ativo' : '🔴 Inativo') + '</span></td>' +
+        '<td style="display:flex;gap:6px;">' +
+        '<button class="btn-acao-missao btn-toggle-missao" onclick="togglePremio('' + p.id + '',' + p.ativo + ')">' + (p.ativo ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
+        '<button class="btn-acao-missao btn-editar-missao" onclick="editarEstoque('' + p.id + '',' + p.estoque + ','' + p.nome.replace(/'/g,"") + '')"">📦 Estoque</button>' +
+        '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirPremio('' + p.id + '')">🗑 Excluir</button>' +
+        '</td></tr>'
+      ).join('') +
+      '</tbody></table>'
+  }
+
+  async function cadastrarPremio() {
+    const nome = document.getElementById('premio-nome').value.trim()
+    const estoque = parseInt(document.getElementById('premio-estoque').value)
+    const probabilidade = parseFloat(document.getElementById('premio-probabilidade').value)
+    const descricao = document.getElementById('premio-descricao').value.trim()
+
+    if (!nome || isNaN(estoque) || isNaN(probabilidade)) { mostrarMsg('msg-premio', 'Preencha nome, estoque e probabilidade.', 'erro'); return; }
+
+    const { error } = await sb.from('premios').insert({ nome, estoque, probabilidade, descricao: descricao || null, ativo: true })
+    if (error) { mostrarMsg('msg-premio', 'Erro: ' + error.message, 'erro'); return; }
+
+    mostrarMsg('msg-premio', '✅ Prêmio cadastrado!', 'sucesso')
+    document.getElementById('premio-nome').value = ''
+    document.getElementById('premio-estoque').value = ''
+    document.getElementById('premio-probabilidade').value = ''
+    document.getElementById('premio-descricao').value = ''
+    await carregarPremios()
+  }
+
+  async function togglePremio(id, ativo) {
+    await sb.from('premios').update({ ativo: !ativo }).eq('id', id)
+    await carregarPremios()
+  }
+
+  async function editarEstoque(id, estoqueAtual, nome) {
+    const novo = prompt('Novo estoque para "' + nome + '":' , estoqueAtual)
+    if (novo === null) return
+    const val = parseInt(novo)
+    if (isNaN(val) || val < 0) { alert('Valor inválido.'); return; }
+    await sb.from('premios').update({ estoque: val }).eq('id', id)
+    await carregarPremios()
+  }
+
+  async function excluirPremio(id) {
+    if (!confirm('Excluir este prêmio? Esta ação não pode ser desfeita.')) return
+    await sb.from('premios').delete().eq('id', id)
+    await carregarPremios()
+  }
+
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
   init()
 </script>

@@ -147,7 +147,7 @@
   const sb = window.supabase.createClient(_url, _key)
 
   const FATIAS = 8
-  const CORES = ['#0D134C','#162060','#1a2875','#0D134C','#162060','#1a2875','#0D134C','#162060']
+  const CORES = ['#04492A','#F3BF1A','#0D134C','#FFFFFF','#04492A','#F3BF1A','#0D134C','#FFFFFF']
   const BORDA = '#F3BF1A'
 
   let cupomAtual = null
@@ -210,7 +210,8 @@
       ctx.translate(cx, cy)
       ctx.rotate(inicio + fatiaAngulo / 2)
       ctx.textAlign = 'right'
-      ctx.fillStyle = '#fff'
+      const corTexto = (CORES[i % CORES.length] === '#FFFFFF' || CORES[i % CORES.length] === '#F3BF1A') ? '#0D134C' : '#FFFFFF'
+      ctx.fillStyle = corTexto
       ctx.font = 'bold 11px Nunito, Arial'
 
       const label = getFatiaLabel(i)
@@ -230,12 +231,20 @@
   }
 
   function getFatiaLabel(i) {
-    if (premios.length === 0) return i % 2 === 0 ? 'Prêmio!' : 'Tente mais'
-    const labels = []
-    premios.forEach(p => labels.push(p.nome.split(' ').slice(0,2).join(' ')))
-    // Completa com "Tente mais" até ter 8 fatias
-    while (labels.length < FATIAS) labels.push('Tente mais!')
-    return labels[i] || 'Tente mais!'
+    if (premios.length === 0) {
+      // Alterna prêmio e tente mais de forma equilibrada
+      return i % 2 === 0 ? '🎁 Prêmio!' : '😅 Tente mais!'
+    }
+    // Distribui prêmios intercalados com "Tente mais" nas 8 fatias
+    const labels = new Array(FATIAS).fill('😅 Tente mais!')
+    // Posições ímpares recebem prêmios
+    const posicoesPremios = [0, 2, 4, 6]
+    premios.forEach((p, idx) => {
+      if (idx < posicoesPremios.length) {
+        labels[posicoesPremios[idx]] = p.nome.length > 14 ? p.nome.substring(0, 13) + '…' : p.nome
+      }
+    })
+    return labels[i]
   }
 
   async function validarCupom() {
@@ -289,10 +298,14 @@
     const voltasExtras = (Math.floor(Math.random() * 5) + 5) * 2 * Math.PI
 
     // Determina ângulo final baseado no resultado
-    let fatiaAlvo = Math.floor(Math.random() * FATIAS)
+    const posicoesPremios = [0, 2, 4, 6]
+    const posicoesSemPremio = [1, 3, 5, 7]
+    let fatiaAlvo
     if (premio) {
       const idx = premios.findIndex(p => p.id === premio.id)
-      if (idx >= 0) fatiaAlvo = idx % FATIAS
+      fatiaAlvo = idx >= 0 && idx < posicoesPremios.length ? posicoesPremios[idx] : posicoesPremios[0]
+    } else {
+      fatiaAlvo = posicoesSemPremio[Math.floor(Math.random() * posicoesSemPremio.length)]
     }
 
     const anguloFinal = voltasExtras + (FATIAS - fatiaAlvo) * fatiaAngulo - fatiaAngulo / 2
