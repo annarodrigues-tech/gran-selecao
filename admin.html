@@ -586,9 +586,9 @@
         '<td>' + p.probabilidade + '%</td>' +
         '<td><span style="color:' + (p.ativo ? '#6bff9a' : 'rgba(255,255,255,0.3)') + ';font-weight:800;">' + (p.ativo ? '🟢 Ativo' : '🔴 Inativo') + '</span></td>' +
         '<td style="display:flex;gap:6px;">' +
-        '<button class="btn-acao-missao btn-toggle-missao" onclick="togglePremio('' + p.id + '',' + p.ativo + ')">' + (p.ativo ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
-        '<button class="btn-acao-missao btn-editar-missao" onclick="editarEstoque('' + p.id + '',' + p.estoque + ','' + p.nome.replace(/'/g,"") + '')"">📦 Estoque</button>' +
-        '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirPremio('' + p.id + '')">🗑 Excluir</button>' +
+        '<button class="btn-acao-missao btn-toggle-missao" onclick="togglePremio(\'' + p.id + '\',' + p.ativo + ')">' + (p.ativo ? '⏸ Desativar' : '▶️ Ativar') + '</button>' +
+        '<button class="btn-acao-missao btn-editar-missao" onclick="editarEstoque(\'' + p.id + '\',' + p.estoque + ')">📦 Estoque</button>' +
+        '<button class="btn-acao-missao btn-excluir-missao" onclick="excluirPremio(\'' + p.id + '\')">🗑 Excluir</button>' +
         '</td></tr>'
       ).join('') +
       '</tbody></table>'
@@ -620,14 +620,13 @@
     await carregarAdmins()
   }
 
-  async function editarEstoque(id, estoqueAtual, nome) {
-    const novo = prompt('Novo estoque para "' + nome + '":' , estoqueAtual)
+  async function editarEstoque(id, estoqueAtual) {
+    const novo = prompt('Novo estoque:', estoqueAtual)
     if (novo === null) return
     const val = parseInt(novo)
     if (isNaN(val) || val < 0) { alert('Valor inválido.'); return; }
     await sb.from('premios').update({ estoque: val }).eq('id', id)
     await carregarPremios()
-    await carregarAdmins()
   }
 
   async function excluirPremio(id) {
