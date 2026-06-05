@@ -611,11 +611,13 @@
     document.getElementById('premio-probabilidade').value = ''
     document.getElementById('premio-descricao').value = ''
     await carregarPremios()
+    await carregarAdmins()
   }
 
   async function togglePremio(id, ativo) {
     await sb.from('premios').update({ ativo: !ativo }).eq('id', id)
     await carregarPremios()
+    await carregarAdmins()
   }
 
   async function editarEstoque(id, estoqueAtual, nome) {
@@ -625,12 +627,57 @@
     if (isNaN(val) || val < 0) { alert('Valor inválido.'); return; }
     await sb.from('premios').update({ estoque: val }).eq('id', id)
     await carregarPremios()
+    await carregarAdmins()
   }
 
   async function excluirPremio(id) {
     if (!confirm('Excluir este prêmio? Esta ação não pode ser desfeita.')) return
     await sb.from('premios').delete().eq('id', id)
     await carregarPremios()
+    await carregarAdmins()
+  }
+
+  // ---- ADMINS ----
+  async function carregarAdmins() {
+    const { data } = await sb.from('admins').select('*').order('criado_em', { ascending: true })
+    const lista = document.getElementById('lista-admins')
+    if (!data || data.length === 0) { lista.innerHTML = '<div class="carregando">Nenhum admin cadastrado.</div>'; return; }
+    lista.innerHTML = '<table class="tabela"><thead><tr><th>E-mail</th><th>Desde</th><th>Ação</th></tr></thead><tbody>' +
+      data.map(a =>
+        '<tr>' +
+        '<td><strong>' + a.email + '</strong></td>' +
+        '<td>' + new Date(a.criado_em).toLocaleDateString('pt-BR') + '</td>' +
+        '<td><button class="btn-acao-missao btn-excluir-missao" onclick="removerAdmin('' + a.id + '', '' + a.email + '')">🗑 Remover</button></td>' +
+        '</tr>'
+      ).join('') +
+      '</tbody></table>'
+  }
+
+  async function adicionarAdmin() {
+    const email = document.getElementById('admin-email').value.trim()
+    if (!email) { mostrarMsg('msg-admin', 'Informe o e-mail do usuário.', 'erro'); return; }
+
+    // Busca o user_id pelo email
+    const { data: usuario, error: errUser } = await sb.from('admins').select('id').eq('email', email).single()
+    if (usuario) { mostrarMsg('msg-admin', 'Este usuário já é admin.', 'erro'); return; }
+
+    // Busca o user_id na tabela auth via RPC ou diretamente
+    const { data: users } = await sb.rpc('get_user_id_by_email', { p_email: email })
+    if (!users) { mostrarMsg('msg-admin', 'Usuário não encontrado. O e-mail precisa estar cadastrado na plataforma.', 'erro'); return; }
+
+    const { error } = await sb.from('admins').insert({ user_id: users, email })
+    if (error) { mostrarMsg('msg-admin', 'Erro: ' + error.message, 'erro'); return; }
+
+    mostrarMsg('msg-admin', '✅ Admin adicionado com sucesso!', 'sucesso')
+    document.getElementById('admin-email').value = ''
+    await carregarAdmins()
+  }
+
+  async function removerAdmin(id, email) {
+    if (!confirm('Remover ' + email + ' como admin? Esta ação não pode ser desfeita.')) return
+    const { error } = await sb.from('admins').delete().eq('id', id)
+    if (error) { alert('Erro: ' + error.message); return; }
+    await carregarAdmins()
   }
 
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
