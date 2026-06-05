@@ -474,12 +474,12 @@
     <div class="modal-nome" id="modal-nome"></div>
     <div class="modal-area" id="modal-area"></div>
     <div id="modal-disciplinas" style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;font-style:italic;margin-top:-18px;margin-bottom:18px;text-align:center;"></div>
-    <div class="modal-acoes">
-      <button class="btn-fechar" onclick="fecharModal()">Colar no álbum!</button>
-      <button class="btn-comp-modal" onclick="compartilharFigurinha()">📤 Compartilhar</button>
+    <div id="modal-cupom-btn-wrap" style="display:none;margin-bottom:12px;">
+      <button onclick="verCupomEFechar()" style="width:100%;padding:13px;background:var(--amarelo);border:none;color:#0D134C;border-radius:10px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(243,191,26,0.35);">🎰 Ver meu cupom da roleta!</button>
     </div>
-    <div id="modal-cupom-btn-wrap" style="display:none;margin-top:12px;">
-      <button onclick="fecharModal();mostrarModalCupom(window._cupomPendente)" style="width:100%;padding:11px;background:rgba(243,191,26,0.1);border:1px solid rgba(243,191,26,0.3);color:var(--amarelo);border-radius:10px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;transition:all 0.2s;">🎰 Ver meu cupom da roleta!</button>
+    <div class="modal-acoes">
+      <button class="btn-fechar" id="btn-colar" onclick="colarEVerificarCupom()">Colar no álbum!</button>
+      <button class="btn-comp-modal" onclick="compartilharFigurinha()">📤 Compartilhar</button>
     </div>
   </div>
 </div>
