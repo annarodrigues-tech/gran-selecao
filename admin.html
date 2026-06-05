@@ -408,7 +408,7 @@
     if (error) { alert('Erro ao gerar código: ' + error.message); return; }
 
     alert('✅ Código gerado: ' + codigo)
-    await carregarProfessores()
+    setTimeout(async () => await carregarProfessores(), 500)
   }
 
   async function cadastrarMissao() {
