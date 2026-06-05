@@ -466,8 +466,8 @@
 </div>
 
 <!-- MODAL REVELAÇÃO -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)fecharModal()">
+  <div class="modal" style="position:relative;">
     <div class="modal-emoji">🎉</div>
     <h2>Figurinha desbloqueada!</h2>
     <div class="modal-figurinha" id="modal-figurinha-wrap"></div>
@@ -513,7 +513,7 @@
 </div>
 
 <!-- MODAL COMPARTILHAMENTO -->
-<div class="modal-overlay" id="modal-comp">
+<div class="modal-overlay" id="modal-comp" onclick="if(event.target===this)fecharCompartilhamento()">
   <div class="modal-comp">
     <h3>📤 Compartilhar</h3>
     <p>Chame seus amigos para participar dos Imparáveis!</p>
@@ -813,6 +813,7 @@
   }
 
   function fecharVerFigurinha() { document.getElementById('modal-ver').classList.remove('visivel') }
+  function fecharVerFigurinhaSeFora(e) { if (e.target === document.getElementById('modal-ver')) fecharVerFigurinha() }
 
   function compartilharDaVisualizacao() {
     fecharVerFigurinha()

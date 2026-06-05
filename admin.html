@@ -646,7 +646,7 @@
         '<tr>' +
         '<td><strong>' + a.email + '</strong></td>' +
         '<td>' + new Date(a.criado_em).toLocaleDateString('pt-BR') + '</td>' +
-        '<td><button class="btn-acao-missao btn-excluir-missao" onclick="removerAdmin('' + a.id + '', '' + a.email + '')">🗑 Remover</button></td>' +
+        '<td><button class="btn-acao-missao btn-excluir-missao" onclick="removerAdmin(\'' + a.id + '\')">🗑 Remover</button></td>' +
         '</tr>'
       ).join('') +
       '</tbody></table>'
@@ -672,8 +672,8 @@
     await carregarAdmins()
   }
 
-  async function removerAdmin(id, email) {
-    if (!confirm('Remover ' + email + ' como admin? Esta ação não pode ser desfeita.')) return
+  async function removerAdmin(id) {
+    if (!confirm('Remover este admin? Esta ação não pode ser desfeita.')) return
     const { error } = await sb.from('admins').delete().eq('id', id)
     if (error) { alert('Erro: ' + error.message); return; }
     await carregarAdmins()
