@@ -409,6 +409,8 @@
     <a href="album.html" class="nav-item ativo"><span class="icon">📖</span> Meu Álbum</a>
     <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
     <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
+    <a href="roleta.html" class="nav-item"><span class="icon">🎰</span> Roleta</a>
+    <a href="trofeus.html" class="nav-item"><span class="icon">🎖️</span> Troféus</a>
     <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
@@ -479,6 +481,23 @@
   </div>
 </div>
 
+<!-- MODAL CUPOM GERADO -->
+<div class="modal-overlay" id="modal-cupom">
+  <div class="modal" style="max-width:380px;padding:36px 32px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">🎰</div>
+    <h2 style="font-size:20px;margin-bottom:8px;">Você ganhou um cupom!</h2>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;font-weight:600;line-height:1.6;">Use este código na Roleta Imparáveis para concorrer a prêmios exclusivos!</p>
+    <div style="background:rgba(13,19,76,0.8);border:2px solid var(--amarelo);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div id="cupom-codigo-gerado" style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--amarelo);letter-spacing:3px;"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-copiar-cupom" onclick="copiarCupom()" style="padding:11px 20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">📋 Copiar</button>
+      <a href="roleta.html" style="padding:11px 20px;background:#04492A;color:#fff;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;">🎰 Girar agora!</a>
+      <button onclick="fecharModalCupom()" style="padding:11px 20px;background:none;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Depois</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL VISUALIZAÇÃO FIGURINHA -->
 <div class="modal-overlay" id="modal-ver">
   <div class="modal" style="max-width:320px;padding:24px 24px 28px;">
@@ -528,6 +547,7 @@
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
+    window._session = session
     const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
     if (admin) document.getElementById('link-admin').style.display = 'flex'
     const { data: config } = await sb.from('configuracoes').select('valor').eq('chave', 'texto_compartilhamento').single()
@@ -561,9 +581,13 @@
 
   function renderizarFiltros() {
     const areasComProfs = new Set(professores.map(p => p.area))
-    const todasAreas = carreiras.length > 0 ? carreiras : [...areasComProfs]
+    // Garante que Especiais aparece sempre no topo
+    let todasAreas = carreiras.length > 0 ? carreiras : [...areasComProfs]
+    if (!todasAreas.includes('Especiais')) todasAreas = ['Especiais', ...todasAreas]
+    else {
+      todasAreas = ['Especiais', ...todasAreas.filter(a => a !== 'Especiais')]
+    }
     const select = document.getElementById('filtro-dropdown')
-    const valorAtual = select.value
     select.innerHTML = '<option value="Todos">Todas as carreiras (' + professores.length + ')</option>' +
       todasAreas.map(area => {
         const qtd = professores.filter(p => p.area === area).length
@@ -699,6 +723,7 @@
       mostrarModal(professor)
     }
     document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
+    await gerarCupom(professor, session)
   }
 
   function mostrarModal(professor) {
@@ -821,6 +846,44 @@
     setTimeout(() => { window.open('https://www.instagram.com/', '_blank') }, 800)
   }
   function copiarTexto() { navigator.clipboard.writeText(getTextoAtual()); alert('Texto copiado!') }
+  async function gerarCupom(professor) {
+    const session = window._session
+    if (!session) return
+
+    // Gera código único SPIN-XXXXXXXX
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let codigo = 'SPIN-'
+    for (let i = 0; i < 8; i++) codigo += chars.charAt(Math.floor(Math.random() * chars.length))
+
+    const { error } = await sb.from('cupons').insert({
+      user_id: session.user.id,
+      email: session.user.email,
+      nome: session.user.user_metadata?.nome_completo || session.user.email,
+      codigo,
+      professor_id: professor.id,
+      usado: false
+    })
+
+    if (!error) mostrarModalCupom(codigo)
+  }
+
+  function mostrarModalCupom(codigo) {
+    document.getElementById('cupom-codigo-gerado').textContent = codigo
+    document.getElementById('modal-cupom').classList.add('visivel')
+  }
+
+  function fecharModalCupom() {
+    document.getElementById('modal-cupom').classList.remove('visivel')
+  }
+
+  function copiarCupom() {
+    const codigo = document.getElementById('cupom-codigo-gerado').textContent
+    navigator.clipboard.writeText(codigo)
+    const btn = document.querySelector('.btn-copiar-cupom')
+    btn.textContent = '✅ Copiado!'
+    setTimeout(() => btn.textContent = '📋 Copiar', 2000)
+  }
+
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
 
 

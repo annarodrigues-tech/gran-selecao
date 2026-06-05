@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imparáveis — Troféus</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --amarelo: #F3BF1A; --verde: #04492A; --azul: #0D134C; --branco: #FFFFFF; }
+
+    body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
+
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .logo-marca { display: flex; align-items: center; gap: 10px; }
+    .logo-icone { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-icone img { width: 38px; height: auto; object-fit: contain; }
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; color: var(--branco); }
+    .logo-texto h1 span { color: var(--amarelo); }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.ativo { background: #04492A; color: var(--branco); box-shadow: 0 4px 12px rgba(4,73,42,0.3); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
+    .btn-sair:hover { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.3); color: var(--branco); }
+
+    .content { margin-left: 230px; flex: 1; padding: 36px; max-width: 860px; }
+
+    .page-header { margin-bottom: 32px; }
+    .page-header h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+    .page-header p { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 22px 24px; display: flex; align-items: center; gap: 16px; }
+    .stat-icon { font-size: 32px; flex-shrink: 0; }
+    .stat-numero { font-size: 36px; font-weight: 900; color: var(--amarelo); line-height: 1; display: block; }
+    .stat-label { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 2px; }
+
+    /* SEÇÃO */
+    .secao { margin-bottom: 32px; }
+    .secao-titulo { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 14px; }
+
+    /* CUPONS */
+    .cupons-lista { display: flex; flex-direction: column; gap: 10px; }
+    .cupom-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; transition: all 0.2s; }
+    .cupom-item:hover { border-color: rgba(243,191,26,0.2); }
+    .cupom-item.usado { opacity: 0.45; }
+    .cupom-codigo { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 900; color: var(--amarelo); letter-spacing: 3px; }
+    .cupom-item.usado .cupom-codigo { color: rgba(255,255,255,0.3); }
+    .cupom-info { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 700; margin-top: 2px; }
+    .cupom-status { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 100px; white-space: nowrap; }
+    .cupom-status.disponivel { background: rgba(243,191,26,0.15); color: var(--amarelo); border: 1px solid rgba(243,191,26,0.25); }
+    .cupom-status.usado-badge { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.08); }
+    .btn-usar-cupom { padding: 8px 18px; background: #04492A; color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; text-decoration: none; display: inline-block; }
+    .btn-usar-cupom:hover { background: #035c35; transform: translateY(-1px); }
+
+    /* PRÊMIOS GANHOS */
+    .premios-lista { display: flex; flex-direction: column; gap: 10px; }
+    .premio-item { background: rgba(243,191,26,0.06); border: 1px solid rgba(243,191,26,0.2); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+    .premio-icon { font-size: 28px; flex-shrink: 0; }
+    .premio-nome { font-size: 15px; font-weight: 800; color: var(--branco); }
+    .premio-data { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 2px; }
+    .premio-badge { margin-left: auto; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 100px; background: rgba(243,191,26,0.15); color: var(--amarelo); border: 1px solid rgba(243,191,26,0.25); white-space: nowrap; }
+
+    .vazio { text-align: center; padding: 40px; color: rgba(255,255,255,0.2); font-size: 14px; font-weight: 700; }
+    .vazio-icon { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.4; }
+    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 40px; font-size: 14px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-marca">
+      <div class="logo-icone"><img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran"></div>
+      <div class="logo-texto"><h1><span>Imparáveis</span></h1></div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-title">Menu</div>
+    <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
+    <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
+    <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
+    <a href="roleta.html" class="nav-item"><span class="icon">🎰</span> Roleta</a>
+    <a href="trofeus.html" class="nav-item ativo"><span class="icon">🎖️</span> Troféus</a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+  </div>
+  <div class="sidebar-footer">
+    <button class="btn-sair" onclick="sair()">↩ Sair</button>
+  </div>
+</nav>
+
+<div class="content">
+  <div class="page-header">
+    <h2>🎖️ Troféus</h2>
+    <p>Seus cupons, giros e prêmios ganhos na Roleta Imparáveis!</p>
+  </div>
+
+  <div class="stats-grid" id="stats">
+    <div class="stat-card"><span class="stat-icon">🎟️</span><div><span class="stat-numero" id="stat-disponiveis">—</span><span class="stat-label">Cupons disponíveis</span></div></div>
+    <div class="stat-card"><span class="stat-icon">🎰</span><div><span class="stat-numero" id="stat-giros">—</span><span class="stat-label">Giros realizados</span></div></div>
+    <div class="stat-card"><span class="stat-icon">🏆</span><div><span class="stat-numero" id="stat-premios">—</span><span class="stat-label">Prêmios ganhos</span></div></div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">🎟️ Meus Cupons</div>
+    <div class="cupons-lista" id="cupons-lista"><div class="carregando">Carregando...</div></div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">🏆 Prêmios Ganhos</div>
+    <div class="premios-lista" id="premios-lista"><div class="carregando">Carregando...</div></div>
+  </div>
+</div>
+
+<script>
+  const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
+  const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
+  const sb = window.supabase.createClient(_url, _key)
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) { window.location.href = 'index.html'; return; }
+    const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
+    if (admin) document.getElementById('link-admin').style.display = 'flex'
+    await Promise.all([carregarCupons(), carregarPremios()])
+  }
+
+  async function carregarCupons() {
+    const { data } = await sb.from('cupons').select('*').order('criado_em', { ascending: false })
+    const lista = data || []
+    const disponiveis = lista.filter(c => !c.usado).length
+    document.getElementById('stat-disponiveis').textContent = disponiveis
+
+    if (lista.length === 0) {
+      document.getElementById('cupons-lista').innerHTML = '<div class="vazio"><span class="vazio-icon">🎟️</span>Você ainda não tem cupons. Desbloqueie figurinhas para ganhar!</div>'
+      return
+    }
+
+    document.getElementById('cupons-lista').innerHTML = lista.map(c => {
+      const data = new Date(c.criado_em).toLocaleDateString('pt-BR')
+      return '<div class="cupom-item' + (c.usado ? ' usado' : '') + '">' +
+        '<div>' +
+          '<div class="cupom-codigo">' + c.codigo + '</div>' +
+          '<div class="cupom-info">Gerado em ' + data + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;">' +
+          '<span class="cupom-status ' + (c.usado ? 'usado-badge' : 'disponivel') + '">' + (c.usado ? '✅ Usado' : '🎰 Disponível') + '</span>' +
+          (!c.usado ? '<a href="roleta.html?cupom=' + c.codigo + '" class="btn-usar-cupom">Girar →</a>' : '') +
+        '</div>' +
+        '</div>'
+    }).join('')
+  }
+
+  async function carregarPremios() {
+    const { data } = await sb.from('giros').select('*, premios(nome)').eq('ganhou', true).order('criado_em', { ascending: false })
+    const lista = data || []
+    document.getElementById('stat-giros').textContent = (await sb.from('giros').select('id', { count: 'exact' })).count || 0
+    document.getElementById('stat-premios').textContent = lista.length
+
+    if (lista.length === 0) {
+      document.getElementById('premios-lista').innerHTML = '<div class="vazio"><span class="vazio-icon">🏆</span>Nenhum prêmio ainda — tente a sorte na roleta!</div>'
+      return
+    }
+
+    document.getElementById('premios-lista').innerHTML = lista.map(g => {
+      const data = new Date(g.criado_em).toLocaleDateString('pt-BR')
+      return '<div class="premio-item">' +
+        '<span class="premio-icon">🎁</span>' +
+        '<div>' +
+          '<div class="premio-nome">' + (g.premios?.nome || 'Prêmio') + '</div>' +
+          '<div class="premio-data">Ganho em ' + data + '</div>' +
+        '</div>' +
+        '<span class="premio-badge">🕐 Aguardando contato</span>' +
+        '</div>'
+    }).join('')
+  }
+
+  async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
+  init()
+</script>
+</body>
+</html>

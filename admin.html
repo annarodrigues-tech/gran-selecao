@@ -143,6 +143,8 @@
     <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
     <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
     <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
+    <a href="roleta.html" class="nav-item"><span class="icon">🎰</span> Roleta</a>
+    <a href="trofeus.html" class="nav-item"><span class="icon">🎖️</span> Troféus</a>
     <a href="admin.html" class="nav-item ativo"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
@@ -484,7 +486,7 @@
   let professorEditAtual = null
 
   async function abrirEdicao(id) {
-    const { data: p, error } = await sb.from('professores').select('*').eq('id', id).single()
+    const { data: p, error } = await sb.from('professores').select('*, codigos(codigo, ativo)').eq('id', id).single()
     if (error || !p) { alert('Erro ao carregar professor.'); return; }
 
     professorEditAtual = p
@@ -497,6 +499,15 @@
     document.getElementById('edit-rede-social-url').value = p.rede_social_url || ''
     document.getElementById('edit-disciplinas').value = p.disciplinas || ''
     document.getElementById('msg-edicao').style.display = 'none'
+
+    // Mostra o código no modal
+    const cod = p.codigos?.[0]
+    const codigoWrap = document.getElementById('edit-codigo-wrap')
+    if (codigoWrap) {
+      codigoWrap.innerHTML = cod
+        ? '<span class="codigo-badge">' + cod.codigo + '</span> <button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">Copiar</button>'
+        : '<span style="color:rgba(255,255,255,0.3);font-size:13px;">Nenhum código gerado ainda</span>'
+    }
 
     const preview = document.getElementById('foto-edit-preview')
     preview.innerHTML = p.foto_url
@@ -615,6 +626,11 @@
         <input type="text" id="edit-disciplinas" placeholder="Ex: Direito Constitucional, Direito Administrativo">
         <div class="hint">Separe as disciplinas por vírgula</div>
       </div>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+      <label style="display:block;font-size:11px;font-weight:800;color:rgba(255,255,255,0.4);margin-bottom:8px;letter-spacing:0.8px;text-transform:uppercase;">Código da figurinha</label>
+      <div id="edit-codigo-wrap" style="display:flex;align-items:center;gap:10px;"></div>
     </div>
 
     <div class="modal-acoes">

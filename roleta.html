@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imparáveis — Roleta</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --amarelo: #F3BF1A; --verde: #04492A; --azul: #0D134C; --branco: #FFFFFF; }
+
+    body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
+
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .logo-marca { display: flex; align-items: center; gap: 10px; }
+    .logo-icone { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-icone img { width: 38px; height: auto; object-fit: contain; }
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; color: var(--branco); }
+    .logo-texto h1 span { color: var(--amarelo); }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.ativo { background: #04492A; color: var(--branco); box-shadow: 0 4px 12px rgba(4,73,42,0.3); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
+    .btn-sair:hover { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.3); color: var(--branco); }
+
+    .content { margin-left: 230px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px; min-height: 100vh; }
+
+    /* CAMPO DE CUPOM */
+    .cupom-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 28px 32px; width: 100%; max-width: 520px; margin-bottom: 32px; text-align: center; }
+    .cupom-box h2 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+    .cupom-box p { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 20px; }
+    .cupom-input-group { display: flex; gap: 10px; }
+    .cupom-input { flex: 1; padding: 14px 18px; background: rgba(13,19,76,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--branco); font-size: 18px; font-family: 'Courier New', monospace; letter-spacing: 3px; text-transform: uppercase; outline: none; transition: all 0.2s; font-weight: 700; text-align: center; }
+    .cupom-input:focus { border-color: var(--amarelo); box-shadow: 0 0 0 3px rgba(243,191,26,0.12); }
+    .cupom-input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.2); font-size: 14px; }
+    .btn-validar { padding: 14px 24px; background: #04492A; color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 16px rgba(4,73,42,0.35); }
+    .btn-validar:hover { background: #035c35; transform: translateY(-1px); }
+    .btn-validar:disabled { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; transform: none; }
+    .msg-cupom { margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; display: none; }
+    .msg-cupom.erro { background: rgba(255,100,100,0.12); color: #ff8090; border: 1px solid rgba(255,100,100,0.25); }
+    .msg-cupom.sucesso { background: rgba(40,200,100,0.12); color: #6bff9a; border: 1px solid rgba(40,200,100,0.25); }
+
+    /* ROLETA */
+    .roleta-wrap { position: relative; display: flex; flex-direction: column; align-items: center; opacity: 0.3; pointer-events: none; transition: opacity 0.4s; }
+    .roleta-wrap.ativa { opacity: 1; pointer-events: all; }
+
+    .roleta-seta { font-size: 40px; margin-bottom: -12px; z-index: 10; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+
+    .roleta-canvas-wrap { position: relative; }
+    canvas { border-radius: 50%; box-shadow: 0 0 0 6px rgba(243,191,26,0.3), 0 0 40px rgba(243,191,26,0.1), 0 20px 60px rgba(0,0,0,0.5); }
+
+    .btn-girar { margin-top: 28px; padding: 16px 48px; background: var(--amarelo); color: var(--azul); border: none; border-radius: 12px; font-size: 18px; font-weight: 900; font-family: inherit; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(243,191,26,0.4); letter-spacing: 0.5px; }
+    .btn-girar:hover { background: #d4a516; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(243,191,26,0.5); }
+    .btn-girar:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); box-shadow: none; cursor: not-allowed; transform: none; }
+
+    /* MODAL RESULTADO */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.visivel { display: flex; }
+    .modal-resultado { background: linear-gradient(145deg, #162060, #1e2d7a); border-radius: 24px; padding: 40px; text-align: center; max-width: 400px; width: 90%; animation: aparecer 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes aparecer { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .resultado-icone { font-size: 64px; margin-bottom: 16px; display: block; }
+    .resultado-titulo { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+    .resultado-desc { font-size: 14px; color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 28px; line-height: 1.6; }
+    .resultado-premio { background: rgba(243,191,26,0.1); border: 1px solid rgba(243,191,26,0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+    .resultado-premio-nome { font-size: 18px; font-weight: 900; color: var(--amarelo); }
+    .resultado-premio-desc { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; font-weight: 600; }
+
+    .btn-fechar-resultado { padding: 13px 32px; background: #04492A; color: var(--branco); border: none; border-radius: 10px; font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; margin-right: 10px; }
+    .btn-fechar-resultado:hover { background: #035c35; }
+    .btn-trofeus { padding: 13px 24px; background: var(--amarelo); color: var(--azul); border: none; border-radius: 10px; font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-trofeus:hover { background: #d4a516; }
+  </style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-marca">
+      <div class="logo-icone"><img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran"></div>
+      <div class="logo-texto"><h1><span>Imparáveis</span></h1></div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-title">Menu</div>
+    <a href="album.html" class="nav-item"><span class="icon">📖</span> Meu Álbum</a>
+    <a href="missoes.html" class="nav-item"><span class="icon">🎯</span> Missões</a>
+    <a href="ranking.html" class="nav-item"><span class="icon">🏆</span> Ranking</a>
+    <a href="roleta.html" class="nav-item ativo"><span class="icon">🎰</span> Roleta</a>
+    <a href="trofeus.html" class="nav-item"><span class="icon">🎖️</span> Troféus</a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+  </div>
+  <div class="sidebar-footer">
+    <button class="btn-sair" onclick="sair()">↩ Sair</button>
+  </div>
+</nav>
+
+<div class="content">
+  <!-- CAMPO CUPOM -->
+  <div class="cupom-box">
+    <h2>🎰 Roleta Imparáveis</h2>
+    <p>Insira seu cupom para girar e concorrer a prêmios exclusivos!</p>
+    <div class="cupom-input-group">
+      <input type="text" class="cupom-input" id="input-cupom" placeholder="SPIN-XXXXXXXX" maxlength="20">
+      <button class="btn-validar" onclick="validarCupom()">Validar</button>
+    </div>
+    <div class="msg-cupom" id="msg-cupom"></div>
+  </div>
+
+  <!-- ROLETA -->
+  <div class="roleta-wrap" id="roleta-wrap">
+    <div class="roleta-seta">▼</div>
+    <div class="roleta-canvas-wrap">
+      <canvas id="canvas" width="380" height="380"></canvas>
+    </div>
+    <button class="btn-girar" id="btn-girar" onclick="girar()">🎰 Girar agora!</button>
+  </div>
+</div>
+
+<!-- MODAL RESULTADO -->
+<div class="modal-overlay" id="modal-resultado">
+  <div class="modal-resultado">
+    <span class="resultado-icone" id="res-icone"></span>
+    <div class="resultado-titulo" id="res-titulo"></div>
+    <div id="res-premio-wrap" style="display:none">
+      <div class="resultado-premio">
+        <div class="resultado-premio-nome" id="res-premio-nome"></div>
+        <div class="resultado-premio-desc" id="res-premio-desc"></div>
+      </div>
+    </div>
+    <div class="resultado-desc" id="res-desc"></div>
+    <button class="btn-fechar-resultado" onclick="fecharResultado()">Fechar</button>
+    <button class="btn-trofeus" onclick="window.location.href='trofeus.html'">🎖️ Ver Troféus</button>
+  </div>
+</div>
+
+<script>
+  const _url = 'https://zjkyaqtaaflvdqpqeabm.supabase.co'
+  const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
+  const sb = window.supabase.createClient(_url, _key)
+
+  const FATIAS = 8
+  const CORES = ['#0D134C','#162060','#1a2875','#0D134C','#162060','#1a2875','#0D134C','#162060']
+  const BORDA = '#F3BF1A'
+
+  let cupomAtual = null
+  let premios = []
+  let girando = false
+  let anguloAtual = 0
+  let userId = null
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession()
+    if (!session) { window.location.href = 'index.html'; return; }
+    userId = session.user.id
+    const { data: admin } = await sb.from('admins').select('id').eq('user_id', userId).single()
+    if (admin) document.getElementById('link-admin').style.display = 'flex'
+
+    await carregarPremios()
+    desenharRoleta(0)
+
+    // Preenche cupom se veio por URL
+    const params = new URLSearchParams(window.location.search)
+    const cupomUrl = params.get('cupom')
+    if (cupomUrl) {
+      document.getElementById('input-cupom').value = cupomUrl
+      await validarCupom()
+    }
+  }
+
+  async function carregarPremios() {
+    const { data } = await sb.from('premios').select('*').eq('ativo', true).gt('estoque', 0)
+    premios = data || []
+  }
+
+  function desenharRoleta(angulo) {
+    const canvas = document.getElementById('canvas')
+    const ctx = canvas.getContext('2d')
+    const cx = canvas.width / 2
+    const cy = canvas.height / 2
+    const r = cx - 8
+    const fatiaAngulo = (2 * Math.PI) / FATIAS
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Fatias
+    for (let i = 0; i < FATIAS; i++) {
+      const inicio = angulo + i * fatiaAngulo
+      const fim = inicio + fatiaAngulo
+
+      ctx.beginPath()
+      ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, r, inicio, fim)
+      ctx.closePath()
+      ctx.fillStyle = CORES[i % CORES.length]
+      ctx.fill()
+      ctx.strokeStyle = BORDA
+      ctx.lineWidth = 2
+      ctx.stroke()
+
+      // Texto
+      ctx.save()
+      ctx.translate(cx, cy)
+      ctx.rotate(inicio + fatiaAngulo / 2)
+      ctx.textAlign = 'right'
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold 11px Nunito, Arial'
+
+      const label = getFatiaLabel(i)
+      ctx.fillText(label, r - 14, 5)
+      ctx.restore()
+    }
+
+    // Centro
+    ctx.beginPath()
+    ctx.arc(cx, cy, 24, 0, 2 * Math.PI)
+    ctx.fillStyle = BORDA
+    ctx.fill()
+    ctx.fillStyle = '#0D134C'
+    ctx.font = 'bold 16px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('★', cx, cy + 6)
+  }
+
+  function getFatiaLabel(i) {
+    if (premios.length === 0) return i % 2 === 0 ? 'Prêmio!' : 'Tente mais'
+    const labels = []
+    premios.forEach(p => labels.push(p.nome.split(' ').slice(0,2).join(' ')))
+    // Completa com "Tente mais" até ter 8 fatias
+    while (labels.length < FATIAS) labels.push('Tente mais!')
+    return labels[i] || 'Tente mais!'
+  }
+
+  async function validarCupom() {
+    const codigo = document.getElementById('input-cupom').value.trim().toUpperCase()
+    const btn = document.querySelector('.btn-validar')
+    const msg = document.getElementById('msg-cupom')
+
+    if (!codigo) return
+    btn.disabled = true; btn.textContent = 'Validando...'
+    msg.style.display = 'none'
+
+    const { data, error } = await sb.from('cupons')
+      .select('*').eq('codigo', codigo).eq('user_id', userId).single()
+
+    btn.disabled = false; btn.textContent = 'Validar'
+
+    if (error || !data) {
+      msg.textContent = 'Cupom inválido ou não pertence à sua conta.'
+      msg.className = 'msg-cupom erro'; msg.style.display = 'block'; return
+    }
+
+    if (data.usado) {
+      msg.textContent = 'Este cupom já foi utilizado.'
+      msg.className = 'msg-cupom erro'; msg.style.display = 'block'; return
+    }
+
+    cupomAtual = data
+    msg.textContent = '✅ Cupom válido! Gire a roleta!'
+    msg.className = 'msg-cupom sucesso'; msg.style.display = 'block'
+    document.getElementById('roleta-wrap').classList.add('ativa')
+  }
+
+  function sortearPremio() {
+    if (premios.length === 0) return null
+    const rand = Math.random() * 100
+    let acumulado = 0
+    for (const premio of premios) {
+      acumulado += parseFloat(premio.probabilidade)
+      if (rand <= acumulado) return premio
+    }
+    return null
+  }
+
+  async function girar() {
+    if (girando || !cupomAtual) return
+    girando = true
+    document.getElementById('btn-girar').disabled = true
+
+    const premio = sortearPremio()
+    const fatiaAngulo = (2 * Math.PI) / FATIAS
+    const voltasExtras = (Math.floor(Math.random() * 5) + 5) * 2 * Math.PI
+
+    // Determina ângulo final baseado no resultado
+    let fatiaAlvo = Math.floor(Math.random() * FATIAS)
+    if (premio) {
+      const idx = premios.findIndex(p => p.id === premio.id)
+      if (idx >= 0) fatiaAlvo = idx % FATIAS
+    }
+
+    const anguloFinal = voltasExtras + (FATIAS - fatiaAlvo) * fatiaAngulo - fatiaAngulo / 2
+
+    let inicio = null
+    const duracao = 5000
+
+    function animar(ts) {
+      if (!inicio) inicio = ts
+      const progresso = Math.min((ts - inicio) / duracao, 1)
+      const ease = 1 - Math.pow(1 - progresso, 4)
+      anguloAtual = ease * anguloFinal
+      desenharRoleta(anguloAtual % (2 * Math.PI))
+
+      if (progresso < 1) {
+        requestAnimationFrame(animar)
+      } else {
+        setTimeout(() => mostrarResultado(premio), 600)
+      }
+    }
+
+    requestAnimationFrame(animar)
+
+    // Registra giro e marca cupom como usado
+    await sb.from('cupons').update({ usado: true }).eq('id', cupomAtual.id)
+    await sb.from('giros').insert({
+      user_id: userId,
+      cupom_id: cupomAtual.id,
+      premio_id: premio?.id || null,
+      ganhou: !!premio
+    })
+
+    if (premio) {
+      await sb.from('premios').update({ estoque: premio.estoque - 1 }).eq('id', premio.id)
+    }
+  }
+
+  function mostrarResultado(premio) {
+    const modal = document.getElementById('modal-resultado')
+    if (premio) {
+      document.getElementById('res-icone').textContent = '🎉'
+      document.getElementById('res-titulo').textContent = 'Parabéns! Você ganhou!'
+      document.getElementById('res-premio-wrap').style.display = 'block'
+      document.getElementById('res-premio-nome').textContent = premio.nome
+      document.getElementById('res-premio-desc').textContent = premio.descricao || ''
+      document.getElementById('res-desc').textContent = 'Nossa equipe entrará em contato pelo e-mail cadastrado para combinar a entrega do seu prêmio. Veja seus Troféus!'
+    } else {
+      document.getElementById('res-icone').textContent = '😅'
+      document.getElementById('res-titulo').textContent = 'Quase lá!'
+      document.getElementById('res-premio-wrap').style.display = 'none'
+      document.getElementById('res-desc').textContent = 'Não foi dessa vez, mas continue desbloqueando figurinhas para ganhar mais cupons e tentar novamente!'
+    }
+    modal.classList.add('visivel')
+  }
+
+  function fecharResultado() {
+    document.getElementById('modal-resultado').classList.remove('visivel')
+    window.location.href = 'trofeus.html'
+  }
+
+  async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
+  init()
+</script>
+</body>
+</html>
