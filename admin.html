@@ -170,6 +170,10 @@
     }
     renderizarAdmin()
     mostrarSecao('professores', { target: document.querySelector('.admin-tab') })
+    await carregarProfessores()
+    await carregarMissoes()
+    await carregarPremios()
+    await carregarAdmins()
   }
 
   function renderizarAdmin() {
@@ -181,6 +185,8 @@
       <div class="admin-tabs">
         <button class="admin-tab ativo" onclick="mostrarSecao('professores', event)">👨‍🏫 Professores</button>
         <button class="admin-tab" onclick="mostrarSecao('missoes', event)">🎯 Missões</button>
+        <button class="admin-tab" onclick="mostrarSecao('premios', event)">🎁 Prêmios</button>
+        <button class="admin-tab" onclick="mostrarSecao('admins', event)">👤 Admins</button>
         <button class="admin-tab" onclick="mostrarSecao('configuracoes', event)">⚙️ Configurações</button>
       </div>
 
@@ -252,6 +258,39 @@
         <div class="card">
           <h3>Missões Cadastradas</h3>
           <div id="lista-missoes"><div class="carregando">Carregando...</div></div>
+        </div>
+      </div>
+
+      <div class="secao" id="secao-premios">
+        <div class="card">
+          <h3>Cadastrar Prêmio</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nome do Prêmio</label><input type="text" id="premio-nome" placeholder="Ex: 🎁 Camiseta Gran"></div>
+            <div class="form-group"><label>Estoque (unidades)</label><input type="number" id="premio-estoque" placeholder="10" min="0"></div>
+            <div class="form-group"><label>Probabilidade (%)</label><input type="number" id="premio-probabilidade" placeholder="5" min="0" max="100" step="0.1"><div class="hint">Ex: 5 = 5% de chance de ganhar</div></div>
+            <div class="form-group"><label>Descrição</label><input type="text" id="premio-descricao" placeholder="Descrição do prêmio"></div>
+          </div>
+          <button class="btn" onclick="cadastrarPremio()">Cadastrar prêmio</button>
+          <div class="mensagem" id="msg-premio"></div>
+        </div>
+        <div class="card">
+          <h3>Prêmios Cadastrados</h3>
+          <div id="lista-premios"><div class="carregando">Carregando...</div></div>
+        </div>
+      </div>
+
+      <div class="secao" id="secao-admins">
+        <div class="card">
+          <h3>Adicionar Admin</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>E-mail do usuário</label><input type="email" id="admin-email" placeholder="usuario@gran.com.br"></div>
+          </div>
+          <button class="btn" onclick="adicionarAdmin()">Adicionar admin</button>
+          <div class="mensagem" id="msg-admin"></div>
+        </div>
+        <div class="card">
+          <h3>Admins Cadastrados</h3>
+          <div id="lista-admins"><div class="carregando">Carregando...</div></div>
         </div>
       </div>
 
@@ -345,13 +384,32 @@
         '<td>' + p.area + '</td>' +
         '<td>' + (cod ? '<span class="codigo-badge">' + cod.codigo + '</span>' : '—') + '</td>' +
         '<td>' + (cod ? '<span class="badge-status ' + (cod.ativo ? 'ativo' : 'inativo') + '">' + (cod.ativo ? 'Ativo' : 'Inativo') + '</span>' : '—') + '</td>' +
-        '<td style="display:flex;gap:6px;align-items:center;">' + '<button class="btn-editar" onclick="abrirEdicao(\'' + p.id + '\')">✏️ Editar</button>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">' + 'Copiar</button>' : '') + '</td>' +
+        '<td style="display:flex;gap:6px;align-items:center;">' + '<button class="btn-editar" onclick="abrirEdicao(\'' + p.id + '\')">✏️ Editar</button>' + (cod ? '<button class="btn-copiar" onclick="copiar(\'' + cod.codigo + '\')">' + 'Copiar</button>' : '<button class="btn-copiar" onclick="gerarCodigoProfessor(\'' + p.id + '\')" style="border-color:rgba(243,191,26,0.4);color:var(--amarelo);">🔑 Gerar código</button>') + '</td>' +
         '</tr>'
     }).join('')
     document.getElementById('tabela-professores').innerHTML = '<table class="tabela"><thead><tr><th>Professor</th><th>Carreira</th><th>Código</th><th>Status</th><th>Ação</th></tr></thead><tbody>' + linhas + '</tbody></table>'
   }
 
   function copiar(codigo) { navigator.clipboard.writeText(codigo); alert('Código ' + codigo + ' copiado!') }
+
+  async function gerarCodigoProfessor(professorId) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let codigo = ''
+    let tentativas = 0
+    do {
+      codigo = ''
+      for (let i = 0; i < 8; i++) codigo += chars.charAt(Math.floor(Math.random() * chars.length))
+      const { data: existe } = await sb.from('codigos').select('id').eq('codigo', codigo).single()
+      if (!existe) break
+      tentativas++
+    } while (tentativas < 10)
+
+    const { error } = await sb.from('codigos').insert({ codigo, professor_id: professorId, ativo: true })
+    if (error) { alert('Erro ao gerar código: ' + error.message); return; }
+
+    alert('✅ Código gerado: ' + codigo)
+    await carregarProfessores()
+  }
 
   async function cadastrarMissao() {
     const titulo = document.getElementById('missao-titulo').value.trim()
