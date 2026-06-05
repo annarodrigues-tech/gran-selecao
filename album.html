@@ -721,9 +721,9 @@
       document.getElementById('prog-barra').style.width = (qtd / professores.length * 100) + '%'
       renderizarGrade()
       mostrarModal(professor)
+      await gerarCupom(professor)
     }
     document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
-    await gerarCupom(professor, session)
   }
 
   function mostrarModal(professor) {
@@ -848,10 +848,9 @@
   }
   function copiarTexto() { navigator.clipboard.writeText(getTextoAtual()); alert('Texto copiado!') }
   async function gerarCupom(professor) {
-    const session = window._session
+    const { data: { session } } = await sb.auth.getSession()
     if (!session) return
 
-    // Gera código único SPIN-XXXXXXXX
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     let codigo = 'SPIN-'
     for (let i = 0; i < 8; i++) codigo += chars.charAt(Math.floor(Math.random() * chars.length))
