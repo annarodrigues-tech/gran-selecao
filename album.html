@@ -478,6 +478,9 @@
       <button class="btn-fechar" onclick="fecharModal()">Colar no álbum!</button>
       <button class="btn-comp-modal" onclick="compartilharFigurinha()">📤 Compartilhar</button>
     </div>
+    <div id="modal-cupom-btn-wrap" style="display:none;margin-top:12px;">
+      <button onclick="fecharModal();mostrarModalCupom(window._cupomPendente)" style="width:100%;padding:11px;background:rgba(243,191,26,0.1);border:1px solid rgba(243,191,26,0.3);color:var(--amarelo);border-radius:10px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;transition:all 0.2s;">🎰 Ver meu cupom da roleta!</button>
+    </div>
   </div>
 </div>
 
@@ -721,13 +724,21 @@
       document.getElementById('prog-barra').style.width = (qtd / professores.length * 100) + '%'
       renderizarGrade()
       mostrarModal(professor)
-      await gerarCupom(professor)
+      // Gera cupom em background e exibe botão no modal quando pronto
+      gerarCupom(professor).then(codigo => {
+        if (codigo) {
+          window._cupomPendente = codigo
+          document.getElementById('modal-cupom-btn-wrap').style.display = 'block'
+        }
+      })
     }
     document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
   }
 
   function mostrarModal(professor) {
     profModal = professor
+    window._cupomPendente = null
+    document.getElementById('modal-cupom-btn-wrap').style.display = 'none'
     const wrap = document.getElementById('modal-figurinha-wrap')
     if (professor.foto_url) {
       wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;">'
@@ -864,7 +875,8 @@
       usado: false
     })
 
-    if (!error) mostrarModalCupom(codigo)
+    if (!error) return codigo
+    return null
   }
 
   function mostrarModalCupom(codigo) {

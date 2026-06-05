@@ -125,6 +125,11 @@
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
 
+  // Recarrega dados sempre que a página recebe foco
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') carregarCupons()
+  })
+
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
@@ -134,7 +139,7 @@
   }
 
   async function carregarCupons() {
-    const { data } = await sb.from('cupons').select('*').order('criado_em', { ascending: false })
+    const { data } = await sb.from('cupons').select('*').order('criado_em', { ascending: false }).throwOnError()
     const lista = data || []
     const disponiveis = lista.filter(c => !c.usado).length
     document.getElementById('stat-disponiveis').textContent = disponiveis
