@@ -375,7 +375,7 @@
 
   let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = [], carreiras = []
   let paginaAtual = 1, profModal = null, profModalVer = null
-  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: imparaveis.vercel.app\n\n🎁 Bônus: use o código 4606EAC4 para desbloquear a figurinha especial do Gran!'
+  let textoCompartilhamento = 'Estou colecionando as figurinhas dos professores do Gran e já tenho {qtd} de {total}! Vamos ver quem completa primeiro o álbum? É só entrar aqui: imparaveis.gran.com.br e com o código 4606EAC4, você ganha uma figurinha especial de presente. :gift:'
   let cupomPendente = null
 
   // ── INIT ──
@@ -654,14 +654,14 @@
   // ── COMPARTILHAMENTO ──
   function compartilharFigurinha() {
     document.getElementById('modal').classList.remove('visivel')
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' nos Imparáveis! Venha colecionar também: imparaveis.vercel.app'
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' no álbum Imparáveis! Você ainda não tem a sua? Venha colecionar também: imparaveis.gran.com.br'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
   }
   function compartilharDaVisualizacao() {
     fecharVerFigurinha()
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + (profModalVer?.nome || '') + ' nos Imparáveis! Venha colecionar também: imparaveis.vercel.app'
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + (profModalVer?.nome || '') + ' nos Imparáveis! Venha colecionar também: imparaveis.gran.com.br'
     document.getElementById('texto-preview').textContent = texto
     document.getElementById('msg-instagram').style.display = 'none'
     document.getElementById('modal-comp').classList.add('visivel')
