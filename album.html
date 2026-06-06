@@ -9,23 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --amarelo: #F3BF1A;
-      --verde: #04492A; --azul: #0D134C; --azul-medio: #162060; --azul-claro: #1e2d7a; --branco: #FFFFFF; }
+    :root { --amarelo: #F3BF1A; --verde: #04492A; --azul: #0D134C; --azul-medio: #162060; --branco: #FFFFFF; }
 
-    body {
-      font-family: 'Nunito', 'Trebuchet MS', sans-serif;
-      background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%);
-      min-height: 100vh; color: var(--branco); display: flex;
-    }
+    body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; background: linear-gradient(135deg, #0D134C 0%, #111a5e 100%); min-height: 100vh; color: var(--branco); display: flex; }
 
     /* SIDEBAR */
-    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar { width: 230px; min-height: 100vh; background: rgba(10,15,60,0.95); border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; transition: transform 0.3s ease; }
     .sidebar-logo { padding: 28px 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .logo-marca { display: flex; align-items: center; gap: 10px; }
-    .logo-icone { width: 38px; height: 38px; background: var(--amarelo); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(243,191,26,0.4); }
-    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; }
+    .logo-icone { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-icone img { width: 38px; height: auto; object-fit: contain; }
+    .logo-texto h1 { font-size: 18px; font-weight: 900; line-height: 1; color: var(--branco); }
     .logo-texto h1 span { color: var(--amarelo); }
-    .logo-texto p { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
     .sidebar-nav { padding: 16px 12px; flex: 1; }
     .nav-section-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 10px; margin: 16px 0 8px; }
     .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.45); transition: all 0.2s; text-decoration: none; margin-bottom: 2px; }
@@ -36,13 +31,22 @@
     .btn-sair { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; }
     .btn-sair:hover { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.3); color: var(--branco); }
 
+    /* MENU MOBILE */
+    .menu-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--azul); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; width: 42px; height: 42px; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: var(--branco); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(4px); }
+    @media (max-width: 768px) {
+      .menu-toggle { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.aberta { transform: translateX(0); }
+      .sidebar-overlay.visivel { display: block; }
+      .content { margin-left: 0 !important; padding: 20px 16px 80px !important; }
+    }
+
     /* CONTEÚDO */
     .content { margin-left: 230px; flex: 1; padding: 36px; }
-
     .page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
     .page-header-text h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
     .page-header-text p { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; font-weight: 600; }
-
     .btn-compartilhar { display: flex; align-items: center; gap: 8px; padding: 11px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.2s; white-space: nowrap; }
     .btn-compartilhar:hover { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.4); color: var(--branco); }
 
@@ -54,7 +58,7 @@
     .prog-direita { flex: 1; }
     .prog-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
     .prog-barra-wrap { background: rgba(255,255,255,0.08); border-radius: 100px; height: 10px; overflow: hidden; }
-    .prog-barra { height: 100%; background: linear-gradient(90deg, var(--amarelo), #d4a516); border-radius: 100px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 10px rgba(243,191,26,0.5); }
+    .prog-barra { height: 100%; background: linear-gradient(90deg, var(--amarelo), #d4a516); border-radius: 100px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 10px rgba(243,191,26,0.4); }
 
     /* RESGATE */
     .resgate-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -66,316 +70,81 @@
     .resgate-input-group input { flex: 1; padding: 13px 18px; background: rgba(13,19,76,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--branco); font-size: 16px; font-family: 'Courier New', monospace; letter-spacing: 4px; text-transform: uppercase; outline: none; transition: all 0.2s; font-weight: 700; }
     .resgate-input-group input:focus { border-color: var(--amarelo); box-shadow: 0 0 0 3px rgba(243,191,26,0.15); }
     .resgate-input-group input::placeholder { letter-spacing: 2px; color: rgba(255,255,255,0.2); font-weight: 400; }
-    .btn-resgatar { padding: 13px 24px; background: var(--amarelo); color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 16px rgba(243,191,26,0.35); }
+    .btn-resgatar { padding: 13px 24px; background: #04492A; color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 16px rgba(4,73,42,0.35); }
     .btn-resgatar:hover { background: #035c35; transform: translateY(-1px); }
     .btn-resgatar:disabled { background: rgba(255,255,255,0.1); box-shadow: none; cursor: not-allowed; transform: none; }
     .msg-resgate { width: 100%; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; display: none; }
-    .msg-resgate.erro { background: rgba(243,191,26,0.15); color: #ff8090; border: 1px solid rgba(243,191,26,0.3); }
+    .msg-resgate.erro { background: rgba(255,100,100,0.15); color: #ff8090; border: 1px solid rgba(255,100,100,0.3); }
     .msg-resgate.sucesso { background: rgba(40,200,100,0.15); color: #6bff9a; border: 1px solid rgba(40,200,100,0.3); }
 
-    /* FILTROS */
+    /* FILTRO */
     .filtros-wrap { margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
     .filtros-titulo { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); white-space: nowrap; }
-    .filtro-select {
-      flex: 1; max-width: 320px;
-      padding: 10px 16px;
-      background: rgba(13,19,76,0.8);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      color: var(--branco);
-      font-size: 14px; font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.2s;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F3BF1A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 36px;
-    }
+    .filtro-select { flex: 1; max-width: 320px; padding: 10px 36px 10px 16px; background: rgba(13,19,76,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--branco); font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; outline: none; transition: all 0.2s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F3BF1A' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
     .filtro-select:focus { border-color: var(--amarelo); box-shadow: 0 0 0 3px rgba(243,191,26,0.12); }
     .filtro-select option { background: #0D134C; color: #fff; }
 
+    /* GRADE */
+    .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; }
+
+    /* FIGURINHA */
+    .figurinha { border-radius: 14px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative; cursor: default; aspect-ratio: 3 / 4; display: flex; flex-direction: column; overflow: hidden; }
+    .figurinha.bloqueada { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+    .figurinha.bloqueada:hover { border-color: rgba(243,191,26,0.25); transform: translateY(-3px); }
+    .figurinha.desbloqueada { border: 2px solid rgba(243,191,26,0.5); box-shadow: 0 0 28px rgba(243,191,26,0.1), 0 8px 32px rgba(0,0,0,0.4); cursor: pointer; }
+    .figurinha.desbloqueada:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 48px rgba(243,191,26,0.2), 0 0 0 2px rgba(243,191,26,0.6); }
+    .figurinha-arte { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+    .figurinha-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 14px 10px 12px; border-radius: 12px; }
+    .figurinha-topo { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+    .figurinha-numero { font-size: 10px; font-weight: 900; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; background: rgba(255,255,255,0.05); padding: 3px 7px; border-radius: 6px; }
+    .figurinha-centro { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    .silhueta { width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 28px; color: rgba(255,255,255,0.15); }
+    .figurinha-rodape { width: 100%; }
+    .figurinha-info-bloqueada { background: rgba(13,19,76,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 10px 8px; text-align: center; }
+    .figurinha-nome-bloqueada { font-size: 11px; font-weight: 900; color: var(--branco); margin-bottom: 4px; line-height: 1.2; }
+    .figurinha-area-bloqueada { font-size: 9px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .figurinha-disciplinas { font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 600; line-height: 1.4; margin-bottom: 8px; font-style: italic; }
+    .btn-rede-social { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 6px 8px; background: var(--amarelo); border: none; border-radius: 7px; color: var(--azul); font-size: 10px; font-weight: 800; font-family: inherit; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+    .btn-rede-social:hover { background: #d4a516; }
+    .badge-novo { position: absolute; top: -8px; right: -8px; background: var(--amarelo); color: var(--azul); font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 100px; box-shadow: 0 4px 8px rgba(243,191,26,0.4); z-index: 2; }
+    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; grid-column: 1/-1; }
     .carregando-vazia { grid-column: 1/-1; text-align: center; padding: 60px 32px; color: rgba(255,255,255,0.4); }
     .carregando-vazia .vazia-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
     .carregando-vazia strong { display: block; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
     .carregando-vazia p { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35); }
 
     /* PAGINAÇÃO */
-    .pag-btn {
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.6);
-      font-size: 14px; font-weight: 800;
-      font-family: inherit; cursor: pointer;
-      transition: all 0.2s;
-      display: flex; align-items: center; justify-content: center;
-    }
+    #paginacao { display: none; justify-content: center; align-items: center; gap: 6px; margin-top: 32px; flex-wrap: wrap; }
+    .pag-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
     .pag-btn:hover:not(:disabled) { background: rgba(243,191,26,0.15); border-color: rgba(243,191,26,0.4); color: var(--branco); }
-    .pag-btn.ativo { background: var(--amarelo); border-color: var(--amarelo); color: var(--branco); box-shadow: 0 4px 12px rgba(243,191,26,0.3); }
+    .pag-btn.ativo { background: var(--amarelo); border-color: var(--amarelo); color: var(--azul); box-shadow: 0 4px 12px rgba(243,191,26,0.3); }
     .pag-btn:disabled { opacity: 0.25; cursor: not-allowed; }
     .pag-reticencias { color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; padding: 0 4px; line-height: 36px; }
     .pag-info { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); margin-left: 8px; }
 
-    /* GRADE DE FIGURINHAS — proporção 2:3, cards maiores */
-    .grade {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 24px;
-    }
+    /* ANIMAÇÃO COLAR */
+    .figurinha-voando { position: fixed; z-index: 2000; pointer-events: none; border-radius: 14px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); transition: none; }
+    @keyframes colar { 0% { transform: scale(1) rotate(0deg); } 60% { transform: scale(1.08) rotate(-2deg); } 75% { transform: scale(0.95) rotate(1deg); } 88% { transform: scale(1.02) rotate(-0.5deg); } 100% { transform: scale(1) rotate(0deg); } }
+    .figurinha.colando { animation: colar 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
-    /* CARD FIGURINHA */
-    .figurinha {
-      border-radius: 14px;
-      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-      position: relative;
-      cursor: default;
-      aspect-ratio: 3 / 4;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* BLOQUEADA */
-    .figurinha.bloqueada {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .figurinha.bloqueada:hover {
-      border-color: rgba(243,191,26,0.25);
-      transform: translateY(-3px);
-    }
-
-    /* DESBLOQUEADA — exibe a arte como imagem de fundo */
-    .figurinha.desbloqueada {
-      border: 2px solid rgba(243,191,26,0.5);
-      box-shadow: 0 0 28px rgba(243,191,26,0.15), 0 8px 32px rgba(0,0,0,0.4);
-    }
-
-    .figurinha.desbloqueada:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 20px 48px rgba(243,191,26,0.3), 0 0 0 2px rgba(243,191,26,0.6);
-    }
-
-    /* Arte da figurinha (imagem completa) */
-    .figurinha-arte {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    /* Overlay para figurinha bloqueada */
-    .figurinha-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 10px 12px;
-      border-radius: 12px;
-    }
-
-    /* Topo do card bloqueado */
-    .figurinha-topo {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      width: 100%;
-    }
-
-    .figurinha-numero {
-      font-size: 10px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 0.5px;
-      background: rgba(255,255,255,0.05);
-      padding: 3px 7px;
-      border-radius: 6px;
-    }
-
-    .figurinha.desbloqueada .figurinha-numero { color: rgba(255,255,255,0.8); background: rgba(0,0,0,0.4); }
-
-    /* Centro — silhueta ou foto */
-    .figurinha-centro {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-    }
-
-    .silhueta {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      border: 2px dashed rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: rgba(255,255,255,0.15);
-    }
-
-    /* Rodapé do card */
-    .figurinha-rodape {
-      width: 100%;
-    }
-
-    /* Card bloqueado — rodapé com nome e rede social */
-    .figurinha-info-bloqueada {
-      background: rgba(13,19,76,0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 10px 10px 8px;
-      text-align: center;
-    }
-
-    .figurinha-nome-bloqueada {
-      font-size: 11px;
-      font-weight: 900;
-      color: var(--branco);
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }
-
-    .figurinha-area-bloqueada {
-      font-size: 9px;
-      color: rgba(255,255,255,0.45);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .figurinha-disciplinas {
-      font-size: 10px;
-      color: rgba(255,255,255,0.55);
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 8px;
-      font-style: italic;
-    }
-
-    .btn-rede-social {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      width: 100%;
-      padding: 6px 8px;
-      background: var(--amarelo);
-      border: none;
-      border-radius: 7px;
-      color: var(--branco);
-      font-size: 10px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .btn-rede-social:hover { background: #d4a516; transform: scale(1.02); }
-
-    /* Card desbloqueado — a arte cobre tudo */
-    .figurinha-overlay-desbloqueada {
-      position: absolute;
-      inset: 0;
-      border-radius: 12px;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .badge-novo {
-      position: absolute;
-      top: -8px; right: -8px;
-      background: linear-gradient(135deg, #ff6b35, var(--amarelo));
-      color: var(--branco); font-size: 9px; font-weight: 900;
-      padding: 3px 8px; border-radius: 100px;
-      box-shadow: 0 4px 8px rgba(243,191,26,0.4);
-      z-index: 2;
-    }
-
-    .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; grid-column: 1/-1; }
-
-    /* MODAL REVELAÇÃO */
+    /* MODAIS */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; }
     .modal-overlay.visivel { display: flex; }
-    .modal-overlay.visivel { display: flex; }
-
-    .modal {
-      background: linear-gradient(145deg, #162060, #1e2d7a);
-      border: 1px solid rgba(243,191,26,0.4);
-      border-radius: 24px;
-      padding: 36px;
-      text-align: center;
-      max-width: 420px;
-      width: 90%;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px rgba(243,191,26,0.15);
-      animation: aparecer 0.4s cubic-bezier(0.34,1.56,0.64,1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
+    .modal { background: linear-gradient(145deg, #162060, #1e2d7a); border: 1px solid rgba(243,191,26,0.3); border-radius: 24px; padding: 36px; text-align: center; max-width: 420px; width: 90%; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: aparecer 0.4s cubic-bezier(0.34,1.56,0.64,1); display: flex; flex-direction: column; align-items: center; }
     @keyframes aparecer { from { transform: scale(0.6) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-
     .modal-emoji { font-size: 48px; margin-bottom: 10px; }
     .modal h2 { font-size: 20px; font-weight: 900; margin-bottom: 20px; }
-
-    /* Figurinha no modal — proporção 2:3 */
-    .modal-figurinha {
-      width: 200px;
-      aspect-ratio: 3 / 4;
-      border-radius: 14px;
-      overflow: hidden;
-      margin: 0 auto 20px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 2px rgba(243,191,26,0.5);
-      position: relative;
-    }
-
-    .modal-figurinha img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .modal-figurinha-placeholder {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(145deg, #0D134C, #162060);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
+    .modal-figurinha { width: 200px; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; margin: 0 auto 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 2px rgba(243,191,26,0.5); position: relative; }
+    .modal-figurinha img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-figurinha-placeholder { width: 100%; height: 100%; background: linear-gradient(145deg, #0D134C, #162060); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
     .modal-inicial { font-size: 56px; font-weight: 900; color: var(--amarelo); }
     .modal-nome { font-size: 18px; font-weight: 900; color: var(--amarelo); margin-bottom: 2px; }
-    .modal-area { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
-
+    .modal-area { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
     .modal-acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; }
-
-    .btn-fechar { padding: 12px 28px; background: var(--amarelo); color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(243,191,26,0.35); }
+    .btn-fechar { padding: 12px 28px; background: #04492A; color: var(--branco); border: none; border-radius: 10px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(4,73,42,0.35); }
     .btn-fechar:hover { background: #035c35; transform: translateY(-1px); }
-
     .btn-comp-modal { padding: 12px 18px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
     .btn-comp-modal:hover { border-color: rgba(243,191,26,0.5); color: var(--branco); }
-
-    /* MODAL COMPARTILHAMENTO */
     .modal-comp { background: linear-gradient(145deg, #162060, #1e2d7a); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 32px; text-align: center; max-width: 420px; width: 90%; animation: aparecer 0.3s ease; }
     .modal-comp h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
     .modal-comp p { color: rgba(255,255,255,0.55); font-size: 14px; font-weight: 600; margin-bottom: 20px; }
@@ -383,70 +152,25 @@
     .botoes-share { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .btn-share { padding: 11px 18px; border: none; border-radius: 10px; font-size: 13px; font-weight: 800; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px; }
     .btn-share:hover { transform: translateY(-2px); }
-    .btn-whatsapp { background: #25D366; color: #fff; box-shadow: 0 4px 12px rgba(37,211,102,0.3); }
-    .btn-twitter { background: #1DA1F2; color: #fff; box-shadow: 0 4px 12px rgba(29,161,242,0.3); }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+    .btn-twitter { background: #1DA1F2; color: #fff; }
     .btn-instagram { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; }
     .btn-copiar-link { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
-    .btn-copiar-link:hover { border-color: rgba(243,191,26,0.5); color: var(--branco); }
     .msg-instagram { display: none; margin-top: 14px; padding: 10px 14px; background: rgba(240,100,50,0.1); border: 1px solid rgba(240,100,50,0.3); border-radius: 10px; font-size: 13px; font-weight: 700; color: #ffaa6b; }
     .btn-cancelar { margin-top: 16px; background: none; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
     .btn-cancelar:hover { border-color: rgba(243,191,26,0.3); color: rgba(255,255,255,0.7); }
-
-    /* MENU MOBILE */
-    .menu-toggle {
-      display: none;
-      position: fixed;
-      top: 14px; left: 14px;
-      z-index: 200;
-      background: var(--azul);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px;
-      width: 42px; height: 42px;
-      align-items: center; justify-content: center;
-      cursor: pointer;
-      font-size: 20px;
-      color: var(--branco);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 99;
-      backdrop-filter: blur(4px);
-    }
-
-    @media (max-width: 768px) {
-      .menu-toggle { display: flex; }
-
-      .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 100;
-      }
-
-      .sidebar.aberta { transform: translateX(0); }
-      .sidebar-overlay.visivel { display: block; }
-
-      .content {
-        margin-left: 0 !important;
-        padding: 20px 16px 80px !important;
-      }
-    }
   </style>
 </head>
 <body>
 
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<div class="sidebar-overlay" onclick="fecharMenu()"></div>
+
 <nav class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-marca">
-      <img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran" style="width:38px;height:38px;object-fit:contain;">
-      <div class="logo-texto">
-        <h1><span>Imparáveis</span></h1>
-        
-      </div>
+      <div class="logo-icone"><img src="https://zjkyaqtaaflvdqpqeabm.supabase.co/storage/v1/object/public/fotos/gran_logo.png" alt="Gran"></div>
+      <div class="logo-texto"><h1><span>Imparáveis</span></h1></div>
     </div>
   </div>
   <div class="sidebar-nav">
@@ -456,7 +180,7 @@
     <a href="ranking.html" class="nav-item" onclick="fecharMenu()"><span class="icon">🏆</span> Ranking</a>
     <a href="roleta.html" class="nav-item" onclick="fecharMenu()"><span class="icon">🎰</span> Roleta</a>
     <a href="trofeus.html" class="nav-item" onclick="fecharMenu()"><span class="icon">🎖️</span> Troféus</a>
-    <a href="admin.html" class="nav-item" onclick="fecharMenu()" id="link-admin" style="display:none"><span class="icon">⚙️</span> Admin</a>
+    <a href="admin.html" class="nav-item" id="link-admin" style="display:none" onclick="fecharMenu()"><span class="icon">⚙️</span> Admin</a>
   </div>
   <div class="sidebar-footer">
     <button class="btn-sair" onclick="sair()">↩ Sair</button>
@@ -475,7 +199,7 @@
   <div class="progresso-bar">
     <div class="prog-numeros">
       <strong id="qtd-desbloqueadas">0</strong>
-      <span>de <span id="qtd-total">0</span></span>
+      <span>de <span id="qtd-total">437</span></span>
     </div>
     <div class="prog-direita">
       <div class="prog-label">Figurinhas colecionadas</div>
@@ -507,19 +231,19 @@
     <div class="carregando">Carregando álbum...</div>
   </div>
 
-  <div id="paginacao" style="display:none;justify-content:center;align-items:center;gap:6px;margin-top:32px;flex-wrap:wrap;"></div>
+  <div id="paginacao"></div>
 </div>
 
 <!-- MODAL REVELAÇÃO -->
 <div class="modal-overlay" id="modal">
-  <div class="modal" style="position:relative;">
+  <div class="modal">
     <div class="modal-emoji">🎉</div>
     <h2>Figurinha desbloqueada!</h2>
     <div class="modal-figurinha" id="modal-figurinha-wrap"></div>
     <div class="modal-nome" id="modal-nome"></div>
     <div class="modal-area" id="modal-area"></div>
-    <div id="modal-disciplinas" style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;font-style:italic;margin-top:-18px;margin-bottom:18px;text-align:center;"></div>
-    <div id="modal-cupom-btn-wrap" style="display:none;margin-bottom:12px;">
+    <div id="modal-disciplinas" style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;font-style:italic;margin-top:-12px;margin-bottom:16px;text-align:center;"></div>
+    <div id="modal-cupom-btn-wrap" style="display:none;width:100%;margin-bottom:12px;">
       <button onclick="verCupom()" style="width:100%;padding:13px;background:var(--amarelo);border:none;color:#0D134C;border-radius:10px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;">🎰 Ver meu cupom da roleta!</button>
     </div>
     <div class="modal-acoes">
@@ -529,30 +253,30 @@
   </div>
 </div>
 
-<!-- MODAL CUPOM GERADO -->
+<!-- MODAL CUPOM -->
 <div class="modal-overlay" id="modal-cupom">
-  <div class="modal" style="max-width:380px;padding:36px 32px;text-align:center;">
+  <div class="modal" style="max-width:380px;padding:36px 32px;">
     <div style="font-size:48px;margin-bottom:12px;">🎰</div>
     <h2 style="font-size:20px;margin-bottom:8px;">Você ganhou um cupom!</h2>
-    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;font-weight:600;line-height:1.6;">Use este código na Roleta Imparáveis para concorrer a prêmios exclusivos!</p>
-    <div style="background:rgba(13,19,76,0.8);border:2px solid var(--amarelo);border-radius:12px;padding:16px;margin-bottom:20px;">
-      <div id="cupom-codigo-gerado" style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--amarelo);letter-spacing:3px;"></div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;font-weight:600;line-height:1.6;">Use este código na Roleta para concorrer a prêmios exclusivos!</p>
+    <div style="background:rgba(13,19,76,0.8);border:2px solid var(--amarelo);border-radius:12px;padding:16px;margin-bottom:20px;width:100%;">
+      <div id="cupom-codigo-gerado" style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--amarelo);letter-spacing:3px;text-align:center;"></div>
     </div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn-copiar-cupom" onclick="copiarCupom()" style="padding:11px 20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">📋 Copiar</button>
+      <button onclick="copiarCupom()" style="padding:11px 20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;" class="btn-copiar-cupom">📋 Copiar</button>
       <a href="roleta.html" style="padding:11px 20px;background:#04492A;color:#fff;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;">🎰 Girar agora!</a>
       <button onclick="fecharModalCupom()" style="padding:11px 20px;background:none;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Depois</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL VISUALIZAÇÃO FIGURINHA -->
-<div class="modal-overlay" id="modal-ver">
-  <div class="modal" style="max-width:320px;padding:24px 24px 28px;">
-    <div class="modal-figurinha" id="modal-ver-figurinha" style="width:220px;margin:0 auto 18px;"></div>
+<!-- MODAL VER FIGURINHA -->
+<div class="modal-overlay" id="modal-ver" onclick="if(event.target===this)fecharVerFigurinha()">
+  <div class="modal" style="max-width:320px;padding:24px;">
+    <div class="modal-figurinha" id="modal-ver-figurinha" style="width:220px;"></div>
     <div class="modal-nome" id="modal-ver-nome"></div>
-    <div class="modal-area" id="modal-ver-area"></div>
     <div id="modal-ver-disciplinas" style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;font-style:italic;margin-top:-12px;margin-bottom:4px;text-align:center;"></div>
+    <div class="modal-area" id="modal-ver-area"></div>
     <div class="modal-acoes" style="margin-top:20px;">
       <button class="btn-fechar" onclick="fecharVerFigurinha()">Fechar</button>
       <button class="btn-comp-modal" onclick="compartilharDaVisualizacao()">📤 Compartilhar</button>
@@ -572,7 +296,7 @@
       <button class="btn-share btn-instagram" onclick="shareInstagram()">📸 Instagram</button>
       <button class="btn-share btn-copiar-link" onclick="copiarTexto()">📋 Copiar</button>
     </div>
-    <div class="msg-instagram" id="msg-instagram">✅ Texto copiado! Abra o Instagram e cole nos Stories ou Feed.</div>
+    <div class="msg-instagram" id="msg-instagram">✅ Texto copiado! Abra o Instagram e cole nos Stories.</div>
     <br>
     <button class="btn-cancelar" onclick="fecharCompartilhamento()">Cancelar</button>
   </div>
@@ -583,64 +307,61 @@
   const _key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqa3lhcXRhYWZsdmRxcHFlYWJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODg3MDcsImV4cCI6MjA5NTI2NDcwN30.uNrqA8ctiG_QlR10wYSVagFi-dmyhQxKCzLZYKe6Gfg'
   const sb = window.supabase.createClient(_url, _key)
 
-  let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = [], carreiras = []
   const TOTAL_PREVISTO = 437
   const POR_PAGINA = 48
-  let paginaAtual = 1
-  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: granselecao.vercel.app'
-  let profModal = null
-
   const iconeRede = { 'Instagram': '📸', 'YouTube': '▶️', 'TikTok': '🎵', 'Twitter': '🐦', 'LinkedIn': '💼', 'Facebook': '👥' }
 
+  let professores = [], desbloqueados = [], filtroAtivo = 'Todos', novosNessaSessao = [], carreiras = []
+  let paginaAtual = 1, profModal = null, profModalVer = null
+  let textoCompartilhamento = 'Já tenho {qtd} de {total} figurinhas dos Imparáveis! 🎴 Venha colecionar os melhores professores do Brasil: imparaveis.vercel.app\n\n🎁 Bônus: use o código 4606EAC4 para desbloquear a figurinha especial do Gran!'
+  let cupomPendente = null
+
+  // ── INIT ──
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
     if (!session) { window.location.href = 'index.html'; return; }
-    window._session = session
     const { data: admin } = await sb.from('admins').select('id').eq('user_id', session.user.id).single()
     if (admin) document.getElementById('link-admin').style.display = 'flex'
     const { data: config } = await sb.from('configuracoes').select('valor').eq('chave', 'texto_compartilhamento').single()
     if (config) textoCompartilhamento = config.valor
     await carregarProfessores()
     await carregarDesbloqueados()
-
-    // Verifica se tem cupom pendente do localStorage
-    const cupomSalvo = localStorage.getItem('cupom_pendente')
-    if (cupomSalvo) {
-      window._cupomPendente = cupomSalvo
-    }
   }
 
+  // ── CARREGAR ──
   async function carregarProfessores() {
-    // Busca professores e carreiras em paralelo
     const [{ data: profs }, { data: cars }] = await Promise.all([
-      sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url, numero, disciplinas').order('area'),
+      sb.from('professores').select('id, nome, area, foto_url, rede_social, rede_social_url, numero, disciplinas').order('numero', { ascending: true, nullsFirst: false }).order('area').order('nome'),
       sb.from('carreiras').select('nome').order('ordem')
     ])
-    professores = profs || []
     carreiras = (cars || []).map(c => c.nome)
-    document.getElementById('qtd-total').textContent = professores.length
+    const fixos = (profs || []).filter(p => p.numero !== null && p.numero !== undefined).sort((a, b) => a.numero - b.numero)
+    const livres = (profs || []).filter(p => p.numero === null || p.numero === undefined)
+    const todos = [...fixos, ...livres]
+    let seq = fixos.length
+    professores = todos.map(p => ({ ...p, numeroExibicao: (p.numero !== null && p.numero !== undefined) ? p.numero : seq++ }))
+    document.getElementById('qtd-total').textContent = TOTAL_PREVISTO
     renderizarFiltros()
   }
 
   async function carregarDesbloqueados() {
     const { data } = await sb.from('resgates').select('professor_id')
     desbloqueados = (data || []).map(r => r.professor_id)
-    const qtd = desbloqueados.length
-    const total = Math.max(professores.length, TOTAL_PREVISTO)
-    document.getElementById('qtd-desbloqueadas').textContent = qtd
-    document.getElementById('qtd-total').textContent = TOTAL_PREVISTO
-    document.getElementById('prog-barra').style.width = total > 0 ? (qtd / total * 100) + '%' : '0%'
+    atualizarProgresso()
     renderizarGrade()
   }
 
+  function atualizarProgresso() {
+    const qtd = desbloqueados.length
+    document.getElementById('qtd-desbloqueadas').textContent = qtd
+    document.getElementById('prog-barra').style.width = (qtd / TOTAL_PREVISTO * 100) + '%'
+  }
+
+  // ── FILTROS ──
   function renderizarFiltros() {
-    const areasComProfs = new Set(professores.map(p => p.area))
-    // Garante que Especiais aparece sempre no topo
-    let todasAreas = carreiras.length > 0 ? carreiras : [...areasComProfs]
-    if (!todasAreas.includes('Especiais')) todasAreas = ['Especiais', ...todasAreas]
-    else {
-      todasAreas = ['Especiais', ...todasAreas.filter(a => a !== 'Especiais')]
-    }
+    let todasAreas = carreiras.length > 0 ? carreiras : [...new Set(professores.map(p => p.area))]
+    if (!todasAreas.includes('Especiais')) todasAreas = ['Especiais', ...todasAreas.filter(a => a !== 'Especiais')]
+    else todasAreas = ['Especiais', ...todasAreas.filter(a => a !== 'Especiais')]
     const select = document.getElementById('filtro-dropdown')
     select.innerHTML = '<option value="Todos">Todas as carreiras (' + professores.length + ')</option>' +
       todasAreas.map(area => {
@@ -648,9 +369,11 @@
         const label = qtd > 0 ? area + ' (' + qtd + ')' : area + ' — em breve'
         return '<option value="' + area + '"' + (area === filtroAtivo ? ' selected' : '') + '>' + label + '</option>'
       }).join('')
-    if (filtroAtivo !== 'Todos') select.value = filtroAtivo
   }
 
+  function filtrar(area) { filtroAtivo = area; paginaAtual = 1; renderizarFiltros(); renderizarGrade(); }
+
+  // ── GRADE ──
   function renderizarGrade(resetar = true) {
     if (resetar) paginaAtual = 1
     const listaFiltrada = filtroAtivo === 'Todos' ? professores : professores.filter(p => p.area === filtroAtivo)
@@ -659,38 +382,30 @@
     const inicio = (paginaAtual - 1) * POR_PAGINA
     const lista = listaFiltrada.slice(inicio, inicio + POR_PAGINA)
     const grade = document.getElementById('grade')
+
     if (listaFiltrada.length === 0) {
-      grade.innerHTML = '<div class="carregando-vazia">' +
-        '<div class="vazia-icon">⏳</div>' +
-        '<strong>Em breve!</strong>' +
-        '<p>Os professores desta carreira serão anunciados em breve. Fique de olho!</p>' +
-        '</div>'
+      grade.innerHTML = '<div class="carregando-vazia"><div class="vazia-icon">⏳</div><strong>Em breve!</strong><p>Os professores desta carreira serão anunciados em breve.</p></div>'
       document.getElementById('paginacao').style.display = 'none'
-      return;
+      return
     }
 
     grade.innerHTML = lista.map((p, i) => {
       const desbloqueada = desbloqueados.includes(p.id)
       const isNovo = novosNessaSessao.includes(p.id)
-      const num = String(p.numeroExibicao !== null && p.numeroExibicao !== undefined ? p.numeroExibicao : 0).padStart(3, '0')
+      const num = String(p.numeroExibicao).padStart(3, '0')
+      const pidx = professores.indexOf(p)
 
       if (desbloqueada) {
-        // CARD DESBLOQUEADO — clicável para abrir modal de visualização
-        const pidx = professores.indexOf(p)
-        return '<div class="figurinha desbloqueada" data-id="' + p.id + '" onclick="verFigurinha(' + pidx + ')" style="cursor:pointer;">' +
+        return '<div class="figurinha desbloqueada" data-id="' + p.id + '" onclick="verFigurinha(' + pidx + ')">' +
           (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
           (p.foto_url
             ? '<img class="figurinha-arte" src="' + p.foto_url + '" alt="' + p.nome + '">'
-            : '<div class="figurinha-overlay" style="background:linear-gradient(145deg,#0D134C,#162060);align-items:center;justify-content:center;"><div style="font-size:48px;font-weight:900;color:var(--amarelo);">' + p.nome.charAt(0) + '</div><div style="font-size:11px;font-weight:900;color:#fff;text-align:center;padding:0 10px;">' + p.nome + '</div><div style="font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;">' + p.area + '</div></div>'
-          ) +
-          '<div class="figurinha-overlay-desbloqueada"></div>' +
+            : '<div style="position:absolute;inset:0;background:linear-gradient(145deg,#0D134C,#162060);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;"><span style=\\"font-size:48px;font-weight:900;color:var(--amarelo);\\">' + p.nome.charAt(0) + '</span><span style=\\"font-size:11px;font-weight:900;color:#fff;\\">' + p.nome + '</span></div>') +
           '</div>'
       } else {
-        // CARD BLOQUEADO — mostra nome, área e link da rede social
         const btnRede = p.rede_social && p.rede_social_url
           ? '<a href="' + p.rede_social_url + '" target="_blank" class="btn-rede-social">' + (iconeRede[p.rede_social] || '🔗') + ' ' + p.rede_social + '</a>'
           : '<div style="font-size:10px;color:rgba(255,255,255,0.25);font-weight:700;">Código em breve</div>'
-
         return '<div class="figurinha bloqueada">' +
           '<div class="figurinha-overlay">' +
           '<div class="figurinha-topo"><span class="figurinha-numero">#' + num + '</span></div>' +
@@ -700,60 +415,31 @@
           '<div class="figurinha-area-bloqueada">' + p.area + '</div>' +
           (p.disciplinas ? '<div class="figurinha-disciplinas">' + p.disciplinas + '</div>' : '') +
           btnRede +
-          '</div></div>' +
-          '</div></div>'
+          '</div></div></div></div>'
       }
     }).join('')
 
     // Paginação
-    renderizarPaginacao(totalPaginas, listaFiltrada.length)
-
-    // Scroll pro topo da grade ao mudar de página
-    if (!resetar) {
-      document.getElementById('grade').scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
-  function renderizarPaginacao(totalPaginas, totalItens) {
     const pag = document.getElementById('paginacao')
     if (totalPaginas <= 1) { pag.style.display = 'none'; return; }
     pag.style.display = 'flex'
-
-    let botoes = ''
-
-    // Anterior
-    botoes += '<button class="pag-btn" ' + (paginaAtual === 1 ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual - 1) + ')"') + '>‹</button>'
-
-    // Páginas
+    let btns = '<button class="pag-btn" ' + (paginaAtual === 1 ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual-1) + ')"') + '>‹</button>'
     for (let i = 1; i <= totalPaginas; i++) {
-      if (
-        i === 1 || i === totalPaginas ||
-        (i >= paginaAtual - 1 && i <= paginaAtual + 1)
-      ) {
-        botoes += '<button class="pag-btn' + (i === paginaAtual ? ' ativo' : '') + '" onclick="irParaPagina(' + i + ')">' + i + '</button>'
+      if (i === 1 || i === totalPaginas || (i >= paginaAtual - 1 && i <= paginaAtual + 1)) {
+        btns += '<button class="pag-btn' + (i === paginaAtual ? ' ativo' : '') + '" onclick="irParaPagina(' + i + ')">' + i + '</button>'
       } else if (i === paginaAtual - 2 || i === paginaAtual + 2) {
-        botoes += '<span class="pag-reticencias">...</span>'
+        btns += '<span class="pag-reticencias">...</span>'
       }
     }
-
-    // Próximo
-    botoes += '<button class="pag-btn" ' + (paginaAtual === totalPaginas ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual + 1) + ')"') + '>›</button>'
-
-    // Info
-    const inicio = (paginaAtual - 1) * POR_PAGINA + 1
-    const fim = Math.min(paginaAtual * POR_PAGINA, totalItens)
-    botoes += '<span class="pag-info">' + inicio + '–' + fim + ' de ' + totalItens + '</span>'
-
-    pag.innerHTML = botoes
+    btns += '<button class="pag-btn" ' + (paginaAtual === totalPaginas ? 'disabled' : 'onclick="irParaPagina(' + (paginaAtual+1) + ')"') + '>›</button>'
+    btns += '<span class="pag-info">' + (inicio+1) + '–' + Math.min(paginaAtual*POR_PAGINA, listaFiltrada.length) + ' de ' + listaFiltrada.length + '</span>'
+    pag.innerHTML = btns
+    if (!resetar) document.getElementById('grade').scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  function irParaPagina(pagina) {
-    paginaAtual = pagina
-    renderizarGrade(false)
-  }
+  function irParaPagina(p) { paginaAtual = p; renderizarGrade(false); }
 
-  function filtrar(area) { filtroAtivo = area; paginaAtual = 1; renderizarFiltros(); renderizarGrade(); }
-
+  // ── RESGATAR ──
   async function resgatar() {
     const codigo = document.getElementById('input-codigo').value.trim().toUpperCase()
     const btn = document.querySelector('.btn-resgatar')
@@ -769,115 +455,86 @@
     }
     const professor = professores.find(p => p.id === data.professor_id)
     if (professor) {
-      desbloqueados.push(professor.id); novosNessaSessao.push(professor.id)
-      const qtd = desbloqueados.length
-      document.getElementById('qtd-desbloqueadas').textContent = qtd
-      document.getElementById('prog-barra').style.width = (qtd / professores.length * 100) + '%'
+      desbloqueados.push(professor.id)
+      novosNessaSessao.push(professor.id)
+      atualizarProgresso()
       renderizarGrade()
       mostrarModal(professor)
-      // Gera cupom em background e exibe botão no modal quando pronto
-      gerarCupom(professor).then(codigo => {
-        if (codigo) {
-          window._cupomPendente = codigo
+      // Gera cupom em background
+      gerarCupom(professor).then(cod => {
+        if (cod) {
+          cupomPendente = cod
           document.getElementById('modal-cupom-btn-wrap').style.display = 'block'
         }
       })
     }
-    document.getElementById('input-codigo').value = ''; msg.style.display = 'none'
+    document.getElementById('input-codigo').value = ''
+    msg.style.display = 'none'
   }
 
+  // ── MODAL REVELAÇÃO ──
   function mostrarModal(professor) {
-    fecharMenu() // Fecha menu mobile se estiver aberto
+    fecharMenu()
     profModal = professor
-    // Verifica se já tem cupom pendente salvo
-    const cupomExistente = window._cupomPendente || localStorage.getItem('cupom_pendente')
-    document.getElementById('modal-cupom-btn-wrap').style.display = cupomExistente ? 'block' : 'none'
+    cupomPendente = null
+    document.getElementById('modal-cupom-btn-wrap').style.display = 'none'
     const wrap = document.getElementById('modal-figurinha-wrap')
-    if (professor.foto_url) {
-      wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;">'
-    } else {
-      wrap.innerHTML = '<div class="modal-figurinha-placeholder"><span class="modal-inicial">' + professor.nome.charAt(0) + '</span><div style="font-size:13px;font-weight:900;color:#fff;padding:0 12px;text-align:center;">' + professor.nome + '</div></div>'
-    }
+    wrap.innerHTML = professor.foto_url
+      ? '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;">'
+      : '<div class="modal-figurinha-placeholder"><span class="modal-inicial">' + professor.nome.charAt(0) + '</span></div>'
     document.getElementById('modal-nome').textContent = professor.nome
     document.getElementById('modal-area').textContent = professor.area
-    const discModalEl = document.getElementById('modal-disciplinas')
-    if (discModalEl) { discModalEl.textContent = professor.disciplinas || ''; discModalEl.style.display = professor.disciplinas ? 'block' : 'none' }
+    const disc = document.getElementById('modal-disciplinas')
+    disc.textContent = professor.disciplinas || ''
+    disc.style.display = professor.disciplinas ? 'block' : 'none'
     document.getElementById('modal').classList.add('visivel')
   }
 
-  function fecharModal() {
-    document.getElementById('modal').classList.remove('visivel')
-    if (profModal) animarColar(profModal)
-  }
-
-  // Colar no álbum — fecha modal e mostra cupom depois se tiver
+  // Colar no álbum — dispara animação e mostra cupom depois
   function colar() {
     document.getElementById('modal').classList.remove('visivel')
     if (profModal) animarColar(profModal)
-    const codigo = window._cupomPendente
-    if (codigo) {
-      window._cupomPendente = null
-      setTimeout(() => mostrarModalCupom(codigo), 1200)
+    if (cupomPendente) {
+      const cod = cupomPendente
+      cupomPendente = null
+      setTimeout(() => mostrarModalCupom(cod), 1000)
     }
   }
 
   // Ver cupom — fecha modal da figurinha e abre modal do cupom
   function verCupom() {
     document.getElementById('modal').classList.remove('visivel')
-    const codigo = window._cupomPendente
-    if (codigo) {
-      window._cupomPendente = null
-      mostrarModalCupom(codigo)
+    if (cupomPendente) {
+      const cod = cupomPendente
+      cupomPendente = null
+      mostrarModalCupom(cod)
     }
   }
 
-  function colarEVerificarCupom() { colar() }
-  function verCupomEFechar() { verCupom() }
-
+  // ── ANIMAÇÃO COLAR ──
   function animarColar(professor) {
-    // Encontra o card da figurinha no álbum pelo data-id
     const cards = document.querySelectorAll('.figurinha.desbloqueada')
     let cardAlvo = null
-    cards.forEach(card => {
-      if (card.dataset.id === professor.id) cardAlvo = card
-    })
-    if (!cardAlvo) {
-      // Fallback — pega o último card desbloqueado
-      const todos = document.querySelectorAll('.figurinha.desbloqueada')
-      if (todos.length) cardAlvo = todos[todos.length - 1]
-    }
+    cards.forEach(card => { if (card.dataset.id === professor.id) cardAlvo = card })
+    if (!cardAlvo && cards.length) cardAlvo = cards[cards.length - 1]
     if (!cardAlvo) return
 
-    // Pega posição e tamanho do card alvo
     const rect = cardAlvo.getBoundingClientRect()
-
-    // Cria elemento clone da figurinha para animar
     const clone = document.createElement('div')
     clone.className = 'figurinha-voando'
-    clone.style.width = rect.width + 'px'
-    clone.style.height = rect.height + 'px'
-    clone.style.left = (window.innerWidth / 2 - rect.width / 2) + 'px'
-    clone.style.top = '-' + rect.height + 'px'
+    clone.style.cssText = 'width:' + rect.width + 'px;height:' + rect.height + 'px;left:' + (window.innerWidth/2 - rect.width/2) + 'px;top:-' + rect.height + 'px;'
     clone.innerHTML = professor.foto_url
       ? '<img src="' + professor.foto_url + '" style="width:100%;height:100%;object-fit:cover;">'
       : '<div style="width:100%;height:100%;background:linear-gradient(145deg,#0D134C,#162060);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;color:#F3BF1A;">' + professor.nome.charAt(0) + '</div>'
-
     document.body.appendChild(clone)
 
-    // Fase 1: cai do topo até o centro da tela
     requestAnimationFrame(() => {
-      clone.style.transition = 'top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.4s ease'
-      clone.style.top = (window.innerHeight / 2 - rect.height / 2) + 'px'
-
-      // Fase 2: voa até o card no álbum
+      clone.style.transition = 'top 0.4s cubic-bezier(0.25,0.46,0.45,0.94), left 0.4s ease'
+      clone.style.top = (window.innerHeight/2 - rect.height/2) + 'px'
       setTimeout(() => {
-        clone.style.transition = 'top 0.45s cubic-bezier(0.55, 0, 1, 0.45), left 0.45s cubic-bezier(0.55, 0, 1, 0.45), width 0.45s ease, height 0.45s ease, opacity 0.1s ease 0.35s'
+        clone.style.transition = 'top 0.45s cubic-bezier(0.55,0,1,0.45), left 0.45s cubic-bezier(0.55,0,1,0.45), opacity 0.1s ease 0.35s'
         clone.style.top = (rect.top + window.scrollY) + 'px'
         clone.style.left = rect.left + 'px'
-        clone.style.width = rect.width + 'px'
-        clone.style.height = rect.height + 'px'
-
-        // Fase 3: efeito de "colar" no card
         setTimeout(() => {
           clone.remove()
           cardAlvo.classList.add('colando')
@@ -887,114 +544,95 @@
     })
   }
 
+  // ── MODAL VER FIGURINHA ──
   function verFigurinha(idx) {
     const professor = professores[idx]
     if (!professor) return
-    profModal = professor
+    profModalVer = professor
     const wrap = document.getElementById('modal-ver-figurinha')
-    if (professor.foto_url) {
-      wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">'
-    } else {
-      wrap.innerHTML = '<div style="width:100%;height:100%;background:linear-gradient(145deg,#0D134C,#162060);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;"><span style=\"font-size:48px;font-weight:900;color:var(--amarelo);\">' + professor.nome.charAt(0) + '</span><span style=\"font-size:13px;font-weight:900;color:#fff;\">' + professor.nome + '</span></div>'
-    }
+    wrap.innerHTML = professor.foto_url
+      ? '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">'
+      : '<div class="modal-figurinha-placeholder"><span class="modal-inicial">' + professor.nome.charAt(0) + '</span></div>'
     document.getElementById('modal-ver-nome').textContent = professor.nome
     document.getElementById('modal-ver-area').textContent = professor.area
-    const discEl = document.getElementById('modal-ver-disciplinas')
-    if (discEl) { discEl.textContent = professor.disciplinas || ''; discEl.style.display = professor.disciplinas ? 'block' : 'none' }
+    const disc = document.getElementById('modal-ver-disciplinas')
+    disc.textContent = professor.disciplinas || ''
+    disc.style.display = professor.disciplinas ? 'block' : 'none'
     document.getElementById('modal-ver').classList.add('visivel')
   }
-
   function fecharVerFigurinha() { document.getElementById('modal-ver').classList.remove('visivel') }
-  function fecharVerFigurinhaSeFora(e) { if (e.target === document.getElementById('modal-ver')) fecharVerFigurinha() }
 
-  function compartilharDaVisualizacao() {
-    fecharVerFigurinha()
-    compartilharFigurinha()
-  }
-
-  function compartilharFigurinha() {
-    fecharModal()
-    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' nos Imparáveis! Venha colecionar também: granselecao.vercel.app'
-    document.getElementById('texto-preview').textContent = texto
-    document.getElementById('msg-instagram').style.display = 'none'
-    document.getElementById('modal-comp').classList.add('visivel')
-  }
-
-  function abrirCompartilhamento() {
-    const qtd = desbloqueados.length, total = professores.length
-    const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', total) +
-      '\n\n🎁 Bônus: use o código 4606EAC4 para desbloquear a figurinha especial do Gran!'
-    document.getElementById('texto-preview').textContent = texto
-    document.getElementById('msg-instagram').style.display = 'none'
-    document.getElementById('modal-comp').classList.add('visivel')
-  }
-
-  function fecharCompartilhamento() { document.getElementById('modal-comp').classList.remove('visivel') }
-  function getTextoAtual() { return document.getElementById('texto-preview').textContent }
-  function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
-  function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(getTextoAtual()), '_blank') }
-  function shareInstagram() {
-    navigator.clipboard.writeText(getTextoAtual())
-    document.getElementById('msg-instagram').style.display = 'block'
-    setTimeout(() => { window.open('https://www.instagram.com/', '_blank') }, 800)
-  }
-  function copiarTexto() { navigator.clipboard.writeText(getTextoAtual()); alert('Texto copiado!') }
+  // ── CUPOM ──
   async function gerarCupom(professor) {
     const { data: { session } } = await sb.auth.getSession()
-    if (!session) return
-
+    if (!session) return null
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     let codigo = 'SPIN-'
     for (let i = 0; i < 8; i++) codigo += chars.charAt(Math.floor(Math.random() * chars.length))
-
     const { error } = await sb.from('cupons').insert({
-      user_id: session.user.id,
-      email: session.user.email,
+      user_id: session.user.id, email: session.user.email,
       nome: session.user.user_metadata?.nome_completo || session.user.email,
-      codigo,
-      professor_id: professor.id,
-      usado: false
+      codigo, professor_id: professor.id, usado: false
     })
-
-    if (!error) {
-      localStorage.setItem('cupom_pendente', codigo)
-      return codigo
-    }
-    return null
+    return error ? null : codigo
   }
 
   function mostrarModalCupom(codigo) {
     document.getElementById('cupom-codigo-gerado').textContent = codigo
     document.getElementById('modal-cupom').classList.add('visivel')
   }
-
-  function fecharModalCupom() {
-    document.getElementById('modal-cupom').classList.remove('visivel')
-  }
-
+  function fecharModalCupom() { document.getElementById('modal-cupom').classList.remove('visivel') }
   function copiarCupom() {
-    const codigo = document.getElementById('cupom-codigo-gerado').textContent
-    navigator.clipboard.writeText(codigo)
-    const btn = document.querySelector('.btn-copiar-cupom')
-    btn.textContent = '✅ Copiado!'
-    setTimeout(() => btn.textContent = '📋 Copiar', 2000)
+    const cod = document.getElementById('cupom-codigo-gerado').textContent
+    navigator.clipboard.writeText(cod)
+    document.querySelector('.btn-copiar-cupom').textContent = '✅ Copiado!'
+    setTimeout(() => document.querySelector('.btn-copiar-cupom').textContent = '📋 Copiar', 2000)
   }
 
+  // ── COMPARTILHAMENTO ──
+  function compartilharFigurinha() {
+    document.getElementById('modal').classList.remove('visivel')
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + profModal.nome + ' nos Imparáveis! Venha colecionar também: imparaveis.vercel.app'
+    document.getElementById('texto-preview').textContent = texto
+    document.getElementById('msg-instagram').style.display = 'none'
+    document.getElementById('modal-comp').classList.add('visivel')
+  }
+  function compartilharDaVisualizacao() {
+    fecharVerFigurinha()
+    const texto = '🎴 Acabei de desbloquear a figurinha de ' + (profModalVer?.nome || '') + ' nos Imparáveis! Venha colecionar também: imparaveis.vercel.app'
+    document.getElementById('texto-preview').textContent = texto
+    document.getElementById('msg-instagram').style.display = 'none'
+    document.getElementById('modal-comp').classList.add('visivel')
+  }
+  function abrirCompartilhamento() {
+    const qtd = desbloqueados.length
+    const texto = textoCompartilhamento.replace('{qtd}', qtd).replace('{total}', TOTAL_PREVISTO)
+    document.getElementById('texto-preview').textContent = texto
+    document.getElementById('msg-instagram').style.display = 'none'
+    document.getElementById('modal-comp').classList.add('visivel')
+  }
+  function fecharCompartilhamento() { document.getElementById('modal-comp').classList.remove('visivel') }
+  function getTexto() { return document.getElementById('texto-preview').textContent }
+  function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent(getTexto()), '_blank') }
+  function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(getTexto()), '_blank') }
+  function shareInstagram() {
+    navigator.clipboard.writeText(getTexto())
+    document.getElementById('msg-instagram').style.display = 'block'
+    setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 800)
+  }
+  function copiarTexto() { navigator.clipboard.writeText(getTexto()); alert('Texto copiado!') }
 
-  // Menu mobile
+  // ── MENU MOBILE ──
   function toggleMenu() {
     document.querySelector('.sidebar').classList.toggle('aberta')
     document.querySelector('.sidebar-overlay').classList.toggle('visivel')
   }
-
   function fecharMenu() {
     document.querySelector('.sidebar').classList.remove('aberta')
     document.querySelector('.sidebar-overlay').classList.remove('visivel')
   }
+
   async function sair() { await sb.auth.signOut(); window.location.href = 'index.html' }
-
-
-
   init()
 </script>
 </body>
