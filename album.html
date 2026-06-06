@@ -601,6 +601,18 @@
     if (config) textoCompartilhamento = config.valor
     await carregarProfessores()
     await carregarDesbloqueados()
+
+    // Verifica se tem cupom pendente do localStorage
+    const cupomSalvo = localStorage.getItem('cupom_pendente')
+    if (cupomSalvo) {
+      window._cupomPendente = cupomSalvo
+      setTimeout(() => {
+        document.getElementById('modal-cupom-btn-wrap').style.display = 'block'
+        mostrarModalCupom(cupomSalvo)
+        localStorage.removeItem('cupom_pendente')
+        window._cupomPendente = null
+      }, 1000)
+    }
   }
 
   async function carregarProfessores() {
@@ -919,7 +931,10 @@
       usado: false
     })
 
-    if (!error) return codigo
+    if (!error) {
+      localStorage.setItem('cupom_pendente', codigo)
+      return codigo
+    }
     return null
   }
 
