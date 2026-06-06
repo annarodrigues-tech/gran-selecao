@@ -513,7 +513,6 @@
 <!-- MODAL REVELAÇÃO -->
 <div class="modal-overlay" id="modal">
   <div class="modal" style="position:relative;">
-    <button onclick="colarEVerificarCupom()" style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.5);width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;">✕</button>
     <div class="modal-emoji">🎉</div>
     <h2>Figurinha desbloqueada!</h2>
     <div class="modal-figurinha" id="modal-figurinha-wrap"></div>
@@ -521,10 +520,10 @@
     <div class="modal-area" id="modal-area"></div>
     <div id="modal-disciplinas" style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;font-style:italic;margin-top:-18px;margin-bottom:18px;text-align:center;"></div>
     <div id="modal-cupom-btn-wrap" style="display:none;margin-bottom:12px;">
-      <button onclick="verCupomEFechar()" style="width:100%;padding:13px;background:var(--amarelo);border:none;color:#0D134C;border-radius:10px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;">🎰 Ver meu cupom da roleta!</button>
+      <button onclick="verCupom()" style="width:100%;padding:13px;background:var(--amarelo);border:none;color:#0D134C;border-radius:10px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;">🎰 Ver meu cupom da roleta!</button>
     </div>
     <div class="modal-acoes">
-      <button class="btn-fechar" onclick="colarEVerificarCupom()">Colar no álbum!</button>
+      <button class="btn-fechar" onclick="colar()">Colar no álbum!</button>
       <button class="btn-comp-modal" onclick="compartilharFigurinha()">📤 Compartilhar</button>
     </div>
   </div>
@@ -811,25 +810,29 @@
     if (profModal) animarColar(profModal)
   }
 
-  function colarEVerificarCupom() {
-    fecharModal()
-    const codigo = window._cupomPendente || localStorage.getItem('cupom_pendente')
+  // Colar no álbum — fecha modal e mostra cupom depois se tiver
+  function colar() {
+    document.getElementById('modal').classList.remove('visivel')
+    if (profModal) animarColar(profModal)
+    const codigo = window._cupomPendente
     if (codigo) {
-      setTimeout(() => mostrarModalCupom(codigo), 800)
       window._cupomPendente = null
-      localStorage.removeItem('cupom_pendente')
+      setTimeout(() => mostrarModalCupom(codigo), 1200)
     }
   }
 
-  function verCupomEFechar() {
-    const codigo = window._cupomPendente || localStorage.getItem('cupom_pendente')
+  // Ver cupom — fecha modal da figurinha e abre modal do cupom
+  function verCupom() {
     document.getElementById('modal').classList.remove('visivel')
+    const codigo = window._cupomPendente
     if (codigo) {
-      mostrarModalCupom(codigo)
       window._cupomPendente = null
-      localStorage.removeItem('cupom_pendente')
+      mostrarModalCupom(codigo)
     }
   }
+
+  function colarEVerificarCupom() { colar() }
+  function verCupomEFechar() { verCupom() }
 
   function animarColar(professor) {
     // Encontra o card da figurinha no álbum pelo data-id
