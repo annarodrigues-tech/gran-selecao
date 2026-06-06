@@ -678,7 +678,7 @@
       if (desbloqueada) {
         // CARD DESBLOQUEADO — clicável para abrir modal de visualização
         const pidx = professores.indexOf(p)
-        return '<div class="figurinha desbloqueada" onclick="verFigurinha(' + pidx + ')" style="cursor:pointer;">' +
+        return '<div class="figurinha desbloqueada" data-id="' + p.id + '" onclick="verFigurinha(' + pidx + ')" style="cursor:pointer;">' +
           (isNovo ? '<div class="badge-novo">NOVO!</div>' : '') +
           (p.foto_url
             ? '<img class="figurinha-arte" src="' + p.foto_url + '" alt="' + p.nome + '">'
@@ -832,13 +832,17 @@
   }
 
   function animarColar(professor) {
-    // Encontra o card da figurinha no álbum
+    // Encontra o card da figurinha no álbum pelo data-id
     const cards = document.querySelectorAll('.figurinha.desbloqueada')
     let cardAlvo = null
     cards.forEach(card => {
-      const nomeEl = card.querySelector('.figurinha-nome')
-      if (nomeEl && nomeEl.textContent === professor.nome) cardAlvo = card
+      if (card.dataset.id === professor.id) cardAlvo = card
     })
+    if (!cardAlvo) {
+      // Fallback — pega o último card desbloqueado
+      const todos = document.querySelectorAll('.figurinha.desbloqueada')
+      if (todos.length) cardAlvo = todos[todos.length - 1]
+    }
     if (!cardAlvo) return
 
     // Pega posição e tamanho do card alvo
