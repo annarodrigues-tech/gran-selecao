@@ -313,6 +313,7 @@
     /* MODAL REVELAÇÃO */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-overlay.visivel { display: flex; }
+    .modal-overlay.visivel { display: flex; }
 
     .modal {
       background: linear-gradient(145deg, #162060, #1e2d7a);
@@ -606,12 +607,6 @@
     const cupomSalvo = localStorage.getItem('cupom_pendente')
     if (cupomSalvo) {
       window._cupomPendente = cupomSalvo
-      setTimeout(() => {
-        document.getElementById('modal-cupom-btn-wrap').style.display = 'block'
-        mostrarModalCupom(cupomSalvo)
-        localStorage.removeItem('cupom_pendente')
-        window._cupomPendente = null
-      }, 1000)
     }
   }
 
@@ -793,8 +788,9 @@
 
   function mostrarModal(professor) {
     profModal = professor
-    window._cupomPendente = null
-    document.getElementById('modal-cupom-btn-wrap').style.display = 'none'
+    // Verifica se já tem cupom pendente salvo
+    const cupomExistente = window._cupomPendente || localStorage.getItem('cupom_pendente')
+    document.getElementById('modal-cupom-btn-wrap').style.display = cupomExistente ? 'block' : 'none'
     const wrap = document.getElementById('modal-figurinha-wrap')
     if (professor.foto_url) {
       wrap.innerHTML = '<img src="' + professor.foto_url + '" alt="' + professor.nome + '" style="width:100%;height:100%;object-fit:cover;">'
