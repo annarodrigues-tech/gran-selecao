@@ -811,6 +811,26 @@
     if (profModal) animarColar(profModal)
   }
 
+  function colarEVerificarCupom() {
+    fecharModal()
+    const codigo = window._cupomPendente || localStorage.getItem('cupom_pendente')
+    if (codigo) {
+      setTimeout(() => mostrarModalCupom(codigo), 800)
+      window._cupomPendente = null
+      localStorage.removeItem('cupom_pendente')
+    }
+  }
+
+  function verCupomEFechar() {
+    const codigo = window._cupomPendente || localStorage.getItem('cupom_pendente')
+    document.getElementById('modal').classList.remove('visivel')
+    if (codigo) {
+      mostrarModalCupom(codigo)
+      window._cupomPendente = null
+      localStorage.removeItem('cupom_pendente')
+    }
+  }
+
   function animarColar(professor) {
     // Encontra o card da figurinha no álbum
     const cards = document.querySelectorAll('.figurinha.desbloqueada')
