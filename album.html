@@ -311,7 +311,7 @@
     .carregando { text-align: center; color: rgba(255,255,255,0.15); padding: 60px 0; font-size: 15px; font-weight: 700; grid-column: 1/-1; }
 
     /* MODAL REVELAÇÃO */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; }
     .modal-overlay.visivel { display: flex; }
     .modal-overlay.visivel { display: flex; }
 
@@ -788,6 +788,7 @@
   }
 
   function mostrarModal(professor) {
+    fecharMenu() // Fecha menu mobile se estiver aberto
     profModal = professor
     // Verifica se já tem cupom pendente salvo
     const cupomExistente = window._cupomPendente || localStorage.getItem('cupom_pendente')
