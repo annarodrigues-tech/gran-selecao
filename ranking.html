@@ -357,6 +357,15 @@
   </style>
 </head>
 <body>
+<!-- FAIXA LIVE -->
+<div id="faixa-live" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#FFFFFF;color:#0D134C;padding:10px 20px;text-align:center;font-family:'Nunito','Trebuchet MS',sans-serif;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 2px 12px rgba(0,0,0,0.15);">
+  <span style="font-size:16px;">🔴</span>
+  <span>LIVE ESPECIAL Gran no YouTube — <strong>15/06 às 9h49</strong> — Sorteio ao vivo para quem completar o álbum!</span>
+  <a href="https://www.youtube.com/@grancursosonline" target="_blank" style="background:#0D134C;color:#F3BF1A;padding:5px 14px;border-radius:100px;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;flex-shrink:0;">Assistir →</a>
+  <button onclick="document.getElementById('faixa-live').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:18px;color:#0D134C;opacity:0.4;margin-left:4px;flex-shrink:0;">✕</button>
+</div>
+<style>#faixa-live ~ * body, body { padding-top: 48px !important; } .sidebar { top: 48px !important; } .menu-toggle { top: 62px !important; }</style>
+
 
 <nav class="sidebar">
   <div class="sidebar-logo">
@@ -385,7 +394,32 @@
 <div class="content">
   <div class="page-header">
     <h2>Ranking</h2>
-    <p>Os colecionadores mais dedicados</p>
+    <p>Os colecionadores mais dedicados Imparáveis!</p>
+  </div>
+
+  <!-- PREMIAÇÃO -->
+  <div style="background:linear-gradient(135deg,rgba(243,191,26,0.12),rgba(243,191,26,0.04));border:1px solid rgba(243,191,26,0.3);border-radius:20px;padding:28px 32px;margin-bottom:32px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px;">🏆 Premiação — Live 15/06 às 9h49</div>
+      <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.7);line-height:1.6;">Sorteio ao vivo no YouTube para quem completar o álbum!</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">📱</div>
+        <div style="font-size:16px;font-weight:900;color:#FFD700;">iPhone</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);margin-top:4px;">1º lugar</div>
+      </div>
+      <div style="background:rgba(192,192,192,0.1);border:1px solid rgba(192,192,192,0.3);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">💻</div>
+        <div style="font-size:16px;font-weight:900;color:#C0C0C0;">Notebook</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);margin-top:4px;">2º lugar</div>
+      </div>
+      <div style="background:rgba(205,127,50,0.1);border:1px solid rgba(205,127,50,0.3);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">📟</div>
+        <div style="font-size:16px;font-weight:900;color:#CD7F32;">Tablet</div>
+        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);margin-top:4px;">3º lugar</div>
+      </div>
+    </div>
   </div>
 
   <div id="ranking-container"><div class="carregando">Carregando ranking...</div></div>
@@ -456,7 +490,7 @@
         return '<div class="podium-item pos-' + pos + '">' +
           '<div class="podium-avatar">' + coroa + inicial + '</div>' +
           '<div class="podium-nome">' + nome + '</div>' +
-          '<div class="podium-qtd">' + item.total + ' figurinhas</div>' +
+          '<div class="podium-qtd">' + (item.uid === meuUid ? item.total + ' figurinhas' : '🔒 oculto') + '</div>' +
           '<div class="podium-base">' + (pos === 1 ? '1º' : pos === 2 ? '2º' : '3º') + '</div>' +
           '</div>'
       }).join('') +
